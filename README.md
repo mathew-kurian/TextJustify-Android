@@ -1,0 +1,35 @@
+![Logo](http://i.imgur.com/nxSMpzx.png)
+=======
+**Simple Android Full Justification**
+Quick Setup
+=======
+Fast, no-hassle setup.
+
+```js
+
+((TextView)findViewById(R.id.textview)).setText(input);
+TextJustify.run(((TextView)findViewById(R.id.textview)), 305f); 
+//Start from a small number like 150f and move up from there to get the exact width. 
+//I haven't fixed this problem yet. 305f works best for me in this case.
+
+```
+Examples
+=======
+Before
+
+![Logo](http://i.stack.imgur.com/ck0bY.png)
+
+After
+
+![Logo](http://i.stack.imgur.com/dujWm.png)
+
+Notes
+=======
+HTML formatting and this class will not have the expected results.
+
+Contributors
+=======
+
+```js
+bluejamesbond
+```

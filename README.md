@@ -15,11 +15,11 @@ TextJustify.run(((TextView)findViewById(R.id.textview)), 305f);
 ```
 Examples
 =======
-Before
+**Before**
 
 ![Logo](http://i.stack.imgur.com/ck0bY.png)
 
-After
+**After**
 
 ![Logo](http://i.stack.imgur.com/dujWm.png)
 

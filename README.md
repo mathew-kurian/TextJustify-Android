@@ -3,7 +3,7 @@
 **Simple Android Full Justification**
 Quick Setup
 =======
-Fast, no-hassle setup.
+This is very simple - not complicated at all. What you want to do is get the library itself and add it to your Android project. Then you want to use the following code:
 
 ```js
 

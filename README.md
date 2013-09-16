@@ -1,4 +1,4 @@
-![Logo](http://i.imgur.com/nxSMpzx.png)
+![Logo](https://raw.github.com/bluejamesbond/TextJustify-Android/master/textjustify%20design%20logo%20%5Ba%5D.png)
 =======
 **Simple Android Full Justification**
 Quick Setup

@@ -10,6 +10,8 @@ final static String SYSTEM_NEWLINE  = "\n";
 final static float COMPLEXITY = 5.12f;  //Reducing this will increase efficiency but will decrease effectiveness
 final static Paint p = new Paint();
 
+/* Coded by Mathew Kurian */
+
 public static void run(final TextView tv, final float origWidth){
     String s = tv.getText().toString();
     p.setTypeface(tv.getTypeface());        

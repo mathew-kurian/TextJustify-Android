@@ -4,7 +4,7 @@ import android.graphics.Paint;
 import android.view.Gravity;
 import android.widget.TextView;
 
-public class TextJustify {
+public class TextJustify { 
 
 final static String SYSTEM_NEWLINE  = "\n";
 final static float COMPLEXITY = 5.12f;  //Reducing this will increase efficiency but will decrease effectiveness

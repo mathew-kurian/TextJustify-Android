@@ -17,19 +17,18 @@ getWindowManager().getDefaultDisplay().getMetrics(metrics);
 int widthPixels = metrics.widthPixels;
 Log.d("size is width pixel", String.valueOf(widthPixels+" "));
 	     
-	    
-	     
-	     
-	     float scaleFactor = metrics.density;
-	     float widthDp = (widthPixels / scaleFactor) ;
+loat scaleFactor = metrics.density;
+float widthDp = (widthPixels / scaleFactor) ;
 
 
  TextView tv = (TextView) findViewById(R.id.textView1);
  ViewGroup.MarginLayoutParams lp1 = (ViewGroup.MarginLayoutParams) tv.getLayoutParams();
 	     
-	tv.setText(text);
-	TextJustify.run(tv,widthDp / FinallwidthDp * widthJustify , tv.getPaddingLeft()
-	                ,tv.getPaddingRight() , lp1.leftMargin, lp1.rightMargin);
+tv.setText(text);
+TextJustify.run(tv,widthDp / FinallwidthDp * widthJustify , 
+		tv.getPaddingLeft() ,tv.getPaddingRight() , 
+		lp1.leftMargin, 
+		lp1.rightMargin);
 
 //Start from a small number like 150f and move up from there to get the exact width. 
 //I haven't fixed this problem yet. 305f works best for me in this case.

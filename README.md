@@ -13,7 +13,7 @@ public int  PaddingLeft , PaddingRight , MarginLeft , MarginRight;
 DisplayMetrics metrics = new DisplayMetrics();
 getWindowManager().getDefaultDisplay().getMetrics(metrics);
 int widthPixels = metrics.widthPixels;
-Log.d("size is width pixel", String.valueOf(widthPixels+" "));
+
 	     
 	    
 	     
@@ -28,8 +28,8 @@ ViewGroup.MarginLayoutParams lp1 = (ViewGroup.MarginLayoutParams) tv.getLayoutPa
 	TextJustify.run(tv,widthDp / FinallwidthDp * widthJustify , tv.getPaddingLeft()
 	                ,tv.getPaddingRight() , lp1.leftMargin, lp1.rightMargin);
 
-//Start from a small number like 150f and move up from there to get the exact width. 
-//I haven't fixed this problem yet. 305f works best for me in this case.
+// if not good for you Start from a small number in widthJustify like 150 and move up from there to get the exact width. 
+
 
 ```
 Examples

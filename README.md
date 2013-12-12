@@ -25,7 +25,7 @@ Examples
 
 Notes
 =======
-HTML formatting and this class will not have the expected results.
+HTML formatting will cause you to have expected results.
 
 Contributors
 =======

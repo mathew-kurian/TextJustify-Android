@@ -13,8 +13,6 @@ final static Paint p = new Paint();
 /* @author Mathew Kurian */
 
 public static void run(final TextView tv, float origWidth, int paddingLeft, int paddingRight, int marginLeft, int marginRight) {
-		
-		
     origWidth-= paddingRight+marginRight+paddingLeft+marginLeft;
     String s = tv.getText().toString();
     p.setTypeface(tv.getTypeface());        

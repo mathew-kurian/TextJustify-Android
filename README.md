@@ -1,4 +1,4 @@
-![Logo](https://raw.github.com/bluejamesbond/TextJustify-Android/master/textjustify%20design%20logo%20%5Ba%5D.png)
+![Logo](https://raw.github.com/bluejamesbond/TextJustify-Android/master/__misc/textjustify%20design%20logo%20%5Ba%5D.png)
 =======
 **Simple Android Full Justification**
 Overview
@@ -34,7 +34,7 @@ Option 1 - Result
 =======
 **Comparison**
 
-![Logo](http://i.imgur.com/2H8iRzb.png)
+![Logo](http://i.imgur.com/xbzYStc.png)
 
 
 Option 2 - Setup
@@ -64,13 +64,10 @@ TextJustify.run(tv,widthDp / FinallwidthDp * widthJustify , tv.getPaddingLeft() 
 ```
 Option 2 - Result
 =======
-**Before**
+**Comparison**
 
-![Logo](http://i.stack.imgur.com/ck0bY.png)
+![Logo](http://i.imgur.com/L62jFKp.png)
 
-**After**
-
-![Logo](http://i.stack.imgur.com/dujWm.png)
 
 Notes
 =======

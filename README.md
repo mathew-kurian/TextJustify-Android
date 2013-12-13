@@ -34,7 +34,7 @@ Option 1 - Result
 =======
 **Comparison**
 
-![Logo](http://i.stack.imgur.com/ck0bY.png)
+![Logo](http://i.imgur.com/2H8iRzb.png)
 
 
 Option 2 - Setup

@@ -11,7 +11,6 @@ Looks very accurate and neat. Small issues may arise but can be easily sorted ou
 
 ```xml
 
-// XML Layout Sample
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"

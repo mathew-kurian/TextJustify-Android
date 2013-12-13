@@ -82,7 +82,7 @@ public class TextViewEx extends TextView
 				
 		dirtyRegionWidth = getWidth();
 		blocks = getText().toString().split("((?<=\n)|(?=\n))");
-		verticalOffset = horizontalFontOffset = getLineHeight();
+		verticalOffset = horizontalFontOffset = getLineHeight() - 0.5f; // Temp fix
 		spaceOffset = paint.measureText(" ");
 		
 		for(int i = 0; i < blocks.length; i++)

@@ -3,9 +3,9 @@
 **Simple Android Full Justification**
 Overview
 =======
-This is very simple - not complicated at all. What you want to do is get the library itself and add it to your Android project. Then you want to use the following code:
+This is very simple - not complicated at all. What you want to do is get the library itself and add it to your Android project.
 
-Option 1 - Setup
+Option 1 (Draw-Based) - Setup
 =======
 Looks very accurate and neat. Small issues may arise but can be easily sorted out if users post their issues on Github. To use it, all you have to do is include the `TextViewEx.java` and `TextJustifyUtils.java` in your project. Then you may use as you would the built-in  `TextView`.
 
@@ -50,7 +50,7 @@ Option 1 - Result
 ![Logo](http://i.imgur.com/xbzYStc.png)
 
 
-Option 2 - Setup
+Option 2 (String-Based) - Setup
 =======
 This would be considered a fallback option in the case the previous option did not work for you. To use this, include `TextJustifyUtils.java` and follow the sample code below.
 

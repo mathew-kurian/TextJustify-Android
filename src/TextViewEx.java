@@ -1,26 +1,48 @@
-package mk.justifytext;
+
+package com.example.textjustify;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-/* @author Mathew Kurian */
+/*
+ * 
+ * TextViewEx.java
+ * @author Mathew Kurian
+ * 
+ * !-- Requires -- !
+ * TextJustifyUtils.java
+ * 
+ * From TextJustify-Android Library v1.0.2
+ * https://github.com/bluejamesbond/TextJustify-Android
+ *
+ * Please report any issues
+ * https://github.com/bluejamesbond/TextJustify-Android/issues
+ * 
+ * Date: 12/13/2013 12:28:16 PM
+ * 
+ */
 
 public class TextViewEx extends TextView 
 {		
-	private Paint p = new Paint();
+	private Paint paint = new Paint();
+
 	private String [] blocks;
-	
 	private float spaceOffset = 0;
 	private float horizontalOffset = 0;
 	private float verticalOffset = 0;
 	private float horizontalFontOffset = 0;
-	private float textWrapWidth = 0;
+	private float dirtyRegionWidth = 0;
+	private boolean wrapEnabled = false;
 	
-	private String wrappedText;
+	private float strecthOffset;
+	private float wrappedEdgeSpace;
+	private String block;
+	private String wrappedLine;
+	private String [] lineAsWords;
+	private Object [] wrappedObj;
 	
 	public TextViewEx(Context context, AttributeSet attrs, int defStyle) 
 	{
@@ -37,52 +59,42 @@ public class TextViewEx extends TextView
 		super(context);
 	}
 
-	public void setWrappedText(String st)
+	public void setText(String st, boolean wrap)
 	{
-		wrappedText = st;
+		wrapEnabled = wrap;	
+		
+		super.setText(st);
 	}
-	
-	public String getWrappedText()
-	{
-		return wrappedText;
-	}
-	
-	@Override
-	protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter)
-	{
-		super.onTextChanged(text, start, lengthBefore, lengthAfter);
-		wrappedText = getText().toString();		
-	}
-	
+
 	@Override
 	protected void onDraw(Canvas canvas) 
-	{		
-		if(wrappedText == null)
+	{
+		if(!wrapEnabled)
 		{
-			// Set the intial wrapped text
-			setWrappedText(getText().toString());
+			super.onDraw(canvas);
+			return;
 		}
-		
-		/************************************************************************
-		## Debugging handle.
-		**************************************************************************/ 
-		// super.onDraw(canvas);
-		
-		p.setStyle(Style.STROKE);
-		p.setColor(getCurrentTextColor());
-		p.setTypeface(getTypeface());
-		p.setTextSize(getTextSize());
-		
-		textWrapWidth = getWidth();
-		verticalOffset = horizontalFontOffset = getLineHeight() - 1.0f; // Temporary fix for overflow issue
-		spaceOffset = p.measureText(" ");
-		blocks = getWrappedText().split("(?<=\n)");
+
+		// Pull widget properties
+		paint.setColor(getCurrentTextColor());
+		paint.setTypeface(getTypeface());
+		paint.setTextSize(getTextSize());
+				
+		dirtyRegionWidth = getWidth();
+		blocks = getText().toString().split("((?<=\n)|(?=\n))");
+		verticalOffset = horizontalFontOffset = getLineHeight();
+		spaceOffset = paint.measureText(" ");
 		
 		for(int i = 0; i < blocks.length; i++)
 		{
-			String block = blocks[i];
-			
-			if(block.equals("\n") && (i + 1 < blocks.length ? blocks[i + 1].equals("\n"): false))
+			block = blocks[i];
+			horizontalOffset = 0;
+
+			if(block.length() == 0)
+			{
+				continue;
+			}			
+			else if(block.equals("\n"))
 			{
 				verticalOffset += horizontalFontOffset; 
 				continue;
@@ -92,55 +104,24 @@ public class TextViewEx extends TextView
 			
 			if(block.length() == 0) continue;
 			
-			Object [] wrapped = wrap(block, textWrapWidth, p);
-			boolean wrap = (Float) wrapped[1] != Float.MIN_VALUE;
-			float extraSpace = (Float) wrapped[1];
-			String wrappedLine = ((String) wrapped[0]);
-			String [] words = wrappedLine.split(" ");
+			wrappedObj = TextJustifyUtils.createWrappedLine(block, paint, spaceOffset, dirtyRegionWidth);
+			wrappedLine = ((String) wrappedObj[0]);
+			wrappedEdgeSpace = (Float) wrappedObj[1];
+			lineAsWords = wrappedLine.split(" ");
+			strecthOffset = wrappedEdgeSpace != Float.MIN_VALUE ? wrappedEdgeSpace/(lineAsWords.length - 1) : 0;
 			
-			for(String word : words)
+			for(String word : lineAsWords)
 			{
-				canvas.drawText(word, horizontalOffset, verticalOffset, p);
-				horizontalOffset += p.measureText(word) + spaceOffset + (wrap ? extraSpace/(words.length - 1) : 0);
+				canvas.drawText(word, horizontalOffset, verticalOffset, paint);
+				horizontalOffset += paint.measureText(word) + spaceOffset + strecthOffset;
 			}
-
-			horizontalOffset = 0;
-			verticalOffset += horizontalFontOffset; 
 			
 			if(blocks[i].length() > 0)
 			{
-				blocks[i] = blocks[i].substring(wrappedLine.length());
+				blocks[i] = blocks[i].substring(wrappedLine.length());				
+				verticalOffset += blocks[i].length() > 0 ? horizontalFontOffset : 0; 				
 				i--;
 			}
 		}
-	}
-
-	private Object [] wrap(String s, float width, Paint p)
-	{
-		float cacheWidth = width;
-		
-		if(p.measureText(s) <= width)
-		{
-			return new Object[] { s, Float.MIN_VALUE };
-		}
-
-		StringBuilder smb = new StringBuilder();
-
-		for(String word : s.split("\\s"))
-		{
-			cacheWidth = p.measureText(word);
-			width -= cacheWidth;
-			
-			if(width <= 0)
-			{
-				return new Object[] { smb.toString(), width + cacheWidth + spaceOffset };
-			}
-
-			smb.append(word);
-			smb.append(" ");
-			width -= spaceOffset;
-		}
-		
-		return new Object[] { smb.toString(), width };
 	}
 }

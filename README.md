@@ -7,7 +7,7 @@ This is very simple - not complicated at all. What you want to do is get the lib
 
 Option 1 - Setup
 =======
-Looks very accurate and neat. Small issues may arise but can be easily sorted out if users post their issues on Github. To use it, all you have to do is include the `TextViewEx.java` in your project. Then you may use as you would the built-in  `TextView`.
+Looks very accurate and neat. Small issues may arise but can be easily sorted out if users post their issues on Github. To use it, all you have to do is include the `TextViewEx.java` and `TextJustifyUtils.java` in your project. Then you may use as you would the built-in  `TextView`.
 
 ```xml
 
@@ -30,6 +30,20 @@ Looks very accurate and neat. Small issues may arise but can be easily sorted ou
 </ScrollView>
 
 ```
+```java
+
+@Override
+protected void onCreate(Bundle savedInstanceState) 
+{
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main); 
+    
+    TextViewEx txtViewEx = (TextViewEx) findViewById(R.id.textViewEx);
+    txtViewEx.setText("Insert your content here", true); // true: enables justification
+}
+
+```
+
 Option 1 - Result
 =======
 **Comparison**
@@ -39,27 +53,35 @@ Option 1 - Result
 
 Option 2 - Setup
 =======
-This would be considered a fallback option in the case the previous option did not work for you. To use this, include `TextJustify.java` and follow the sample code below.
+This would be considered a fallback option in the case the previous option did not work for you. To use this, include `TextJustifyUtils.java` and follow the sample code below.
 
-```js
+```java
 
-int FinallwidthDp  = 320 ;
-int widthJustify  = 223 ;
-int PaddingLeft , PaddingRight , MarginLeft , MarginRight;
+@Override
+protected void onCreate(Bundle savedInstanceState) 
+{
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main); 
+    
+    final TextView txtView = (TextView) findViewById(R.id.textView);
+    txtView.getViewTreeObserver().addOnPreDrawListener(new OnPreDrawListener()
+    {           
+        boolean isJustified = false;
 
-DisplayMetrics metrics = new DisplayMetrics();
-getWindowManager().getDefaultDisplay().getMetrics(metrics);
-int widthPixels = metrics.widthPixels;
-  
-float scaleFactor = metrics.density;
-float widthDp = (widthPixels / scaleFactor) ;
-
-TextView tv = (TextView) findViewById(R.id.textView1);
-ViewGroup.MarginLayoutParams lp1 = (ViewGroup.MarginLayoutParams) tv.getLayoutParams();
-
-TextJustify.run(tv,widthDp / FinallwidthDp * widthJustify , tv.getPaddingLeft() ,tv.getPaddingRight() , lp1.leftMargin, lp1.rightMargin);
-
-// If this doesn't work, then start from a small number for widthJustify like 150 and move up from there to get the exact width. 
+        @Override
+        public boolean onPreDraw() 
+        {
+            if(!isJustified)
+            {
+                TextJustifyUtils.run(txtView);
+                isJustified = true;
+            }
+            
+            return true;
+        }
+        
+    });
+}
 
 ```
 Option 2 - Result

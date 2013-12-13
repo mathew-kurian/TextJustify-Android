@@ -29,6 +29,7 @@ ipch/
 *.sql
 *.sqlite
 *.sdf
+log/
 
 # OS generated files #
 ######################
@@ -46,3 +47,4 @@ shader-error.txt
 pingme.txt
 LICENSE
 git-score.py
+*.opensdf

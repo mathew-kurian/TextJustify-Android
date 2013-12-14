@@ -4,6 +4,11 @@
 Overview
 =======
 This is very simple - not complicated at all. What you want to do is get the library itself and add it to your Android project.
+Upcoming
+=======
+1. Support for auto-hyphenating
+2. Support for editable text (while justification is enabled)
+3. More optimizations
 
 Option 1 (Draw-Based) - Setup
 =======

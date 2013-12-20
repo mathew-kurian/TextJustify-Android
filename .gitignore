@@ -40,11 +40,3 @@ log/
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# Other #
-#########
-shader-error.txt
-pingme.txt
-LICENSE
-git-score.py
-*.opensdf

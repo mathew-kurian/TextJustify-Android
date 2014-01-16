@@ -14,7 +14,9 @@ Upcoming
 
 Option 1 (Draw-Based) - Setup
 =======
-Looks very accurate and neat. Small issues may arise but can be easily sorted out if users post their issues on Github. To use it, all you have to do is include the `TextViewEx.java` and `TextJustifyUtils.java` in your project. Then you may use as you would the built-in  `TextView`.
+Looks very accurate and neat. Small issues may arise but can be easily sorted out if users post their issues on Github. To use it, all you have to do is include the `TextViewEx.java` and `TextJustifyUtils.java` in your project. Then you may use as you would the built-in  `TextView`. 
+
+To improve performance on large TextViews, you must enable optimization. To do so, you must use `setDrawingCacheEnabled(bool)`. Uing this increases speed, but it also requires more memory.
 
 ```xml
 
@@ -49,7 +51,6 @@ protected void onCreate(Bundle savedInstanceState)
 }
 
 ```
-
 Option 1 - Result
 =======
 **Comparison**
@@ -106,4 +107,6 @@ Contributors
 
 ```js
 bluejamesbond
+fscz
+shayanpourvatan
 ```

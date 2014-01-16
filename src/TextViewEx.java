@@ -72,19 +72,35 @@ public class TextViewEx extends TextView
 	@Override
 	protected void onDraw(Canvas canvas) 
 	{
-		Canvas newCanvas = null;
+		// Active canas needs to be set
+		// based on cacheEnabled
+		Canvas activeCanvas = null;
+
+		// Set the active canvas based on
+		// whether cache is enabled
 		if (cacheEnabled) {
 
-			if (cache != null) {
+			if (cache != null) 
+			{
+				// Draw to the OS provided canvas
+				// if the cache is not empty
 				canvas.drawBitmap(cache, 0, 0, paint);
 				return;
-			} else  {
+			} 
+			else  
+			{
+				// Create a bitmap and set the activeCanvas
+				// to the one derived from the bitmap
 				cache = Bitmap.createBitmap(getWidth(), getHeight(), 
 	                    Config.ARGB_4444);
-				newCanvas = new Canvas(cache);
+				activeCanvas = new Canvas(cache);
 			}
-		} else {
-			newCanvas = canvas;
+		} 
+		else 
+		{
+			// Active canvas is the OS
+			// provided canvas
+			activeCanvas = canvas;
 		}
 		
 		// Pull widget properties
@@ -93,12 +109,11 @@ public class TextViewEx extends TextView
 		paint.setTextSize(getTextSize());
 				
 		dirtyRegionWidth = getWidth();
-		int maxLines = getMaxLines();
+		int maxLines = getMaxLines(), lines = 1;
 		blocks = getText().toString().split("((?<=\n)|(?=\n))");
 		verticalOffset = horizontalFontOffset = getLineHeight() - 0.5f; // Temp fix
-		spaceOffset = paint.measureText(" ");
-		
-		int lines = 1;
+		spaceOffset = paint.measureText(" ");	
+
 		for(int i = 0; i < blocks.length && lines <= maxLines; i++)
 		{
 			block = blocks[i];
@@ -116,7 +131,10 @@ public class TextViewEx extends TextView
 			
 			block = block.trim();
 			
-			if(block.length() == 0) continue;
+			if(block.length() == 0) 
+			{
+				continue;
+			}
 			
 			wrappedObj = TextJustifyUtils.createWrappedLine(block, paint, spaceOffset, dirtyRegionWidth);
 			
@@ -128,13 +146,18 @@ public class TextViewEx extends TextView
 			for(int j = 0; j < lineAsWords.length; j++)
 			{
 				String word = lineAsWords[j];
-				if (lines == maxLines && j == lineAsWords.length - 1) {
-					newCanvas.drawText("...", horizontalOffset, verticalOffset, paint);
-				} else {
-					newCanvas.drawText(word, horizontalOffset, verticalOffset, paint);
+				if (lines == maxLines && j == lineAsWords.length - 1) 
+				{
+					activeCanvas.drawText("...", horizontalOffset, verticalOffset, paint);
+				} 
+				else 
+				{
+					activeCanvas.drawText(word, horizontalOffset, verticalOffset, paint);
 				}
+
 				horizontalOffset += paint.measureText(word) + spaceOffset + strecthOffset;
 			}
+
 			lines++;
 			
 			if(blocks[i].length() > 0)
@@ -145,7 +168,10 @@ public class TextViewEx extends TextView
 			}
 		}
 		
-		if (cacheEnabled) {
+		if (cacheEnabled)
+		{
+			// Draw the cache onto the OS provided
+			// canvas.
 			canvas.drawBitmap(cache, 0, 0, paint);
 		}
 	}

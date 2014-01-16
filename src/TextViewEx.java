@@ -54,12 +54,12 @@ public class TextViewEx extends TextView
 		super(context, attrs, defStyle);
 	}
 
-	public TextViewJustify(Context context, AttributeSet attrs) 
+	public TextViewEx(Context context, AttributeSet attrs) 
 	{
 		super(context, attrs);
 	}
 
-	public TextViewJustify(Context context) 
+	public TextViewEx(Context context) 
 	{
 		super(context);
 	}

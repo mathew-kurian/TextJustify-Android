@@ -125,7 +125,12 @@ public class TextViewEx extends TextView
         paint.setTextSize(getTextSize());
                 
         dirtyRegionWidth = getWidth();
-        int maxLines = getMaxLines(), lines = 1;
+        int maxLines = Integer.MAX_VALUE;
+		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+		if (currentapiVersion >= android.os.Build.VERSION_CODES.JELLY_BEAN){
+			maxLines = getMaxLines();
+		}
+        int lines = 1;
         blocks = getText().toString().split("((?<=\n)|(?=\n))");
         verticalOffset = horizontalFontOffset = getLineHeight() - 0.5f; // Temp fix
         spaceOffset = paint.measureText(" ");   

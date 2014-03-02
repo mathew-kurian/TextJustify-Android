@@ -1,4 +1,6 @@
-package customviews;
+package com.example.textjustify;
+
+import com.fscz.util.TextJustifyUtils;
 
 import android.annotation.TargetApi;
 import android.content.Context;

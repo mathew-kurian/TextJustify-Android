@@ -2,12 +2,14 @@ package com.example.textjustify;
 
 import com.fscz.util.TextJustifyUtils;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.widget.TextView;
+import android.os.Build;
 import android.util.AttributeSet;
 
 /*
@@ -28,6 +30,7 @@ import android.util.AttributeSet;
  * 
  */
 
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class TextViewEx extends TextView 
 {       
     private Paint paint = new Paint();
@@ -39,6 +42,7 @@ public class TextViewEx extends TextView
     private float horizontalFontOffset = 0;
     private float dirtyRegionWidth = 0;
     private boolean wrapEnabled = false;
+    int left,top,right,bottom=0;
     
     private float strecthOffset;
     private float wrappedEdgeSpace;
@@ -53,19 +57,32 @@ public class TextViewEx extends TextView
     public TextViewEx(Context context, AttributeSet attrs, int defStyle) 
     {
         super(context, attrs, defStyle);
+        //set a minimum of left and right padding so that the texts are not too close to the side screen
+        this.setPadding(10, 0, 10, 0);
     }
 
     public TextViewEx(Context context, AttributeSet attrs) 
     {
         super(context, attrs);
+        this.setPadding(10, 0, 10, 0);
     }
 
     public TextViewEx(Context context) 
     {
         super(context);
+        this.setPadding(10, 0, 10, 0);
     }
     
+    
+    
     @Override
+	public void setPadding(int left, int top, int right, int bottom) {
+		// TODO Auto-generated method stub
+    	
+		super.setPadding(left+10, top, right+10, bottom);
+	}
+
+	@Override
     public void setDrawingCacheEnabled(boolean cacheEnabled) 
     {
         this.cacheEnabled = cacheEnabled;
@@ -77,7 +94,7 @@ public class TextViewEx extends TextView
         super.setText(st);
     }
 
-    @Override
+	@Override
     protected void onDraw(Canvas canvas) 
     { 
         // If wrap is disabled then,
@@ -123,8 +140,9 @@ public class TextViewEx extends TextView
         paint.setColor(getCurrentTextColor());
         paint.setTypeface(getTypeface());
         paint.setTextSize(getTextSize());
-                
-        dirtyRegionWidth = getWidth();
+        
+        //minus out the paddings pixel         
+        dirtyRegionWidth = getWidth()-getPaddingLeft()-getPaddingRight();
         int maxLines = Integer.MAX_VALUE;
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 		if (currentapiVersion >= android.os.Build.VERSION_CODES.JELLY_BEAN){
@@ -170,10 +188,21 @@ public class TextViewEx extends TextView
                 if (lines == maxLines && j == lineAsWords.length - 1) 
                 {
                     activeCanvas.drawText("...", horizontalOffset, verticalOffset, paint);
+                	 
+
                 } 
+                else if(j==0){
+                	//if it is the first word of the line, text will be drawn starting from position getPaddingLeft()            	
+                	 activeCanvas.drawText(word, getPaddingLeft(), verticalOffset, paint);
+                	// add in the left padding pixel length to the horizontalOffset
+                	 horizontalOffset+=getPaddingLeft();
+                	
+                }
                 else 
                 {
                     activeCanvas.drawText(word, horizontalOffset, verticalOffset, paint);
+                  
+                    
                 }
 
                 horizontalOffset += paint.measureText(word) + spaceOffset + strecthOffset;

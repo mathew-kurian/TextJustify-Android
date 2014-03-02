@@ -1,4 +1,4 @@
-package com.example.textjustify;
+package customviews;
 
 import android.graphics.Paint;
 import android.view.Gravity;

@@ -108,12 +108,8 @@ public class TextJustifyUtils
     protected static Object [] createWrappedLine(String block, Paint paint, float spaceOffset, float maxWidth)
     {
         float cacheWidth = maxWidth;
+        float origMaxWidth = maxWidth;
         
-        if(paint.measureText(block) <= maxWidth)
-        {
-            return new Object[] { block, Float.MIN_VALUE };
-        }
-
         String line = "";
         
         for(String word : block.split("\\s"))
@@ -131,6 +127,11 @@ public class TextJustifyUtils
             
         }
         
+      if(paint.measureText(block) <= origMaxWidth)
+      {
+          return new Object[] { block, Float.MIN_VALUE };
+      }
+      
         return new Object[] { line, maxWidth };
     }
     

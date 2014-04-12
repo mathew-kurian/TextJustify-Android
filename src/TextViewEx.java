@@ -140,6 +140,7 @@ public class TextViewEx extends TextView
         paint.setColor(getCurrentTextColor());
         paint.setTypeface(getTypeface());
         paint.setTextSize(getTextSize());
+        paint.setTextAlign(Align.RIGHT);
         
         //minus out the paddings pixel         
         dirtyRegionWidth = getWidth()-getPaddingLeft()-getPaddingRight();
@@ -192,20 +193,18 @@ public class TextViewEx extends TextView
 
                 } 
                 else if(j==0){
-                	//if it is the first word of the line, text will be drawn starting from position getPaddingLeft()            	
-                	 activeCanvas.drawText(word, getPaddingLeft(), verticalOffset, paint);
-                	// add in the left padding pixel length to the horizontalOffset
-                	 horizontalOffset+=getPaddingLeft();
+                	//if it is the first word of the line, text will be drawn starting from right edge of textview            	
+                	 activeCanvas.drawText(word, getWidth()-(getPaddingRight()), verticalOffset, paint);
+                	// add in the paddings to the horizontalOffset
+                	 horizontalOffset+=getWidth()-(getPaddingRight());
                 	
                 }
                 else 
                 {
                     activeCanvas.drawText(word, horizontalOffset, verticalOffset, paint);
-                  
-                    
                 }
 
-                horizontalOffset += paint.measureText(word) + spaceOffset + strecthOffset;
+                horizontalOffset -=  paint.measureText(word) + spaceOffset + strecthOffset;
             }
 
             lines++;

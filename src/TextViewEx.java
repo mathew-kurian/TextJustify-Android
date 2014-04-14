@@ -1,11 +1,12 @@
-package com.example.textjustify;
+package ir.zeeno.birthtofirstyear;
 
-import com.fscz.util.TextJustifyUtils;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.Paint.Align;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.widget.TextView;
@@ -30,7 +31,7 @@ import android.util.AttributeSet;
  * 
  */
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+
 public class TextViewEx extends TextView 
 {       
     private Paint paint = new Paint();
@@ -43,7 +44,7 @@ public class TextViewEx extends TextView
     private float dirtyRegionWidth = 0;
     private boolean wrapEnabled = false;
     int left,top,right,bottom=0;
-    
+    private Align _align=Align.LEFT;
     private float strecthOffset;
     private float wrappedEdgeSpace;
     private String block;
@@ -73,8 +74,6 @@ public class TextViewEx extends TextView
         this.setPadding(10, 0, 10, 0);
     }
     
-    
-    
     @Override
 	public void setPadding(int left, int top, int right, int bottom) {
 		// TODO Auto-generated method stub
@@ -93,7 +92,11 @@ public class TextViewEx extends TextView
         wrapEnabled = wrap;
         super.setText(st);
     }
-
+    public void setTextAlign(Align align)
+    {
+    	_align=align;
+    }
+	@SuppressLint("NewApi")
 	@Override
     protected void onDraw(Canvas canvas) 
     { 
@@ -140,7 +143,7 @@ public class TextViewEx extends TextView
         paint.setColor(getCurrentTextColor());
         paint.setTypeface(getTypeface());
         paint.setTextSize(getTextSize());
-        paint.setTextAlign(Align.RIGHT);
+        paint.setTextAlign(_align);
         
         //minus out the paddings pixel         
         dirtyRegionWidth = getWidth()-getPaddingLeft()-getPaddingRight();
@@ -193,18 +196,28 @@ public class TextViewEx extends TextView
 
                 } 
                 else if(j==0){
-                	//if it is the first word of the line, text will be drawn starting from right edge of textview            	
+                	//if it is the first word of the line, text will be drawn starting from right edge of textview
+                	if (_align==Align.RIGHT)
+                	{
                 	 activeCanvas.drawText(word, getWidth()-(getPaddingRight()), verticalOffset, paint);
                 	// add in the paddings to the horizontalOffset
                 	 horizontalOffset+=getWidth()-(getPaddingRight());
+                	}
+                	else
+                	{
+                		 activeCanvas.drawText(word, getPaddingLeft(), verticalOffset, paint);
+                     	 horizontalOffset+=getPaddingLeft();
+                	}
                 	
                 }
                 else 
                 {
                     activeCanvas.drawText(word, horizontalOffset, verticalOffset, paint);
                 }
-
-                horizontalOffset -=  paint.measureText(word) + spaceOffset + strecthOffset;
+                if (_align==Align.RIGHT)
+                	horizontalOffset -=  paint.measureText(word) + spaceOffset + strecthOffset;
+                else
+                	horizontalOffset += paint.measureText(word) + spaceOffset + strecthOffset;
             }
 
             lines++;

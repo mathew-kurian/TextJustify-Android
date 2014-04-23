@@ -144,6 +144,7 @@ public class TextViewEx extends TextView
         paint.setTypeface(getTypeface());
         paint.setTextSize(getTextSize());
         paint.setTextAlign(_align);
+        paint.setFlags(Paint.ANTI_ALIAS_FLAG);
         
         //minus out the paddings pixel         
         dirtyRegionWidth = getWidth()-getPaddingLeft()-getPaddingRight();

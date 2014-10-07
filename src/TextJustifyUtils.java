@@ -21,6 +21,9 @@ import android.widget.TextView;
 
 public class TextJustifyUtils 
 {   
+    public static String SYLLABLE_SEPARATOR = "§";
+    private static String HYPHEN_SYMBOL = "-";
+    
     // Please use run(...) instead
     public static void justify(TextView textView)
     {
@@ -108,31 +111,68 @@ public class TextJustifyUtils
     protected static Object [] createWrappedLine(String block, Paint paint, float spaceOffset, float maxWidth)
     {
         float cacheWidth = maxWidth;
-        float origMaxWidth = maxWidth;
-        
+
         String line = "";
-        
-        for(String word : block.split("\\s"))
+
+        String[] wordSyllables;
+        StringBuilder stringBuilder;
+        String cleanWord;
+        Integer charCounter = 0;
+
+        wordsLoop:
+        for(String dirtyWord : block.split("\\s"))
         {
-            cacheWidth = paint.measureText(word);
-            maxWidth -= cacheWidth;
-            
-            if(maxWidth <= 0) 
-            {
-                return new Object[] { line, maxWidth + cacheWidth + spaceOffset };
+            stringBuilder = new StringBuilder();
+            wordSyllables = dirtyWord.split(SYLLABLE_SEPARATOR);
+
+            for (String syllable : wordSyllables) {
+
+                stringBuilder.append(syllable);
             }
-            
-            line += word + " ";
+
+            cleanWord = stringBuilder.toString();
+
+            cacheWidth = paint.measureText(cleanWord);
+            maxWidth -= cacheWidth;
+
+            if(maxWidth <= 0) // Full word doesn't fit in the line, try syllables
+            {
+                for (int i = wordSyllables.length - 2; i >= 0; i--) {
+
+                    maxWidth += cacheWidth;
+                    stringBuilder = new StringBuilder();
+
+                    for (int j = 0; j <= i; j ++) {
+
+                        stringBuilder.append(wordSyllables[j]);
+                    }
+
+                    cleanWord = stringBuilder.toString();
+                    cacheWidth = paint.measureText(cleanWord + HYPHEN_SYMBOL);
+                    maxWidth -= cacheWidth;
+
+                    if (maxWidth > 0) {
+                        line += cleanWord + HYPHEN_SYMBOL;
+                        charCounter += cleanWord.length() + i + 1;
+                        break wordsLoop;
+                    }
+                }
+
+                if (maxWidth <= 0)
+                    return new Object[] { line, maxWidth + cacheWidth + spaceOffset, charCounter };
+            }
+
+            line += cleanWord + " ";
             maxWidth -= spaceOffset;
-            
+            charCounter += dirtyWord.length() + 1;
         }
-        
-      if(paint.measureText(block) <= origMaxWidth)
-      {
-          return new Object[] { block, Float.MIN_VALUE };
-      }
-      
-        return new Object[] { line, maxWidth };
+
+        if (block.substring(charCounter - 1).length() == 0) { //End of block
+
+            return new Object[] { line.substring(0, line.length() - 1), Float.MIN_VALUE, charCounter - 1 };
+        }
+
+        return new Object[] { line, maxWidth, charCounter };
     }
     
     final static String SYSTEM_NEWLINE  = "\n";

@@ -184,6 +184,7 @@ public class TextViewEx extends TextView
             
             wrappedLine = ((String) wrappedObj[0]);
             wrappedEdgeSpace = (Float) wrappedObj[1];
+            charCounter = (Integer) wrappedObj[2];
             lineAsWords = wrappedLine.split(" ");
             strecthOffset = wrappedEdgeSpace != Float.MIN_VALUE ? wrappedEdgeSpace/(lineAsWords.length - 1) : 0;
             
@@ -225,7 +226,7 @@ public class TextViewEx extends TextView
             
             if(blocks[i].length() > 0)
             {
-                blocks[i] = blocks[i].substring(wrappedLine.length());              
+                blocks[i] = blocks[i].substring(charCounter);
                 verticalOffset += blocks[i].length() > 0 ? horizontalFontOffset : 0;                
                 i--;
             }

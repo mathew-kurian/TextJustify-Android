@@ -20,8 +20,7 @@ import android.widget.TextView;
  */
 
 public class TextJustifyUtils 
-{   
-    public static String SYLLABLE_SEPARATOR = "§";
+{
     private static String HYPHEN_SYMBOL = "-";
     
     // Please use run(...) instead
@@ -108,58 +107,68 @@ public class TextJustifyUtils
         textView.setText(smb);
     }
 
-    protected static Object [] createWrappedLine(String block, Paint paint, float spaceOffset, float maxWidth)
+    protected static Object [] createWrappedLine(String block, Paint paint, float spaceOffset, float maxWidth, boolean hyphenate, String syllableSeparator)
     {
         float cacheWidth = maxWidth;
 
         String line = "";
 
-        String[] wordSyllables;
-        StringBuilder stringBuilder;
+        String[] wordSyllables = new String[0];
+        StringBuilder mStringBuilder;
         String cleanWord;
         Integer charCounter = 0;
 
         wordsLoop:
         for(String dirtyWord : block.split("\\s"))
         {
-            stringBuilder = new StringBuilder();
-            wordSyllables = dirtyWord.split(SYLLABLE_SEPARATOR);
+            if (hyphenate) 
+            {
+                mStringBuilder = new StringBuilder();
+                wordSyllables = dirtyWord.split(syllableSeparator);
 
-            for (String syllable : wordSyllables) {
+                for (String syllable : wordSyllables) 
+                {
+                    mStringBuilder.append(syllable);
+                }
 
-                stringBuilder.append(syllable);
+                cleanWord = mStringBuilder.toString();
+            } 
+            else 
+            {
+                cleanWord = dirtyWord;
             }
-
-            cleanWord = stringBuilder.toString();
 
             cacheWidth = paint.measureText(cleanWord);
             maxWidth -= cacheWidth;
 
             if(maxWidth <= 0) // Full word doesn't fit in the line, try syllables
             {
-                for (int i = wordSyllables.length - 2; i >= 0; i--) {
+                if (hyphenate) 
+                {
+                    for (int i = wordSyllables.length - 2; i >= 0; i--) 
+                    {
+                        maxWidth += cacheWidth;
+                        mStringBuilder = new StringBuilder();
 
-                    maxWidth += cacheWidth;
-                    stringBuilder = new StringBuilder();
+                        for (int j = 0; j <= i; j++) 
+                        {
+                            mStringBuilder.append(wordSyllables[j]);
+                        }
 
-                    for (int j = 0; j <= i; j ++) {
+                        cleanWord = mStringBuilder.toString();
+                        cacheWidth = paint.measureText(cleanWord + HYPHEN_SYMBOL);
+                        maxWidth -= cacheWidth;
 
-                        stringBuilder.append(wordSyllables[j]);
-                    }
-
-                    cleanWord = stringBuilder.toString();
-                    cacheWidth = paint.measureText(cleanWord + HYPHEN_SYMBOL);
-                    maxWidth -= cacheWidth;
-
-                    if (maxWidth > 0) {
-                        line += cleanWord + HYPHEN_SYMBOL;
-                        charCounter += cleanWord.length() + i + 1;
-                        break wordsLoop;
+                        if (maxWidth > 0) 
+                        {
+                            line += cleanWord + HYPHEN_SYMBOL;
+                            charCounter += cleanWord.length() + i + 1;
+                            break wordsLoop;
+                        }
                     }
                 }
 
-                if (maxWidth <= 0)
-                    return new Object[] { line, maxWidth + cacheWidth + spaceOffset, charCounter };
+                return new Object[]{line, maxWidth + cacheWidth + spaceOffset, charCounter};
             }
 
             line += cleanWord + " ";
@@ -167,8 +176,8 @@ public class TextJustifyUtils
             charCounter += dirtyWord.length() + 1;
         }
 
-        if (block.substring(charCounter - 1).length() == 0) { //End of block
-
+        if (block.substring(charCounter - 1).length() == 0)  //End of block
+        {
             return new Object[] { line.substring(0, line.length() - 1), Float.MIN_VALUE, charCounter - 1 };
         }
 

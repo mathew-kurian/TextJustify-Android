@@ -48,6 +48,11 @@ protected void onCreate(Bundle savedInstanceState)
     
     TextViewEx txtViewEx = (TextViewEx) findViewById(R.id.textViewEx);
     txtViewEx.setText("Insert your content here", true); // true: enables justification
+    
+    // Optional hyphenation:
+    // Words syllables must be pre-separated with a syllableSeparator string (character)
+    // Example: A com*put*er is a gen*er*al pur*pose de*vice that...
+    txtViewEx.setHyphenate(true, "*");
 }
 
 ```

@@ -52,6 +52,9 @@ public class TextViewEx extends TextView
     private String [] lineAsWords;
     private Object[] wrappedObj;
     
+    public boolean hyphenate = false;
+    private String syllableSeparator = "";
+    
     private Bitmap cache = null;
     private boolean cacheEnabled = false;
     
@@ -180,7 +183,7 @@ public class TextViewEx extends TextView
                 continue;
             }
             
-            wrappedObj = TextJustifyUtils.createWrappedLine(block, paint, spaceOffset, dirtyRegionWidth);
+            wrappedObj = TextJustifyUtils.createWrappedLine(block, paint, spaceOffset, dirtyRegionWidth, hyphenate, syllableSeparator);
             
             wrappedLine = ((String) wrappedObj[0]);
             wrappedEdgeSpace = (Float) wrappedObj[1];
@@ -238,5 +241,11 @@ public class TextViewEx extends TextView
             // canvas.
             canvas.drawBitmap(cache, 0, 0, paint);
         }
+    }
+    
+    public void setHyphenate (boolean hyphenate, String syllableSeparator) 
+    {
+        this.hyphenate = hyphenate;
+        this.syllableSeparator = syllableSeparator;
     }
 }

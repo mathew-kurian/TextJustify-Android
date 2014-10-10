@@ -6,9 +6,9 @@ Overview
 This is very simple. What you want to do is get the library itself and add it to your Android project.
 Upcoming
 =======
-[X] Support for hyphenating. @muriloandrade
-[ ] Support for editable text (while justification is enabled)
-[ ] More optimizations
+- [X] Support for hyphenating. @muriloandrade
+- [ ] Support for editable text (while justification is enabled)
+- [ ] More optimizations
 
 *Been very busy lately*
 

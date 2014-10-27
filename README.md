@@ -2,6 +2,8 @@
 
 ####Update 2: Download the experimental version [here](https://github.com/bluejamesbond/Sandbox/tree/master/TextJustify) with support for **Spannables**!
 
+####Update 3: Writing test cases and documentation for the new refractor. Will push after some housekeeping.
+
 ![Logo](https://raw.github.com/bluejamesbond/TextJustify-Android/master/__misc/textjustify%20design%20logo%20%5Ba%5D.png)
 =======
 **Simple Android Full Justification**

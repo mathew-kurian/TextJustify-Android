@@ -1,6 +1,6 @@
 ####Update: Recent merges have broken the branch. I am working on a push that fixes most of the identified issues. This will take some refractoring and additional techniques. I will push after testing the code by the end of this week (October 25, 2014). Until then, refer to [commit@8495997abb676dd86b7ee48d09a0bd6237adb5f4](https://github.com/bluejamesbond/TextJustify-Android/tree/8495997abb676dd86b7ee48d09a0bd6237adb5f4) which is the last known building version. 
 
-####Update 2: Download the experimental version [here](https://github.com/bluejamesbond/Sandbox/tree/master/TextJustify) with support for **Spannables**!
+####Update 2: Download the [experimental version](https://github.com/bluejamesbond/Sandbox/tree/master/TextJustify) with support for **Spannables**!
 
 ####Update 3: Writing test cases and documentation for the new refractor. Will push after some housekeeping.
 

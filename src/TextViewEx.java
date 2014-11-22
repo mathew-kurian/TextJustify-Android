@@ -229,7 +229,7 @@ public class TextViewEx extends TextView
             
             if(blocks[i].length() > 0)
             {
-                blocks[i] = blocks[i].substring(charCounter);
+                blocks[i] = blocks[i].trim.substring(charCounter);
                 verticalOffset += blocks[i].length() > 0 ? horizontalFontOffset : 0;                
                 i--;
             }

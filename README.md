@@ -1,8 +1,5 @@
-###Warning: Deprecation
-This version is deprecated now. Please download the [updated version](https://github.com/bluejamesbond/Sandbox/tree/master/TextJustify) with support for **Spannables**!
-
-###Note: If you still want to use the old version...
-Recent merges have broken the branch. Refer to [commit@8495997abb676dd86b7ee48d09a0bd6237adb5f4](https://github.com/bluejamesbond/TextJustify-Android/tree/8495997abb676dd86b7ee48d09a0bd6237adb5f4) which is the last known building version.
+###Warning: Version Deprecation
+This version is deprecated now. Please download the [Updated TextJustify-Android - V2.0](https://github.com/bluejamesbond/Sandbox/tree/master/TextJustify) with support for **Spannables**!
 
 ![Logo](https://raw.github.com/bluejamesbond/TextJustify-Android/master/__misc/textjustify%20design%20logo%20%5Ba%5D.png)
 =======

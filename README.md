@@ -1,4 +1,4 @@
-###Warning: Version Deprecation
+#Warning: Version Deprecation
 This version is deprecated now. Please download the [Updated TextJustify-Android - V2.0](https://github.com/bluejamesbond/Sandbox/tree/master/TextJustify) with support for the following:
 - **Spannables**
 - **RTL Languages**

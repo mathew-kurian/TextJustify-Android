@@ -1,5 +1,10 @@
 ###Warning: Version Deprecation
-This version is deprecated now. Please download the [Updated TextJustify-Android - V2.0](https://github.com/bluejamesbond/Sandbox/tree/master/TextJustify) with support for **Spannables**!
+This version is deprecated now. Please download the [Updated TextJustify-Android - V2.0](https://github.com/bluejamesbond/Sandbox/tree/master/TextJustify) with support for the following:
+- **Spannables**
+- **RTL Languages**
+- **Increased performance / optimizations**
+- **Test Cases / Samples**
+- **Alignments: Left / Center / Right / Justified**
 
 ![Logo](https://raw.github.com/bluejamesbond/TextJustify-Android/master/__misc/textjustify%20design%20logo%20%5Ba%5D.png)
 =======

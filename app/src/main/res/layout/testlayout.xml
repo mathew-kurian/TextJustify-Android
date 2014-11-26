@@ -1,0 +1,39 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#222222"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <Button
+            android:id="@+id/debugButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="TOGGLE DEBUG"
+            android:textAllCaps="true"
+            android:textColor="#aaaaaa"
+            android:textSize="10dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#ff000000"
+        tools:context=".SideBySide">
+
+        <LinearLayout
+            android:id="@+id/articleList"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"/>
+    </ScrollView>
+
+</LinearLayout>

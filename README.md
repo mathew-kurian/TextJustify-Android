@@ -1,4 +1,4 @@
-![Logo](https://raw.github.com/bluejamesbond/TextJustify-Android/master/__misc/textjustify%20design%20logo%20%5Ba%5D.png)
+![Logo](https://raw.github.com/bluejamesbond/TextJustify-Android/master/misc/textjustify%20design%20logo%20%5Ba%5D.png)
 =======
 **Android Full Justification**
 

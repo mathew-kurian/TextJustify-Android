@@ -1,9 +1,11 @@
-![Logo](https://raw.github.com/bluejamesbond/TextJustify-Android/master/misc/textjustify%20design%20logo%20%5Ba%5D.png)
+![Logo](https://raw.github.com/bluejamesbond/TextJustify-Android/master/misc/logo.png)
 =======
 **Android Full Justification V2.0**
 
 #About
 This library will provide you a way to justify text. It supports both plain text and Spannables. Additionally, the library can auto-hyphentate your displayed content.
+
+*Compatible for Android 2.X to 5.X*
 
 #Wiki
 
@@ -20,6 +22,9 @@ If for some reason you like the library and feel like thanking me. Here you go! 
 | :------------:    |:---------------|
 |  **`OPEN`**       | Scroll caching for very large documents i.e. > 4000 paragaphs |
 |  **`OPEN`**       | Support more features like `TextView` in terms of `Paint` settings  |
+
+#Demo
+Download the demo on [Google Play Store](https://play.google.com/store/apps/details?id=com.mathewkurian.text.demo). Currently the user interface of the demo only supports Android (5.0) Lollipop. Support other versions will come soon.
 
 #Screenshot
 

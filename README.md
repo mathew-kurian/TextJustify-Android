@@ -9,7 +9,7 @@ This library will provide you a way to justify text. It supports both plain text
 
 #Wiki
 
-For examples, tests, and API refer to the [Android-TextJustify Wiki](https://github.com/bluejamesbond/TextJustify-Android/wiki/1-Home).
+For examples, tests, and API refer to the [Android-TextJustify Wiki](https://github.com/bluejamesbond/TextJustify-Android/wiki/1-%C2%B7-Home).
 
 #Donate
 If for some reason you like the library and feel like thanking me. Here you go! Thank you in advance.

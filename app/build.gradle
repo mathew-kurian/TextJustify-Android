@@ -12,7 +12,7 @@ android {
     compileSdkVersion 21
     buildToolsVersion '21.0.2'
     defaultConfig {
-        applicationId 'com.mathewkurian.text.demo'
+        applicationId 'com.bluejamesbond.text.demo'
         minSdkVersion 21
         targetSdkVersion 21
         versionCode 2

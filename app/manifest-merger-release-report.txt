@@ -23,7 +23,7 @@ ADDED from AndroidManifest.xml:5:5
 		ADDED from AndroidManifest.xml:7:9
 	android:theme
 		ADDED from AndroidManifest.xml:9:9
-activity#com.text.demo.helper.TestList
+activity#com.bluejamesbond.text.demo.helper.TestList
 ADDED from AndroidManifest.xml:10:9
 	android:label
 		ADDED from AndroidManifest.xml:12:13
@@ -41,43 +41,43 @@ category#android.intent.category.LAUNCHER
 ADDED from AndroidManifest.xml:16:17
 	android:name
 		ADDED from AndroidManifest.xml:16:27
-activity#com.text.demo.test.FormattedTextTest
+activity#com.bluejamesbond.text.demo.test.FormattedTextTest
 ADDED from AndroidManifest.xml:19:9
 	android:theme
 		ADDED from AndroidManifest.xml:20:13
 	android:name
 		ADDED from AndroidManifest.xml:19:19
-activity#com.text.demo.test.LeadingMarginSpan2Test
+activity#com.bluejamesbond.text.demo.test.LeadingMarginSpan2Test
 ADDED from AndroidManifest.xml:21:9
 	android:theme
 		ADDED from AndroidManifest.xml:22:13
 	android:name
 		ADDED from AndroidManifest.xml:21:19
-activity#com.text.demo.test.LineBreakTest
+activity#com.bluejamesbond.text.demo.test.LineBreakTest
 ADDED from AndroidManifest.xml:23:9
 	android:theme
 		ADDED from AndroidManifest.xml:24:13
 	android:name
 		ADDED from AndroidManifest.xml:23:19
-activity#com.text.demo.test.PlainTextTest
+activity#com.bluejamesbond.text.demo.test.PlainTextTest
 ADDED from AndroidManifest.xml:25:9
 	android:theme
 		ADDED from AndroidManifest.xml:26:13
 	android:name
 		ADDED from AndroidManifest.xml:25:19
-activity#com.text.demo.test.QuoteSpanTest
+activity#com.bluejamesbond.text.demo.test.QuoteSpanTest
 ADDED from AndroidManifest.xml:27:9
 	android:theme
 		ADDED from AndroidManifest.xml:28:13
 	android:name
 		ADDED from AndroidManifest.xml:27:19
-activity#com.text.demo.test.ChineseCharacterTest
+activity#com.bluejamesbond.text.demo.test.ChineseCharacterTest
 ADDED from AndroidManifest.xml:29:9
 	android:theme
 		ADDED from AndroidManifest.xml:30:13
 	android:name
 		ADDED from AndroidManifest.xml:29:19
-activity#com.text.demo.test.RTLTest
+activity#com.bluejamesbond.text.demo.test.RTLTest
 ADDED from AndroidManifest.xml:31:9
 	android:theme
 		ADDED from AndroidManifest.xml:32:13

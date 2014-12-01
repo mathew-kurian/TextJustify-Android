@@ -3,7 +3,7 @@
 **Android Full Justification**
 
 #About
-This library will provide you a way to justify text. It supports both plain text and Spannables. Additionally, the library can auto-hyphentate your displayed content.
+This library will provide you a way to justify text. It supports both plain text and Spannables. Additionally, the library can auto-hyphentate your displayed content (thanks to [@](https://github.com/muriloandrade)).
 
 *Compatible for Android 2.X to 5.X*
 

@@ -5,7 +5,7 @@
 #About
 This library will provide you a way to justify text. It supports both plain text and Spannables. Additionally, the library can auto-hyphentate your displayed content (thanks to [@muriloandrade](https://github.com/muriloandrade)).
 
-*Compatible for Android 2.X to 5.X*
+*Compatible for Android 2.0 to 5.X*
 
 #Wiki
 

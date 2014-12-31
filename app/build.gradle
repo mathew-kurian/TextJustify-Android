@@ -1,16 +1,29 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        release {
-            keyAlias 'bluejamesbond'
-            keyPassword 'Mkone123*'
-            storeFile file('C:/release.keystore.jks')
-            storePassword 'Mkone123*'
+    try {
+        File keystore = new File("C:/release.keystore.jks")
+        if (keystore.exists()) {
+            signingConfigs {
+                release {
+                    keyAlias 'bluejamesbond'
+                    keyPassword 'Mkone123*'
+                    storeFile file('C:/release.keystore.jks')
+                    storePassword 'Mkone123*'
+                }
+            }
+
+            buildTypes {
+                release {
+                    minifyEnabled false
+                    proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                }
+            }
         }
+    } catch (Exception e) {
     }
     compileSdkVersion 21
-    buildToolsVersion '21.0.2'
+    buildToolsVersion '21.1.2'
     defaultConfig {
         applicationId 'com.bluejamesbond.text.demo'
         minSdkVersion 21
@@ -18,16 +31,9 @@ android {
         versionCode 2
         versionName '2.0'
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    android {
+        lintOptions {
+            abortOnError false
         }
     }
-    productFlavors {
-    }
-}
-
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
 }

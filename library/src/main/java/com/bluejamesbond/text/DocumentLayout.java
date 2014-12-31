@@ -32,13 +32,14 @@ package com.bluejamesbond.text;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.text.TextPaint;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.bluejamesbond.text.hyphen.Hyphenator;
 import com.bluejamesbond.text.style.TextAlignment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.ListIterator;
 
 @SuppressWarnings("unused")
@@ -56,8 +57,8 @@ public class DocumentLayout {
     // Main content
     private String text;
     // Parsing objects
-    private LinkedList<Token> tokens;
-    private LinkedList<String> chunks;
+    private ConcurrentModifableLinkedList<Token> tokens;
+    private ConcurrentModifableLinkedList<String> chunks;
 
     public DocumentLayout(TextPaint paint) {
 
@@ -70,8 +71,8 @@ public class DocumentLayout {
 
         measuredHeight = 0;
 
-        tokens = new LinkedList<Token>();
-        chunks = new LinkedList<String>();
+        tokens = new ConcurrentModifableLinkedList<Token>();
+        chunks = new ConcurrentModifableLinkedList<String>();
     }
 
     public boolean isDebugging() {
@@ -123,7 +124,14 @@ public class DocumentLayout {
 
             while (start > -1) {
                 int next = text.indexOf('\n', start + 1);
-                chunks.add(text.substring(start, next < 0 ? text.length() : next));
+
+                if(next < 0){
+                    chunks.add(text.substring(start, text.length()));
+                } else {
+                    chunks.add(text.substring(start, next));
+                    next += 1;
+                }
+
                 start = next;
             }
 
@@ -143,7 +151,7 @@ public class DocumentLayout {
         float halfLineHeight = lineHeight / 2;
         float x;
         float y = params.paddingTop + halfLineHeight;
-        float spaceOffset = paint.measureText(" ");
+        float spaceOffset = paint.measureText(" ") * params.spacingMultiplier;
 
         for (String paragraph : chunks) {
 
@@ -177,7 +185,7 @@ public class DocumentLayout {
             int start = 0;
             int overallCounter = 0;
 
-            LinkedList<Unit> units = tokenize(paragraph);
+            ConcurrentModifableLinkedList<Unit> units = tokenize(paragraph);
             ListIterator<Unit> unitIterator = units.listIterator();
             ListIterator<Unit> justifyIterator = units.listIterator();
 
@@ -220,6 +228,7 @@ public class DocumentLayout {
 
                 for (int i = format.start; i < format.end; i++) {
                     Unit unit = unitIterator.next();
+
                     unit.x = x;
                     unit.y = y;
                     unit.lineNumber = lineNumber;
@@ -256,14 +265,28 @@ public class DocumentLayout {
     }
 
     public void draw(Canvas canvas) {
+
+        int lastColor = 0;
+        float lastStrokeWidth = 0;
+
+        if (debugging) {
+            lastColor = paint.getColor();
+            lastStrokeWidth = paint.getStrokeWidth();
+        }
+
         for (Token token : tokens) {
             token.draw(canvas, paint, params);
         }
+
+        if (debugging) {
+            paint.setStrokeWidth(lastStrokeWidth);
+            paint.setColor(lastColor);
+        }
     }
 
-    private LinkedList<Unit> tokenize(String s) {
+    private ConcurrentModifableLinkedList<Unit> tokenize(String s) {
 
-        LinkedList<Unit> units = new LinkedList<Unit>();
+        ConcurrentModifableLinkedList<Unit> units = new ConcurrentModifableLinkedList<Unit>();
 
         // If empty string, just return one group
         if (s.trim().length() <= 1) {
@@ -423,6 +446,8 @@ public class DocumentLayout {
         protected Float parentWidth = 800.0f;
         protected Float offsetX = 0.0f;
         protected Float offsetY = 0.0f;
+
+        protected Float spacingMultiplier = 1.0f;
         protected Float lineHeightAdd = 0.0f;
         protected Boolean hyphenated = false;
         protected Boolean reverse = false;
@@ -439,7 +464,20 @@ public class DocumentLayout {
             return Arrays.hashCode(
                     new Object[]{hyphenator, paddingLeft, paddingTop, paddingBottom, paddingRight,
                             parentWidth, offsetX, offsetX,
-                            lineHeightAdd, hyphenated, reverse, maxLines, hyphen, textAlignment});
+                            lineHeightAdd, hyphenated, reverse, maxLines, hyphen, textAlignment, spacingMultiplier});
+        }
+
+        public Float getSpacingMultiplier() {
+            return spacingMultiplier;
+        }
+
+        public void setSpacingMultiplier(Float spacingMultiplier) {
+            if (this.spacingMultiplier == spacingMultiplier) {
+                return;
+            }
+
+            this.spacingMultiplier = spacingMultiplier;
+            this.changed = true;
         }
 
         public TextAlignment getTextAlignment() {
@@ -460,11 +498,11 @@ public class DocumentLayout {
         }
 
         public void setHyphenator(Hyphenator hyphenator) {
-            if (this.hyphenator == null) {
+            if (hyphenator == null) {
                 return;
             }
 
-            if (this.hyphenator.equals(hyphenator)) {
+            if (this.hyphenator != null && this.hyphenator.equals(hyphenator)) {
                 return;
             }
 
@@ -588,7 +626,7 @@ public class DocumentLayout {
                 return;
             }
 
-            if(reverse){
+            if (reverse) {
                 textAlignment = TextAlignment.RIGHT;
             }
 

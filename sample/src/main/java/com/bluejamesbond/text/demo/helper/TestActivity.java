@@ -61,7 +61,7 @@ public class TestActivity extends Activity {
         setContentView(R.layout.testlayout);
     }
 
-    public void addDocumentView(CharSequence article, int type, boolean rtl){
+    public DocumentView addDocumentView(CharSequence article, int type, boolean rtl){
         final DocumentView documentView = new DocumentView(this, type);
         documentView.setColor(0xffffffff);
         documentView.setTypeface(Typeface.DEFAULT);
@@ -98,9 +98,11 @@ public class TestActivity extends Activity {
                 }
             });
         }
+
+        return documentView;
     }
 
-    public void addDocumentView(CharSequence article, int type) {
-        addDocumentView(article, type, false);
+    public DocumentView addDocumentView(CharSequence article, int type) {
+        return addDocumentView(article, type, false);
     }
 }

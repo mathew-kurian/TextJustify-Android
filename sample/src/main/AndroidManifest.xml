@@ -30,6 +30,10 @@
             android:theme="@android:style/Theme.Material" />
         <activity android:name="com.bluejamesbond.text.demo.test.RTLTest"
             android:theme="@android:style/Theme.Material" />
+        <activity android:name="com.bluejamesbond.text.demo.test.HyphenatedTest"
+            android:theme="@android:style/Theme.Material" />
+        <activity android:name=".test.WordSpacingTest"
+            android:theme="@android:style/Theme.Material" />
     </application>
 
 </manifest>

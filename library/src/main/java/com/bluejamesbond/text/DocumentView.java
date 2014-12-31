@@ -138,7 +138,7 @@ public class DocumentView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = MeasureSpec.getSize(widthMeasureSpec);
-        this.layout.getLayoutParams().setParentWidth(width);
+        this.layout.getLayoutParams().setParentWidth((float) width);
         this.layout.measure();
         this.setMeasuredDimension(width, this.layout.getMeasuredHeight());
     }

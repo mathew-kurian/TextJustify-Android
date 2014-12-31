@@ -164,7 +164,7 @@ public class SpannedDocumentLayout extends DocumentLayout {
         float y = params.paddingTop;
         float left = params.paddingLeft;
         float right = params.paddingRight;
-        float lineHeightAdd = params.lineHeightAdd;
+        float lineHeightAdd = params.lineHeightMulitplier;
         float lastAscent;
         float lastDescent;
 

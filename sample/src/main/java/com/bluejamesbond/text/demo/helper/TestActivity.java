@@ -67,11 +67,11 @@ public class TestActivity extends Activity {
         documentView.setTypeface(Typeface.DEFAULT);
         documentView.setTextSize(33);
         documentView.getDocumentLayoutParams().setTextAlignment(TextAlignment.JUSTIFIED);
-        documentView.getDocumentLayoutParams().setPaddingLeft(50);
-        documentView.getDocumentLayoutParams().setPaddingRight(50);
-        documentView.getDocumentLayoutParams().setPaddingTop(50);
-        documentView.getDocumentLayoutParams().setPaddingBottom(50);
-        documentView.getDocumentLayoutParams().setLineHeightAdd(1);
+        documentView.getDocumentLayoutParams().setPaddingLeft(50f);
+        documentView.getDocumentLayoutParams().setPaddingRight(50f);
+        documentView.getDocumentLayoutParams().setPaddingTop(50f);
+        documentView.getDocumentLayoutParams().setPaddingBottom(50f);
+        documentView.getDocumentLayoutParams().setLineHeightMulitplier(1f);
         documentView.getDocumentLayoutParams().setReverse(rtl);
         documentView.getLayout().setDebugging(debugging);
         documentView.setText(article, true); // true: enable justification

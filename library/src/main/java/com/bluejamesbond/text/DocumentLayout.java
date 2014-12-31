@@ -30,10 +30,9 @@ package com.bluejamesbond.text;
  */
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.TextPaint;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.bluejamesbond.text.hyphen.Hyphenator;
 import com.bluejamesbond.text.style.TextAlignment;
@@ -65,14 +64,14 @@ public class DocumentLayout {
         this.paint = paint;
 
         params = new LayoutParams();
-        params.setLineHeightAdd(1.0f);
+        params.setLineHeightMulitplier(1.0f);
         params.setHyphenated(false);
         params.setReverse(false);
 
         measuredHeight = 0;
 
-        tokens = new ConcurrentModifableLinkedList<Token>();
-        chunks = new ConcurrentModifableLinkedList<String>();
+        tokens = new ConcurrentModifableLinkedList<>();
+        chunks = new ConcurrentModifableLinkedList<>();
     }
 
     public boolean isDebugging() {
@@ -101,11 +100,11 @@ public class DocumentLayout {
     }
 
     private float getFontAscent() {
-        return -paint.ascent() * params.lineHeightAdd;
+        return -paint.ascent() * params.lineHeightMulitplier;
     }
 
     private float getFontDescent() {
-        return paint.descent() * params.lineHeightAdd;
+        return paint.descent() * params.lineHeightMulitplier;
     }
 
     public int getMeasuredHeight() {
@@ -125,7 +124,7 @@ public class DocumentLayout {
             while (start > -1) {
                 int next = text.indexOf('\n', start + 1);
 
-                if(next < 0){
+                if (next < 0) {
                     chunks.add(text.substring(start, text.length()));
                 } else {
                     chunks.add(text.substring(start, next));
@@ -272,6 +271,19 @@ public class DocumentLayout {
         if (debugging) {
             lastColor = paint.getColor();
             lastStrokeWidth = paint.getStrokeWidth();
+            paint.setStrokeWidth(2);
+            paint.setColor(Color.DKGRAY);
+            canvas.drawRect(params.paddingLeft, params.paddingTop,
+                    params.parentWidth - params.paddingRight,
+                    measuredHeight - params.paddingBottom, paint);
+            paint.setColor(Color.GREEN);
+            canvas.drawLine(params.paddingLeft, 0, params.paddingLeft, measuredHeight, paint);
+            canvas.drawLine(params.parentWidth - params.paddingRight, 0,
+                    params.parentWidth - params.paddingRight, measuredHeight, paint);
+            paint.setColor(Color.MAGENTA);
+            canvas.drawRect(0, params.paddingTop, params.parentWidth, params.paddingTop, paint);
+            canvas.drawRect(0, measuredHeight - params.paddingBottom, params.parentWidth,
+                    measuredHeight - params.paddingBottom, paint);
         }
 
         for (Token token : tokens) {
@@ -286,7 +298,7 @@ public class DocumentLayout {
 
     private ConcurrentModifableLinkedList<Unit> tokenize(String s) {
 
-        ConcurrentModifableLinkedList<Unit> units = new ConcurrentModifableLinkedList<Unit>();
+        ConcurrentModifableLinkedList<Unit> units = new ConcurrentModifableLinkedList<>();
 
         // If empty string, just return one group
         if (s.trim().length() <= 1) {
@@ -329,13 +341,11 @@ public class DocumentLayout {
      * as by {@link String#trim}.
      */
     protected int getTrimmedLength(CharSequence s, int start, int end) {
-        int len = end;
-
-        while (start < len && s.charAt(start) <= ' ') {
+        while (start < end && s.charAt(start) <= ' ') {
             start++;
         }
 
-        int endCpy = len;
+        int endCpy = end;
         while (endCpy > start && s.charAt(endCpy - 1) <= ' ') {
             endCpy--;
         }
@@ -355,6 +365,7 @@ public class DocumentLayout {
         // Greedy search to see if the word
         // can actually fit on a line
         while (iterator.hasNext()) {
+
             // Get word
             Unit unit = iterator.next();
             String word = unit.unit;
@@ -402,6 +413,8 @@ public class DocumentLayout {
                                 iterator.add(new Unit(word.substring(lastConcatPartial.length())));
                                 availableWidth -= lastFormattedPartialWidth;
 
+                                iterator.previous();
+
                                 return new LineAnalysis(startIndex, i + 1, availableWidth);
                             }
                         }
@@ -448,7 +461,7 @@ public class DocumentLayout {
         protected Float offsetY = 0.0f;
 
         protected Float spacingMultiplier = 1.0f;
-        protected Float lineHeightAdd = 0.0f;
+        protected Float lineHeightMulitplier = 0.0f;
         protected Boolean hyphenated = false;
         protected Boolean reverse = false;
         protected Integer maxLines = Integer.MAX_VALUE;
@@ -464,7 +477,7 @@ public class DocumentLayout {
             return Arrays.hashCode(
                     new Object[]{hyphenator, paddingLeft, paddingTop, paddingBottom, paddingRight,
                             parentWidth, offsetX, offsetX,
-                            lineHeightAdd, hyphenated, reverse, maxLines, hyphen, textAlignment, spacingMultiplier});
+                            lineHeightMulitplier, hyphenated, reverse, maxLines, hyphen, textAlignment, spacingMultiplier});
         }
 
         public Float getSpacingMultiplier() {
@@ -472,7 +485,7 @@ public class DocumentLayout {
         }
 
         public void setSpacingMultiplier(Float spacingMultiplier) {
-            if (this.spacingMultiplier == spacingMultiplier) {
+            if (this.spacingMultiplier.equals(spacingMultiplier)) {
                 return;
             }
 
@@ -514,8 +527,8 @@ public class DocumentLayout {
             return paddingLeft;
         }
 
-        public void setPaddingLeft(float paddingLeft) {
-            if (this.paddingLeft == paddingLeft) {
+        public void setPaddingLeft(Float paddingLeft) {
+            if (this.paddingLeft.equals(paddingLeft)) {
                 return;
             }
 
@@ -527,8 +540,8 @@ public class DocumentLayout {
             return paddingTop;
         }
 
-        public void setPaddingTop(float paddingTop) {
-            if (this.paddingTop == paddingTop) {
+        public void setPaddingTop(Float paddingTop) {
+            if (this.paddingTop.equals(paddingTop)) {
                 return;
             }
 
@@ -540,8 +553,8 @@ public class DocumentLayout {
             return paddingBottom;
         }
 
-        public void setPaddingBottom(float paddingBottom) {
-            if (this.paddingBottom == paddingBottom) {
+        public void setPaddingBottom(Float paddingBottom) {
+            if (this.paddingBottom.equals(paddingBottom)) {
                 return;
             }
 
@@ -553,8 +566,8 @@ public class DocumentLayout {
             return paddingRight;
         }
 
-        public void setPaddingRight(float paddingRight) {
-            if (this.paddingRight == paddingRight) {
+        public void setPaddingRight(Float paddingRight) {
+            if (this.paddingRight.equals(paddingRight)) {
                 return;
             }
 
@@ -566,8 +579,8 @@ public class DocumentLayout {
             return parentWidth;
         }
 
-        public void setParentWidth(float parentWidth) {
-            if (this.parentWidth == parentWidth) {
+        public void setParentWidth(Float parentWidth) {
+            if (this.parentWidth.equals(parentWidth)) {
                 return;
             }
 
@@ -579,7 +592,7 @@ public class DocumentLayout {
             return offsetX;
         }
 
-        public void setOffsetX(float offsetX) {
+        public void setOffsetX(Float offsetX) {
             this.offsetX = offsetX;
         }
 
@@ -587,20 +600,20 @@ public class DocumentLayout {
             return offsetY;
         }
 
-        public void setOffsetY(float offsetY) {
+        public void setOffsetY(Float offsetY) {
             this.offsetY = offsetY;
         }
 
-        public float getLineHeightAdd() {
-            return lineHeightAdd;
+        public float getLineHeightMulitplier() {
+            return lineHeightMulitplier;
         }
 
-        public void setLineHeightAdd(float lineHeightAdd) {
-            if (this.lineHeightAdd == lineHeightAdd) {
+        public void setLineHeightMulitplier(Float lineHeightMulitplier) {
+            if (this.lineHeightMulitplier.equals(lineHeightMulitplier)) {
                 return;
             }
 
-            this.lineHeightAdd = lineHeightAdd;
+            this.lineHeightMulitplier = lineHeightMulitplier;
             this.changed = true;
         }
 
@@ -608,8 +621,8 @@ public class DocumentLayout {
             return hyphenated;
         }
 
-        public void setHyphenated(boolean hyphenated) {
-            if (this.hyphenated == hyphenated) {
+        public void setHyphenated(Boolean hyphenated) {
+            if (this.hyphenated.equals(hyphenated)) {
                 return;
             }
 
@@ -621,8 +634,8 @@ public class DocumentLayout {
             return reverse;
         }
 
-        public void setReverse(boolean reverse) {
-            if (this.reverse == reverse) {
+        public void setReverse(Boolean reverse) {
+            if (this.reverse.equals(reverse)) {
                 return;
             }
 
@@ -638,8 +651,8 @@ public class DocumentLayout {
             return maxLines;
         }
 
-        public void setMaxLines(int maxLines) {
-            if (this.maxLines == maxLines) {
+        public void setMaxLines(Integer maxLines) {
+            if (this.maxLines.equals(maxLines)) {
                 return;
             }
 

@@ -1,0 +1,45 @@
+apply plugin: 'com.android.application'
+
+android {
+    // if keystore not available, don't build the release version
+    try {
+        File keystore = new File("C:/release.keystore.jks")
+        if (keystore.exists()) {
+            signingConfigs {
+                release {
+                    keyAlias 'bluejamesbond'
+                    keyPassword 'Mkone123*'
+                    storeFile file('C:/release.keystore.jks')
+                    storePassword 'Mkone123*'
+                }
+            }
+
+            buildTypes {
+                release {
+                    minifyEnabled false
+                    proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                }
+            }
+        }
+    } catch (Exception e) {
+    }
+
+    compileSdkVersion 21
+    buildToolsVersion '21.1.2'
+    defaultConfig {
+        applicationId 'com.bluejamesbond.text.demo'
+        minSdkVersion 21
+        targetSdkVersion 21
+        versionCode 2
+        versionName '2.0'
+    }
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
+}
+
+dependencies {
+    compile project(':library')
+}

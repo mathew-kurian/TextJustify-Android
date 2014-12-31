@@ -8,7 +8,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="helper.TestList"
+            android:name="com.bluejamesbond.text.demo.helper.TestList"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Material">
             <intent-filter>
@@ -16,19 +16,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="test.FormattedTextTest"
+        <activity android:name="com.bluejamesbond.text.demo.test.FormattedTextTest"
             android:theme="@android:style/Theme.Material" />
-        <activity android:name="test.LeadingMarginSpan2Test"
+        <activity android:name="com.bluejamesbond.text.demo.test.LeadingMarginSpan2Test"
             android:theme="@android:style/Theme.Material" />
-        <activity android:name="test.LineBreakTest"
+        <activity android:name="com.bluejamesbond.text.demo.test.LineBreakTest"
             android:theme="@android:style/Theme.Material" />
-        <activity android:name="test.PlainTextTest"
+        <activity android:name="com.bluejamesbond.text.demo.test.PlainTextTest"
             android:theme="@android:style/Theme.Material" />
-        <activity android:name="test.QuoteSpanTest"
+        <activity android:name="com.bluejamesbond.text.demo.test.QuoteSpanTest"
             android:theme="@android:style/Theme.Material" />
-        <activity android:name="test.ChineseCharacterTest"
+        <activity android:name="com.bluejamesbond.text.demo.test.ChineseCharacterTest"
             android:theme="@android:style/Theme.Material" />
-        <activity android:name="test.RTLTest"
+        <activity android:name="com.bluejamesbond.text.demo.test.RTLTest"
             android:theme="@android:style/Theme.Material" />
     </application>
 

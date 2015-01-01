@@ -21,6 +21,9 @@ If for some reason you like the library and feel like thanking me. Here you go! 
 | Status| Issues    |
 | :------------:    |:---------------|
 |  **`OPEN`**       | Scroll caching for very large documents i.e. > 4000 paragaphs |
+|  **`OPEN`**       | Add letter-spacing feature like CSS |
+|  **`OPEN`**       | Improve text strike-through |
+|  **`OPEN`**       | Improve text underline  |
 |  **`OPEN`**       | Support more features like `TextView` in terms of `Paint` settings  |
 
 #Demo

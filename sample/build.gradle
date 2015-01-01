@@ -23,7 +23,7 @@ android {
         }
     } catch (Exception e) {
     }
-    compileSdkVersion 8
+    compileSdkVersion 21
     buildToolsVersion '21.1.2'
     defaultConfig {
         applicationId 'com.bluejamesbond.text.sample'

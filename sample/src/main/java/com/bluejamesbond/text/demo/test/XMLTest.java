@@ -36,6 +36,6 @@ public class XMLTest extends TestActivity {
 
     @Override
     protected int getContentView() {
-        return R.layout.test_xml_attrs_layout;
+        return R.layout.test_xml_activity;
     }
 }

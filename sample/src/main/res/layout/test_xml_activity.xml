@@ -31,7 +31,7 @@
                 document:paddingRight="10dp"
                 document:paddingTop="10dp"
                 document:text="@string/xml_test_data"
-                document:textColor="@android:color/holo_blue_bright"
+                document:textColor="@android:color/white"
                 document:textFormat="plain"
                 document:textSize="12sp"
                 document:textStyle="bold|strikeThrough|underline"

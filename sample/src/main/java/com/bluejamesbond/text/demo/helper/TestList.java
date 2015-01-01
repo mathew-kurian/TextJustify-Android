@@ -76,7 +76,7 @@ public class TestList extends TestActivity {
         // FontsOverride.setDefaultFont(this, "DEFAULT", "fonts/notosans.ttf");
 
         // Set layout
-        setContentView(R.layout.testlist);
+        setContentView(R.layout.testlist_activity);
 
         // Create list of simple test names
         String[] testNames = new String[tests.length];

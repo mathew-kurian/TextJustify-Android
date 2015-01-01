@@ -41,7 +41,6 @@ import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.Toast;
 
 import com.bluejamesbond.text.style.TextAlignment;
 
@@ -205,13 +204,13 @@ public class DocumentView extends View {
         this.cacheEnabled = cacheEnabled;
     }
 
+    public CharSequence getText() {
+        return this.layout.getText();
+    }
+
     public void setText(CharSequence text) {
         this.layout.setText(text);
         requestLayout();
-    }
-
-    public CharSequence getText() {
-        return this.layout.getText();
     }
 
     public DocumentLayout.LayoutParams getDocumentLayoutParams() {

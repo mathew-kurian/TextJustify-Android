@@ -29,15 +29,12 @@
 
 package com.bluejamesbond.text.demo.helper;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.bluejamesbond.text.DocumentView;
 import com.bluejamesbond.text.demo.R;
@@ -48,8 +45,8 @@ public class TestActivity extends Activity {
     public String testName;
     private boolean debugging = false;
 
-    protected int getContentView(){
-        return R.layout.testlayout;
+    protected int getContentView() {
+        return R.layout.test_activity;
     }
 
     @Override
@@ -57,10 +54,6 @@ public class TestActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         testName = Utils.splitCamelCase(getClass().getSimpleName());
-
-        ActionBar bar = getActionBar();
-        bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#e74c3c")));
-        bar.setTitle("Samples");
 
         setContentView(getContentView());
     }
@@ -90,7 +83,7 @@ public class TestActivity extends Activity {
         LinearLayout articleList = (LinearLayout) findViewById(R.id.articleList);
         articleList.addView(linearLayout);
 
-        Button debugButton = (Button) findViewById(R.id.debugButton);
+        TextView debugButton = (TextView) findViewById(R.id.debugButton);
 
         if (debugButton != null) {
             debugButton.setOnClickListener(new View.OnClickListener() {

@@ -29,7 +29,7 @@
         <attr name="textSize" format="dimension" />
         <attr name="textColor" format="color" />
         <attr name="antialias" format="boolean" />
-        <attr name="text" format="string"/>
+        <attr name="text" format="string" />
         <attr name="textSubpixel" format="boolean" />
         <attr name="textTypefacePath" format="string" />
         <attr name="textStyle" format="integer">

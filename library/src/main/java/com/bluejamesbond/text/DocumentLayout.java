@@ -71,8 +71,8 @@ public class DocumentLayout {
 
         measuredHeight = 0;
 
-        tokens = new ConcurrentModifableLinkedList<>();
-        chunks = new ConcurrentModifableLinkedList<>();
+        tokens = new ConcurrentModifableLinkedList<Token>();
+        chunks = new ConcurrentModifableLinkedList<String>();
     }
 
     public boolean isDebugging() {
@@ -305,7 +305,7 @@ public class DocumentLayout {
 
     private ConcurrentModifableLinkedList<Unit> tokenize(String s) {
 
-        ConcurrentModifableLinkedList<Unit> units = new ConcurrentModifableLinkedList<>();
+        ConcurrentModifableLinkedList<Unit> units = new ConcurrentModifableLinkedList<Unit>();
 
         // If empty string, just return one group
         if (s.trim().length() <= 1) {

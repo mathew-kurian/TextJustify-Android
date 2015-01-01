@@ -134,3 +134,5 @@ local.properties
 # TeXlipse plugin
 .texlipse
 
+sample/build.gradle
+sample/build.gradle

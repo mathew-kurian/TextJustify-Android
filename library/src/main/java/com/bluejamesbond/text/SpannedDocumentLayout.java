@@ -55,7 +55,7 @@ public class SpannedDocumentLayout extends DocumentLayout {
     private static final int TOKEN_LENGTH = 6;
     private TextPaint workPaint;
     private CharSequence text;
-    private LinkedList<LeadingMarginSpanDrawParameters> leadMarginSpanDrawEvents;
+    private LinkedList<LeadingMarginSpanDrawParameters> mLeadMarginSpanDrawEvents;
     private int[] tokens;
 
     public SpannedDocumentLayout(TextPaint paint) {
@@ -145,7 +145,7 @@ public class SpannedDocumentLayout extends DocumentLayout {
         float boundWidth =
                 params.getParentWidth() - params.getPaddingLeft() - params.getPaddingRight();
 
-        leadMarginSpanDrawEvents = new LinkedList<>();
+        mLeadMarginSpanDrawEvents = new LinkedList<LeadingMarginSpanDrawParameters>();
 
         StaticLayout staticLayout = new StaticLayout(getText(), (TextPaint) getPaint(),
                 (int) boundWidth, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
@@ -251,10 +251,12 @@ public class SpannedDocumentLayout extends DocumentLayout {
                             // Default margin is everything
                             int marginLineCount = -1;
 
-                            if (leadSpan instanceof LeadingMarginSpan.LeadingMarginSpan2) {
-                                LeadingMarginSpan.LeadingMarginSpan2 leadSpan2 =
-                                        ((LeadingMarginSpan.LeadingMarginSpan2) leadSpan);
-                                marginLineCount = leadSpan2.getLeadingMarginLineCount();
+                            {
+                                if (leadSpan instanceof LeadingMarginSpan.LeadingMarginSpan2) {
+                                    LeadingMarginSpan.LeadingMarginSpan2 leadSpan2 =
+                                            ((LeadingMarginSpan.LeadingMarginSpan2) leadSpan);
+                                    marginLineCount = leadSpan2.getLeadingMarginLineCount();
+                                }
                             }
 
                             leadSpans.put(leadSpan, marginLineCount);
@@ -288,8 +290,8 @@ public class SpannedDocumentLayout extends DocumentLayout {
                 // Update only if the valid next valid
                 if (spanLines > 0 || spanLines == -1) {
                     leadSpans.put(leadSpan, spanLines == -1 ? -1 : spanLines - 1);
-                    leadMarginSpanDrawEvents
-                            .push(new LeadingMarginSpanDrawParameters(leadSpan, (int) calcX,
+                    mLeadMarginSpanDrawEvents
+                            .add(new LeadingMarginSpanDrawParameters(leadSpan, (int) calcX,
                                     lineAlignmentVal, top, baseline,
                                     bottom, start, end, isParaStart));
 
@@ -465,7 +467,7 @@ public class SpannedDocumentLayout extends DocumentLayout {
             paint.setStrokeWidth(lastStrokeWidth);
         }
 
-        for (LeadingMarginSpanDrawParameters parameters : leadMarginSpanDrawEvents) {
+        for (LeadingMarginSpanDrawParameters parameters : mLeadMarginSpanDrawEvents) {
             parameters.span.drawLeadingMargin(canvas, paint, parameters.x,
                     parameters.dir, parameters.top, parameters.baseline,
                     parameters.bottom, text, parameters.start,

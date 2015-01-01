@@ -27,7 +27,6 @@ package com.bluejamesbond.text;
 
 import java.util.AbstractSequentialList;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -40,8 +39,7 @@ import java.util.NoSuchElementException;
  * the <tt>LinkedList</tt> class provides uniformly named methods to
  * <tt>get</tt>, <tt>remove</tt> and <tt>insert</tt> an element at the
  * beginning and end of the list.  These operations allow linked lists to be
- * used as a stack, Queue, or {@linkplain Deque
- * double-ended queue}. <p>
+ * used as a stack or Queue. <p>
  *
  * @param <E> the type of elements held in this collection
  * @author Josh Bloch
@@ -51,7 +49,7 @@ import java.util.NoSuchElementException;
 
 public class ConcurrentModifableLinkedList<E>
         extends AbstractSequentialList<E>
-        implements List<E>, Deque<E>, Cloneable, java.io.Serializable {
+        implements List<E>, Cloneable, java.io.Serializable {
     private static final long serialVersionUID = 876323262645176354L;
     private transient Entry<E> header = new Entry<E>(null, null, null);
     private transient int size = 0;
@@ -836,8 +834,8 @@ public class ConcurrentModifableLinkedList<E>
     }
 
     private class ListItr implements ListIterator<E> {
-        private Entry<E> next;        private Entry<E> lastReturned = header;
-        private int nextIndex;
+        private Entry<E> next;
+        private int nextIndex;        private Entry<E> lastReturned = header;
         ListItr(int index) {
             if (index < 0 || index > size)
                 throw new IndexOutOfBoundsException("Index: " + index +
@@ -913,6 +911,8 @@ public class ConcurrentModifableLinkedList<E>
             addBefore(e, next);
             nextIndex++;
         }
+
+
 
 
     }

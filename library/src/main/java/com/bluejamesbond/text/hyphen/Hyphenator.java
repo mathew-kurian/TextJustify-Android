@@ -84,7 +84,7 @@ public class Hyphenator {
                 t = tree;
 
                 for (c = 0; c < chars.length; c++) {
-                    if (chars[c].isEmpty()) {
+                    if (chars[c].length() == 0) {
                         continue;
                     }
 

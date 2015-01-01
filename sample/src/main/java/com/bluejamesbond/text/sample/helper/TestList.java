@@ -27,7 +27,7 @@
  * Date: 11/1/14 3:21 AM
  */
 
-package com.bluejamesbond.text.demo.helper;
+package com.bluejamesbond.text.sample.helper;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -41,17 +41,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.bluejamesbond.text.demo.R;
-import com.bluejamesbond.text.demo.test.ChineseCharacterTest;
-import com.bluejamesbond.text.demo.test.FormattedTextTest;
-import com.bluejamesbond.text.demo.test.HyphenatedTest;
-import com.bluejamesbond.text.demo.test.LeadingMarginSpan2Test;
-import com.bluejamesbond.text.demo.test.LineBreakTest;
-import com.bluejamesbond.text.demo.test.PlainTextTest;
-import com.bluejamesbond.text.demo.test.QuoteSpanTest;
-import com.bluejamesbond.text.demo.test.RTLTest;
-import com.bluejamesbond.text.demo.test.WordSpacingTest;
-import com.bluejamesbond.text.demo.test.XMLTest;
+import com.bluejamesbond.text.sample.R;
+import com.bluejamesbond.text.sample.test.ChineseCharacterTest;
+import com.bluejamesbond.text.sample.test.FormattedTextTest;
+import com.bluejamesbond.text.sample.test.HyphenatedTest;
+import com.bluejamesbond.text.sample.test.LeadingMarginSpan2Test;
+import com.bluejamesbond.text.sample.test.LineBreakTest;
+import com.bluejamesbond.text.sample.test.PlainTextTest;
+import com.bluejamesbond.text.sample.test.QuoteSpanTest;
+import com.bluejamesbond.text.sample.test.RTLTest;
+import com.bluejamesbond.text.sample.test.WordSpacingTest;
+import com.bluejamesbond.text.sample.test.XMLTest;
 
 public class TestList extends TestActivity {
 

@@ -27,17 +27,14 @@
  * Date: 11/1/14 3:21 AM
  */
 
-package com.bluejamesbond.text.demo.test;
+package com.bluejamesbond.text.sample.test;
 
 import android.os.Bundle;
 
 import com.bluejamesbond.text.DocumentView;
-import com.bluejamesbond.text.demo.helper.TestActivity;
-import com.bluejamesbond.text.hyphen.HyphenPattern;
-import com.bluejamesbond.text.hyphen.Hyphenator;
-import com.bluejamesbond.text.style.TextAlignment;
+import com.bluejamesbond.text.sample.helper.TestActivity;
 
-public class HyphenatedTest extends TestActivity {
+public class WordSpacingTest extends TestActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +42,13 @@ public class HyphenatedTest extends TestActivity {
 
         DocumentView documentView = addDocumentView(new StringBuilder()
                 .append(testName + "\n")
-                .append("Vágner Mancini hoje é um sujeito tão angustiado quanto otimista, por mais que pareça uma contradição. O técnico do Botafogo tem a difícil missão de salvar " +
-                        "o time do rebaixamento no Campeonato Brasileiro, apesar de todas as dificuldades que o próprio clube impõe a seu trabalho - salários atrasados, afastamento " +
-                        "de jogadores importantes, dívidas que ameaçam até as poucas chances que ainda existem de permanência na Série A em 2015. Na manhã desta segunda-feira, Mancini " +
-                        "falou ao blog.")
+                .append("Document view now supports both String and Spannables. To support this, there are two (2) types of layouts: (a) DocumentLayout and (b) SpannedDocumentLayout. " +
+                        "DocumentLayout supports just plain Strings just like the text you are reading. However, Spannables require the " +
+                        "constructor to have SpannedDocumentLayout.class as a parameter. For now, DocumentLayout will offer significant speed improvements " +
+                        "compared to SpannedDocumentLayout, so use each class accordingly. DocumentLayout also supports hyphenation. To learn more about" +
+                        "these layouts and what they have to offer visit the link in the titlebar above. And please report all the issues on GitHub!")
                 .toString(), DocumentView.PLAIN_TEXT);
 
-        documentView.getDocumentLayoutParams().setTextAlignment(TextAlignment.JUSTIFIED);
-        documentView.getDocumentLayoutParams().setHyphenator(new Hyphenator(HyphenPattern.PT));
-        documentView.getDocumentLayoutParams().setHyphenated(true);
+        documentView.getDocumentLayoutParams().setWordSpacingMultiplier(5f);
     }
 }

@@ -27,20 +27,20 @@
  * Date: 11/1/14 3:21 AM
  */
 
-package com.bluejamesbond.text.demo.test;
+package com.bluejamesbond.text.sample.test;
 
 import android.os.Bundle;
 
 import com.bluejamesbond.text.DocumentView;
-import com.bluejamesbond.text.demo.helper.TestActivity;
+import com.bluejamesbond.text.sample.helper.TestActivity;
 
-public class WordSpacingTest extends TestActivity {
+public class PlainTextTest extends TestActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DocumentView documentView = addDocumentView(new StringBuilder()
+        addDocumentView(new StringBuilder()
                 .append(testName + "\n")
                 .append("Document view now supports both String and Spannables. To support this, there are two (2) types of layouts: (a) DocumentLayout and (b) SpannedDocumentLayout. " +
                         "DocumentLayout supports just plain Strings just like the text you are reading. However, Spannables require the " +
@@ -48,7 +48,5 @@ public class WordSpacingTest extends TestActivity {
                         "compared to SpannedDocumentLayout, so use each class accordingly. DocumentLayout also supports hyphenation. To learn more about" +
                         "these layouts and what they have to offer visit the link in the titlebar above. And please report all the issues on GitHub!")
                 .toString(), DocumentView.PLAIN_TEXT);
-
-        documentView.getDocumentLayoutParams().setWordSpacingMultiplier(5f);
     }
 }

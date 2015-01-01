@@ -27,7 +27,7 @@
  * Date: 11/1/14 3:03 PM
  */
 
-package com.bluejamesbond.text.demo.helper;
+package com.bluejamesbond.text.sample.helper;
 
 import android.text.Html;
 import android.text.SpannableStringBuilder;

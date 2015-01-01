@@ -1,4 +1,4 @@
-package com.bluejamesbond.text.demo.helper;
+package com.bluejamesbond.text.sample.helper;
 
 /*
  * Provided by @levifan

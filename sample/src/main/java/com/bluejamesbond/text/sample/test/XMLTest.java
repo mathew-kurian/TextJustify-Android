@@ -27,10 +27,10 @@
  * Date: 11/1/14 3:21 AM
  */
 
-package com.bluejamesbond.text.demo.test;
+package com.bluejamesbond.text.sample.test;
 
-import com.bluejamesbond.text.demo.R;
-import com.bluejamesbond.text.demo.helper.TestActivity;
+import com.bluejamesbond.text.sample.R;
+import com.bluejamesbond.text.sample.helper.TestActivity;
 
 public class XMLTest extends TestActivity {
 

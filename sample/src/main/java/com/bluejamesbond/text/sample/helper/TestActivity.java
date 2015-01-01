@@ -27,7 +27,7 @@
  * Date: 11/1/14 3:03 PM
  */
 
-package com.bluejamesbond.text.demo.helper;
+package com.bluejamesbond.text.sample.helper;
 
 import android.app.Activity;
 import android.graphics.Typeface;
@@ -37,7 +37,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bluejamesbond.text.DocumentView;
-import com.bluejamesbond.text.demo.R;
+import com.bluejamesbond.text.sample.R;
 import com.bluejamesbond.text.style.TextAlignment;
 
 public class TestActivity extends Activity {

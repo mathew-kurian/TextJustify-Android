@@ -2,7 +2,7 @@
  * http://stackoverflow.com/questions/2973270/using-a-custom-typeface-in-android/16275257#16275257
  */
 
-package com.bluejamesbond.text.demo.helper;
+package com.bluejamesbond.text.sample.helper;
 
 import android.content.Context;
 import android.graphics.Typeface;

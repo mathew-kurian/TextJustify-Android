@@ -1,4 +1,4 @@
-package com.bluejamesbond.text.demo.helper;
+package com.bluejamesbond.text.sample.helper;
 
 /*
  * Copyright (C) 2006 The Android Open Source Project

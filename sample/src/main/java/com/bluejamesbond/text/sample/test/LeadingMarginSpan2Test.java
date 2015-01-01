@@ -27,7 +27,7 @@
  * Date: 11/1/14 3:21 AM
  */
 
-package com.bluejamesbond.text.demo.test;
+package com.bluejamesbond.text.sample.test;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -35,9 +35,9 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 
 import com.bluejamesbond.text.DocumentView;
-import com.bluejamesbond.text.demo.helper.ArticleBuilder;
-import com.bluejamesbond.text.demo.helper.MyLeadingMarginSpan2;
-import com.bluejamesbond.text.demo.helper.TestActivity;
+import com.bluejamesbond.text.sample.helper.ArticleBuilder;
+import com.bluejamesbond.text.sample.helper.MyLeadingMarginSpan2;
+import com.bluejamesbond.text.sample.helper.TestActivity;
 import com.bluejamesbond.text.style.JustifiedSpan;
 import com.bluejamesbond.text.style.LeftSpan;
 

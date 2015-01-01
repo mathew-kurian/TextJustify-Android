@@ -36,11 +36,11 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 
 import com.bluejamesbond.text.DocumentView;
-import com.bluejamesbond.text.style.JustifiedSpan;
-import com.bluejamesbond.text.style.LeftSpan;
 import com.bluejamesbond.text.demo.helper.ArticleBuilder;
 import com.bluejamesbond.text.demo.helper.MyQuoteSpan;
 import com.bluejamesbond.text.demo.helper.TestActivity;
+import com.bluejamesbond.text.style.JustifiedSpan;
+import com.bluejamesbond.text.style.LeftSpan;
 
 public class ChineseCharacterTest extends TestActivity {
     @Override

@@ -1,5 +1,3 @@
-package com.bluejamesbond.text.style;
-
 /*
  * Copyright 2014 Mathew Kurian
  *
@@ -17,7 +15,7 @@ package com.bluejamesbond.text.style;
  *
  * -------------------------------------------------------------------------
  *
- * TextAlignment.java
+ * PlainTextTest.java
  * @author Mathew Kurian
  *
  * From TextJustify-Android Library v2.0
@@ -26,34 +24,18 @@ package com.bluejamesbond.text.style;
  * Please report any issues
  * https://github.com/bluejamesbond/TextJustify-Android/issues
  *
- * Date: 10/27/14 1:36 PM
+ * Date: 11/1/14 3:21 AM
  */
 
-@SuppressWarnings("unused")
-public enum TextAlignment {
-    LEFT(0), RIGHT(1), JUSTIFIED(2), CENTER(3);
+package com.bluejamesbond.text.demo.test;
 
-    private final int mCode;
+import com.bluejamesbond.text.demo.R;
+import com.bluejamesbond.text.demo.helper.TestActivity;
 
-    private TextAlignment(int code) {
-        mCode = code;
-    }
+public class XMLTest extends TestActivity {
 
-    public static TextAlignment getAlignment(int i) {
-        switch (i) {
-            default:
-            case 0:
-                return LEFT;
-            case 1:
-                return RIGHT;
-            case 2:
-                return JUSTIFIED;
-            case 3:
-                return CENTER;
-        }
-    }
-
-    public int getCode() {
-        return mCode;
+    @Override
+    protected int getContentView() {
+        return R.layout.test_xml_attrs_layout;
     }
 }

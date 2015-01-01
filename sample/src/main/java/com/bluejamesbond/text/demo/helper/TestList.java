@@ -41,6 +41,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bluejamesbond.text.demo.R;
 import com.bluejamesbond.text.demo.test.ChineseCharacterTest;
 import com.bluejamesbond.text.demo.test.FormattedTextTest;
 import com.bluejamesbond.text.demo.test.HyphenatedTest;
@@ -48,9 +49,9 @@ import com.bluejamesbond.text.demo.test.LeadingMarginSpan2Test;
 import com.bluejamesbond.text.demo.test.LineBreakTest;
 import com.bluejamesbond.text.demo.test.PlainTextTest;
 import com.bluejamesbond.text.demo.test.QuoteSpanTest;
-import com.bluejamesbond.text.demo.R;
 import com.bluejamesbond.text.demo.test.RTLTest;
 import com.bluejamesbond.text.demo.test.WordSpacingTest;
+import com.bluejamesbond.text.demo.test.XMLTest;
 
 public class TestList extends TestActivity {
 
@@ -63,7 +64,8 @@ public class TestList extends TestActivity {
             QuoteSpanTest.class,
             HyphenatedTest.class,
             WordSpacingTest.class,
-            RTLTest.class
+            RTLTest.class,
+            XMLTest.class
     };
 
     @Override

@@ -34,9 +34,9 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 
 import com.bluejamesbond.text.DocumentView;
-import com.bluejamesbond.text.style.JustifiedSpan;
 import com.bluejamesbond.text.demo.helper.MyLeadingMarginSpan2;
 import com.bluejamesbond.text.demo.helper.TestActivity;
+import com.bluejamesbond.text.style.JustifiedSpan;
 
 public class LineBreakTest extends TestActivity {
     @Override

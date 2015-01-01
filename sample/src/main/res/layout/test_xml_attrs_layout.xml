@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <ScrollView xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#ff000000"
+        tools:context=".SideBySide">
+
+        <LinearLayout
+            android:id="@+id/articleList"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <com.bluejamesbond.text.DocumentView xmlns:document="http://schemas.android.com/apk/res-auto"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+
+                document:antialias="true"
+                document:hypen="-"
+                document:lineHeightMultiplier="2.0"
+                document:maxLines="100"
+                document:offsetX="10dp"
+                document:offsetY="10dp"
+                document:paddingBottom="10dp"
+                document:paddingLeft="10dp"
+                document:paddingRight="10dp"
+                document:paddingTop="10dp"
+                document:text="@string/xml_test_data"
+                document:textColor="@android:color/holo_blue_bright"
+                document:textFormat="plain"
+                document:textSize="12sp"
+                document:textStyle="bold|strikeThrough|underline"
+                document:textSubpixel="true"
+                document:textTypefacePath="fonts/helvetica.ttf"
+                document:wordSpacingMultiplier="5.0" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

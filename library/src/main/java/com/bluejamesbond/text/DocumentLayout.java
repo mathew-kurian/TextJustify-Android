@@ -62,6 +62,7 @@ public class DocumentLayout {
     public DocumentLayout(TextPaint paint) {
 
         this.paint = paint;
+        this.text = "";
 
         params = new LayoutParams();
         params.setLineHeightMulitplier(1.0f);
@@ -95,7 +96,7 @@ public class DocumentLayout {
     }
 
     public void setText(CharSequence text) {
-        this.text = text.toString();
+        this.text = text == null ? "" : text.toString();
         this.textChange = true;
     }
 
@@ -111,7 +112,13 @@ public class DocumentLayout {
         return measuredHeight;
     }
 
+    protected void onTextNull() {
+        params.changed = false;
+        measuredHeight = (int) (params.paddingTop + params.paddingBottom);
+    }
+
     public void measure() {
+
         if (!params.changed && !textChange) {
             return;
         }
@@ -150,7 +157,7 @@ public class DocumentLayout {
         float halfLineHeight = lineHeight / 2;
         float x;
         float y = params.paddingTop + halfLineHeight;
-        float spaceOffset = paint.measureText(" ") * params.spacingMultiplier;
+        float spaceOffset = paint.measureText(" ") * params.wordSpacingMultiplier;
 
         for (String paragraph : chunks) {
 
@@ -460,7 +467,7 @@ public class DocumentLayout {
         protected Float offsetX = 0.0f;
         protected Float offsetY = 0.0f;
 
-        protected Float spacingMultiplier = 1.0f;
+        protected Float wordSpacingMultiplier = 1.0f;
         protected Float lineHeightMulitplier = 0.0f;
         protected Boolean hyphenated = false;
         protected Boolean reverse = false;
@@ -477,19 +484,19 @@ public class DocumentLayout {
             return Arrays.hashCode(
                     new Object[]{hyphenator, paddingLeft, paddingTop, paddingBottom, paddingRight,
                             parentWidth, offsetX, offsetX,
-                            lineHeightMulitplier, hyphenated, reverse, maxLines, hyphen, textAlignment, spacingMultiplier});
+                            lineHeightMulitplier, hyphenated, reverse, maxLines, hyphen, textAlignment, wordSpacingMultiplier});
         }
 
-        public Float getSpacingMultiplier() {
-            return spacingMultiplier;
+        public Float getWordSpacingMultiplier() {
+            return wordSpacingMultiplier;
         }
 
-        public void setSpacingMultiplier(Float spacingMultiplier) {
-            if (this.spacingMultiplier.equals(spacingMultiplier)) {
+        public void setWordSpacingMultiplier(Float wordSpacingMultiplier) {
+            if (this.wordSpacingMultiplier.equals(wordSpacingMultiplier)) {
                 return;
             }
 
-            this.spacingMultiplier = spacingMultiplier;
+            this.wordSpacingMultiplier = wordSpacingMultiplier;
             this.changed = true;
         }
 

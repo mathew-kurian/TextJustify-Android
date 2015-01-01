@@ -83,10 +83,10 @@ public class HyphenPattern {
     public final int leftMin;
     public final int rightMin;
 
-	/*
+    /*
      * Common language patterns
-	 * More info at https://github.com/bramstein/hyphenation-patterns
-	 */
+     * More info at https://github.com/bramstein/hyphenation-patterns
+     */
     public final Map<Integer, String> patternObject;
 
     public HyphenPattern(int leftMin, int rightMin, Map<Integer, String> patternObject) {

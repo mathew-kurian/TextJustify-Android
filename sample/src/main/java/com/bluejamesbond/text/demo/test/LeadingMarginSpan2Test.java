@@ -35,11 +35,11 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 
 import com.bluejamesbond.text.DocumentView;
-import com.bluejamesbond.text.style.JustifiedSpan;
-import com.bluejamesbond.text.style.LeftSpan;
 import com.bluejamesbond.text.demo.helper.ArticleBuilder;
 import com.bluejamesbond.text.demo.helper.MyLeadingMarginSpan2;
 import com.bluejamesbond.text.demo.helper.TestActivity;
+import com.bluejamesbond.text.style.JustifiedSpan;
+import com.bluejamesbond.text.style.LeftSpan;
 
 public class LeadingMarginSpan2Test extends TestActivity {
     @Override

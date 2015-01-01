@@ -52,6 +52,7 @@ public class Hyphenator {
     TrieNode trie;
     int leftMin;
     int rightMin;
+
     public Hyphenator(HyphenPattern pattern) {
 
         this.hyphenationPattern = pattern;

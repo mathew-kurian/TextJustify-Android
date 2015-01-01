@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DocumentView">
+
+        <attr name="padding" format="dimension" />
+        <attr name="paddingLeft" format="dimension" />
+        <attr name="paddingRight" format="dimension" />
+        <attr name="paddingTop" format="dimension" />
+        <attr name="paddingBottom" format="dimension" />
+
+        <attr name="offsetX" format="dimension" />
+        <attr name="offsetY" format="dimension" />
+        <attr name="wordSpacingMultiplier" format="float" />
+        <attr name="lineHeightMultiplier" format="float" />
+        <attr name="reverse" format="boolean" />
+        <attr name="maxLines" format="integer" />
+        <attr name="hypen" format="string" />
+        <attr name="textAlignment" format="enum">
+            <!--
+            Corresponds to
+            @link com.bluejamesbond.text.style.TextAlignment}
+            -->
+            <enum name="left" value="0" />
+            <enum name="right" value="1" />
+            <enum name="justified" value="2" />
+            <enum name="center" value="3" />
+
+        </attr>
+        <attr name="textSize" format="dimension" />
+        <attr name="textColor" format="color" />
+        <attr name="antialias" format="boolean" />
+        <attr name="text" format="string"/>
+        <attr name="textSubpixel" format="boolean" />
+        <attr name="textTypefacePath" format="string" />
+        <attr name="textStyle" format="integer">
+            <flag name="plain" value="0" />
+            <flag name="bold" value="1" />
+            <flag name="underline" value="2" />
+            <flag name="strikeThrough" value="4" />
+        </attr>
+        <attr name="textFormat" format="enum">
+            <!--
+                Plain old text. Corresponds to
+                {@link com.bluejamesbond.text.DocumentView#PLAIN_TEXT}
+            -->
+            <enum name="plain" value="0" />
+            <!--
+                Spannable text. Corresponds to
+                {@link com.bluejamesbond.text.DocumentView#FORMATTED_TEXT}.
+            -->
+            <enum name="formatted" value="1" />
+        </attr>
+
+    </declare-styleable>
+</resources>

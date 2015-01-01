@@ -49,6 +49,6 @@ public class WordSpacingTest extends TestActivity {
                         "these layouts and what they have to offer visit the link in the titlebar above. And please report all the issues on GitHub!")
                 .toString(), DocumentView.PLAIN_TEXT);
 
-        documentView.getDocumentLayoutParams().setSpacingMultiplier(5f);
+        documentView.getDocumentLayoutParams().setWordSpacingMultiplier(5f);
     }
 }

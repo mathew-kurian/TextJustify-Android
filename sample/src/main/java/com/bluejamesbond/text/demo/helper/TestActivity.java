@@ -40,13 +40,17 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.bluejamesbond.text.DocumentView;
-import com.bluejamesbond.text.style.TextAlignment;
 import com.bluejamesbond.text.demo.R;
+import com.bluejamesbond.text.style.TextAlignment;
 
 public class TestActivity extends Activity {
 
     public String testName;
     private boolean debugging = false;
+
+    protected int getContentView(){
+        return R.layout.testlayout;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +62,10 @@ public class TestActivity extends Activity {
         bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#e74c3c")));
         bar.setTitle("Samples");
 
-        setContentView(R.layout.testlayout);
+        setContentView(getContentView());
     }
 
-    public DocumentView addDocumentView(CharSequence article, int type, boolean rtl){
+    public DocumentView addDocumentView(CharSequence article, int type, boolean rtl) {
         final DocumentView documentView = new DocumentView(this, type);
         documentView.setColor(0xffffffff);
         documentView.setTypeface(Typeface.DEFAULT);
@@ -74,7 +78,7 @@ public class TestActivity extends Activity {
         documentView.getDocumentLayoutParams().setLineHeightMulitplier(1f);
         documentView.getDocumentLayoutParams().setReverse(rtl);
         documentView.getLayout().setDebugging(debugging);
-        documentView.setText(article, true); // true: enable justification
+        documentView.setText(article); // true: enable justification
 
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.VERTICAL);

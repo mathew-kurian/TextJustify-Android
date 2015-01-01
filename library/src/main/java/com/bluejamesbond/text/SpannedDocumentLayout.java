@@ -136,6 +136,7 @@ public class SpannedDocumentLayout extends DocumentLayout {
 
     @Override
     public void measure() {
+
         if (!params.changed && !textChange) {
             return;
         }
@@ -144,7 +145,7 @@ public class SpannedDocumentLayout extends DocumentLayout {
         float boundWidth =
                 params.getParentWidth() - params.getPaddingLeft() - params.getPaddingRight();
 
-        leadMarginSpanDrawEvents = new LinkedList<LeadingMarginSpanDrawParameters>();
+        leadMarginSpanDrawEvents = new LinkedList<>();
 
         StaticLayout staticLayout = new StaticLayout(getText(), (TextPaint) getPaint(),
                 (int) boundWidth, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);

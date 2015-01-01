@@ -31,14 +31,19 @@ package com.bluejamesbond.text;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.Toast;
+
+import com.bluejamesbond.text.style.TextAlignment;
 
 @SuppressWarnings("unused")
 public class DocumentView extends View {
@@ -55,34 +60,116 @@ public class DocumentView extends View {
 
     public DocumentView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(PLAIN_TEXT);
+        init(context, attrs, PLAIN_TEXT);
     }
 
     public DocumentView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(PLAIN_TEXT);
+        init(context, attrs, PLAIN_TEXT);
     }
 
     public DocumentView(Context context) {
         super(context);
-        init(PLAIN_TEXT);
+        init(context, null, PLAIN_TEXT);
     }
 
     public DocumentView(Context context, int type) {
         super(context);
-        init(type);
+        init(context, null, type);
     }
 
-    private void init(int type) {
+    private void init(Context context, AttributeSet attrs, int type) {
         this.paint = new TextPaint();
 
         // Initialize paint
         initPaint(this.paint);
 
-        // Get default layout
-        this.layout = getDocumentLayoutInstance(type, paint);
+        // Set default padding
+        setPadding(0, 0, 0, 0);
 
-        this.setPadding(0, 0, 0, 0);
+        if (attrs != null) {
+            TypedArray a = context.obtainStyledAttributes(attrs,
+                    R.styleable.DocumentView);
+
+            final int N = a.getIndexCount();
+            boolean layoutSet = false;
+
+            // find and set project layout
+            for (int i = 0; i < N; ++i) {
+                int attr = a.getIndex(i);
+                if (R.styleable.DocumentView_textFormat == attr) {
+                    this.layout = getDocumentLayoutInstance(a.getInt(attr, DocumentView.PLAIN_TEXT), paint);
+                    layoutSet = true;
+                    break;
+                }
+            }
+
+            if (!layoutSet) {
+                this.layout = getDocumentLayoutInstance(DocumentView.PLAIN_TEXT, paint);
+            }
+
+            DocumentLayout.LayoutParams layoutParams = this.layout.getLayoutParams();
+
+            for (int i = 0; i < N; ++i) {
+
+                int attr = a.getIndex(i);
+
+                if (attr == R.styleable.DocumentView_padding) {
+                    Float pad = a.getFloat(attr, 0f);
+                    layoutParams.setPaddingLeft(pad);
+                    layoutParams.setPaddingBottom(pad);
+                    layoutParams.setPaddingRight(pad);
+                    layoutParams.setPaddingTop(pad);
+                } else if (attr == R.styleable.DocumentView_paddingLeft) {
+                    layoutParams.setPaddingLeft(a.getDimension(attr, 0f));
+                } else if (attr == R.styleable.DocumentView_paddingBottom) {
+                    layoutParams.setPaddingBottom(a.getDimension(attr, 0f));
+                } else if (attr == R.styleable.DocumentView_paddingRight) {
+                    layoutParams.setPaddingRight(a.getDimension(attr, 0f));
+                } else if (attr == R.styleable.DocumentView_paddingTop) {
+                    layoutParams.setPaddingTop(a.getDimension(attr, 0f));
+                } else if (attr == R.styleable.DocumentView_offsetX) {
+                    layoutParams.setOffsetX(a.getDimension(attr, 0f));
+                } else if (attr == R.styleable.DocumentView_offsetY) {
+                    layoutParams.setOffsetY(a.getDimension(attr, 0f));
+                } else if (attr == R.styleable.DocumentView_hypen) {
+                    layoutParams.setHyphen(a.getString(attr));
+                } else if (attr == R.styleable.DocumentView_maxLines) {
+                    layoutParams.setMaxLines(a.getInt(attr, Integer.MAX_VALUE));
+                } else if (attr == R.styleable.DocumentView_lineHeightMultiplier) {
+                    layoutParams.setLineHeightMulitplier(a.getFloat(attr, 1.0f));
+                } else if (attr == R.styleable.DocumentView_textAlignment) {
+                    layoutParams.setTextAlignment(TextAlignment.getAlignment(a.getInt(attr, TextAlignment.LEFT.getCode())));
+                } else if (attr == R.styleable.DocumentView_reverse) {
+                    layoutParams.setReverse(a.getBoolean(attr, false));
+                } else if (attr == R.styleable.DocumentView_wordSpacingMultiplier) {
+                    layoutParams.setWordSpacingMultiplier(a.getFloat(attr, 1.0f));
+                } else if (attr == R.styleable.DocumentView_textColor) {
+                    setColor(a.getColor(attr, Color.BLACK));
+                } else if (attr == R.styleable.DocumentView_textSize) {
+                    setTextSize(a.getDimension(attr, paint.getTextSize()));
+                } else if (attr == R.styleable.DocumentView_textStyle) {
+                    int style = a.getInt(attr, 0);
+                    paint.setFakeBoldText((style & 1) > 0);
+                    paint.setUnderlineText(((style >> 1) & 1) > 0);
+                    paint.setStrikeThruText(((style >> 2) & 1) > 0);
+                } else if (attr == R.styleable.DocumentView_textTypefacePath) {
+                    setTypeface(Typeface.createFromAsset(getResources().getAssets(), a.getString(attr)));
+                } else if (attr == R.styleable.DocumentView_antialias) {
+                    paint.setAntiAlias(a.getBoolean(attr, true));
+                } else if (attr == R.styleable.DocumentView_textSubpixel) {
+                    paint.setSubpixelText(a.getBoolean(attr, true));
+                } else if (attr == R.styleable.DocumentView_text) {
+                    layout.setText(a.getString(attr));
+                }
+            }
+
+            a.recycle();
+
+        } else {
+            this.layout = getDocumentLayoutInstance(type, paint);
+        }
+
     }
 
     public void setTextSize(float textSize) {
@@ -118,7 +205,7 @@ public class DocumentView extends View {
         this.cacheEnabled = cacheEnabled;
     }
 
-    public void setText(CharSequence text, boolean justify) {
+    public void setText(CharSequence text) {
         this.layout.setText(text);
         requestLayout();
     }
@@ -146,6 +233,11 @@ public class DocumentView extends View {
     @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
+
+        // Android studio render
+        if (isInEditMode()) {
+            super.onDraw(canvas);
+        }
 
         // Active canas needs to be set
         // based on cacheEnabled

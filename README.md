@@ -25,7 +25,7 @@ If for some reason you like the library and feel like thanking me. Here you go! 
 |  **`OPEN`**       | Support more features like `TextView` in terms of `Paint` settings  |
 
 #Demo
-Download the demo on [Google Play Store](https://play.google.com/store/apps/details?id=com.bluejamesbond.text.demo).
+Download the demo on [Google Play Store](https://play.google.com/store/apps/details?id=com.bluejamesbond.text.sample).
 
 #Screenshot
 ![Preview](https://raw.githubusercontent.com/bluejamesbond/TextJustify-Android/master/screenshots/quoteSpan.png)

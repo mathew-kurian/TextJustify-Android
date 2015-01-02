@@ -15,6 +15,14 @@ If for some reason you like the library and feel like thanking me. Here you go! 
 
 [![Donate](http://i.imgur.com/6tHWFwv.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=YTSYSHBANY9YG&lc=US&item_name=TextJustifyAndroid&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
 
+#Install
+Just add to your `build.gradle`
+```
+dependencies {
+    compile 'com.github.bluejamesbond:textjustify-android:1.1'
+}
+```
+
 #Known Issues
 | Status| Issues    |
 | :------------:    |:---------------|

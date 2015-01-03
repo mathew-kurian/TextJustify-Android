@@ -835,7 +835,7 @@ public class ConcurrentModifableLinkedList<E>
 
     private class ListItr implements ListIterator<E> {
         private Entry<E> next;
-        private int nextIndex;        private Entry<E> lastReturned = header;
+        private int nextIndex;
         ListItr(int index) {
             if (index < 0 || index > size)
                 throw new IndexOutOfBoundsException("Index: " + index +
@@ -849,7 +849,7 @@ public class ConcurrentModifableLinkedList<E>
                 for (nextIndex = size; nextIndex > index; nextIndex--)
                     next = next.previous;
             }
-        }
+        }        private Entry<E> lastReturned = header;
 
         public boolean hasNext() {
             return nextIndex != size;

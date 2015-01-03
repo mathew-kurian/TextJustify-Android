@@ -232,10 +232,11 @@ public class DocumentView extends View {
     @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
 
         // Android studio render
         if (isInEditMode()) {
-            super.onDraw(canvas);
+            return;
         }
 
         // Active canas needs to be set

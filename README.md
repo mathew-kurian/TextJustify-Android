@@ -19,7 +19,7 @@ If for some reason you like the library and feel like thanking me. Here you go! 
 Just add to your `build.gradle`
 ```
 dependencies {
-    compile 'com.github.bluejamesbond:textjustify-android:1.1'
+    compile 'com.github.bluejamesbond:textjustify-android:1.2'
 }
 ```
 

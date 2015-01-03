@@ -47,6 +47,7 @@ import java.util.NoSuchElementException;
  * @since 1.2
  */
 
+@SuppressWarnings({"unused", "unchecked"})
 public class ConcurrentModifiableLinkedList<E>
         extends AbstractSequentialList<E>
         implements List<E>, Cloneable, java.io.Serializable {
@@ -836,6 +837,7 @@ public class ConcurrentModifiableLinkedList<E>
     private class ListItr implements ListIterator<E> {
         private Entry<E> next;
         private int nextIndex;
+
         ListItr(int index) {
             if (index < 0 || index > size)
                 throw new IndexOutOfBoundsException("Index: " + index +
@@ -849,7 +851,9 @@ public class ConcurrentModifiableLinkedList<E>
                 for (nextIndex = size; nextIndex > index; nextIndex--)
                     next = next.previous;
             }
-        }        private Entry<E> lastReturned = header;
+        }
+
+        private Entry<E> lastReturned = header;
 
         public boolean hasNext() {
             return nextIndex != size;
@@ -911,8 +915,6 @@ public class ConcurrentModifiableLinkedList<E>
             addBefore(e, next);
             nextIndex++;
         }
-
-
 
 
     }

@@ -47,7 +47,7 @@ import java.util.NoSuchElementException;
  * @since 1.2
  */
 
-public class ConcurrentModifableLinkedList<E>
+public class ConcurrentModifiableLinkedList<E>
         extends AbstractSequentialList<E>
         implements List<E>, Cloneable, java.io.Serializable {
     private static final long serialVersionUID = 876323262645176354L;
@@ -57,7 +57,7 @@ public class ConcurrentModifableLinkedList<E>
     /**
      * Constructs an empty list.
      */
-    public ConcurrentModifableLinkedList() {
+    public ConcurrentModifiableLinkedList() {
         header.next = header.previous = header;
     }
 
@@ -69,7 +69,7 @@ public class ConcurrentModifableLinkedList<E>
      * @param c the collection whose elements are to be placed into this list
      * @throws NullPointerException if the specified collection is null
      */
-    public ConcurrentModifableLinkedList(Collection<? extends E> c) {
+    public ConcurrentModifiableLinkedList(Collection<? extends E> c) {
         this();
         addAll(c);
     }
@@ -684,9 +684,9 @@ public class ConcurrentModifableLinkedList<E>
      * @return a shallow copy of this <tt>LinkedList</tt> instance
      */
     public Object clone() {
-        ConcurrentModifableLinkedList<E> clone = null;
+        ConcurrentModifiableLinkedList<E> clone = null;
         try {
-            clone = (ConcurrentModifableLinkedList<E>) super.clone();
+            clone = (ConcurrentModifiableLinkedList<E>) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new InternalError();
         }
@@ -889,7 +889,7 @@ public class ConcurrentModifableLinkedList<E>
         public void remove() {
             Entry<E> lastNext = lastReturned.next;
             try {
-                ConcurrentModifableLinkedList.this.remove(lastReturned);
+                ConcurrentModifiableLinkedList.this.remove(lastReturned);
             } catch (NoSuchElementException e) {
                 throw new IllegalStateException();
             }

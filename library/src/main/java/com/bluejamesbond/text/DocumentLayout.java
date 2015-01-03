@@ -56,8 +56,8 @@ public class DocumentLayout {
     // Main content
     private String text;
     // Parsing objects
-    private ConcurrentModifableLinkedList<Token> tokens;
-    private ConcurrentModifableLinkedList<String> chunks;
+    private ConcurrentModifiableLinkedList<Token> tokens;
+    private ConcurrentModifiableLinkedList<String> chunks;
 
     public DocumentLayout(TextPaint paint) {
 
@@ -71,8 +71,8 @@ public class DocumentLayout {
 
         measuredHeight = 0;
 
-        tokens = new ConcurrentModifableLinkedList<Token>();
-        chunks = new ConcurrentModifableLinkedList<String>();
+        tokens = new ConcurrentModifiableLinkedList<Token>();
+        chunks = new ConcurrentModifiableLinkedList<String>();
     }
 
     public boolean isDebugging() {
@@ -191,7 +191,7 @@ public class DocumentLayout {
             int start = 0;
             int overallCounter = 0;
 
-            ConcurrentModifableLinkedList<Unit> units = tokenize(paragraph);
+            ConcurrentModifiableLinkedList<Unit> units = tokenize(paragraph);
             ListIterator<Unit> unitIterator = units.listIterator();
             ListIterator<Unit> justifyIterator = units.listIterator();
 
@@ -303,9 +303,9 @@ public class DocumentLayout {
         }
     }
 
-    private ConcurrentModifableLinkedList<Unit> tokenize(String s) {
+    private ConcurrentModifiableLinkedList<Unit> tokenize(String s) {
 
-        ConcurrentModifableLinkedList<Unit> units = new ConcurrentModifableLinkedList<Unit>();
+        ConcurrentModifiableLinkedList<Unit> units = new ConcurrentModifiableLinkedList<Unit>();
 
         // If empty string, just return one group
         if (s.trim().length() <= 1) {

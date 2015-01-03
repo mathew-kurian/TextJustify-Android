@@ -86,7 +86,7 @@ public class DocumentView extends View {
         // Set default padding
         setPadding(0, 0, 0, 0);
 
-        if (attrs != null) {
+        if (attrs != null && !isInEditMode()) {
             TypedArray a = context.obtainStyledAttributes(attrs,
                     R.styleable.DocumentView);
 
@@ -153,7 +153,7 @@ public class DocumentView extends View {
                     paint.setUnderlineText(((style >> 1) & 1) > 0);
                     paint.setStrikeThruText(((style >> 2) & 1) > 0);
                 } else if (attr == R.styleable.DocumentView_textTypefacePath) {
-                    setTypeface(Typeface.createFromAsset(getResources().getAssets(), a.getString(attr)));
+                        setTypeface(Typeface.createFromAsset(getResources().getAssets(), a.getString(attr)));
                 } else if (attr == R.styleable.DocumentView_antialias) {
                     paint.setAntiAlias(a.getBoolean(attr, true));
                 } else if (attr == R.styleable.DocumentView_textSubpixel) {

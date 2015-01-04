@@ -29,8 +29,8 @@ android {
         applicationId 'com.bluejamesbond.text.sample'
         minSdkVersion 8
         targetSdkVersion 8
-        versionCode 5
-        versionName '4.1'
+        versionCode 6
+        versionName '4.2'
     }
     android {
         lintOptions {

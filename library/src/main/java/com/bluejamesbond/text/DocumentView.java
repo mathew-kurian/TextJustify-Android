@@ -294,7 +294,7 @@ public class DocumentView extends View {
             activeCanvas = canvas;
         }
 
-        onDocumentViewDraw(activeCanvas);
+        onLayoutDraw(activeCanvas);
 
         if (cacheEnabled) {
             // Draw the cache onto the OS provided
@@ -302,8 +302,8 @@ public class DocumentView extends View {
             canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
         }
     }
-    
-    protected void onDocumentViewDraw(Canvas canvas) {
+
+    protected void onLayoutDraw(Canvas canvas) {
         this.mLayout.draw(canvas);
     }
 

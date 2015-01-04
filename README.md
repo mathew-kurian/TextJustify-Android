@@ -7,6 +7,10 @@ This library will provide you a way to justify text. It supports both plain text
 
 *Compatible for Android 2.2 to 5.X*
 
+#Recent
+**1/4/2014** ► Improved caching support which allows for smooth scrolling  
+**1/2/2014** ► Added XML attributes for `DocumentView`
+
 #Wiki
 For examples, tests, and API refer to the [Android-TextJustify Wiki](https://github.com/bluejamesbond/TextJustify-Android/wiki/1-%C2%B7-Home).
 
@@ -20,6 +24,7 @@ Just add to your `build.gradle`
 ```gradle
 dependencies {
     compile 'com.github.bluejamesbond:textjustify-android:1.5.1'
+    // compile 'com.github.bluejamesbond:textjustify-android:1.5'
     // compile 'com.github.bluejamesbond:textjustify-android:1.4'
     // compile 'com.github.bluejamesbond:textjustify-android:1.3'
     // compile 'com.github.bluejamesbond:textjustify-android:1.2'

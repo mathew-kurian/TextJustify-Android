@@ -154,9 +154,8 @@ public class DocumentLayout {
         int lineNumber = 0;
         float width = params.parentWidth - params.paddingRight - params.paddingLeft;
         float lineHeight = getFontAscent() + getFontDescent();
-        float halfLineHeight = lineHeight / 2;
         float x;
-        float y = params.paddingTop + halfLineHeight;
+        float y = params.paddingTop + getFontAscent();
         float spaceOffset = paint.measureText(" ") * params.wordSpacingMultiplier;
 
         for (String paragraph : chunks) {

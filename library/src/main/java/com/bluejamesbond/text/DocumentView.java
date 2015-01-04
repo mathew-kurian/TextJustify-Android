@@ -239,12 +239,6 @@ public class DocumentView extends View {
     }
 
     @Override
-    public void postInvalidate() {
-        destroyCache();
-        super.postInvalidate();
-    }
-
-    @Override
     public void requestLayout() {
         this.mLayout.getLayoutParams().invalidate();
         super.requestLayout();

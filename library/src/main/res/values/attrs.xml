@@ -55,6 +55,7 @@
             <enum name="auto_quality" value="1" />
             <enum name="low_quality" value="2" />
             <enum name="high_quality" value="3" />
+            <enum name="grayscale" value="4" />
         </attr>
 
     </declare-styleable>

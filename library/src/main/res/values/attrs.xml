@@ -50,6 +50,12 @@
             -->
             <enum name="formatted" value="1" />
         </attr>
+        <attr name="cacheConfig" format="enum">
+            <enum name="no_cache" value="0" />
+            <enum name="auto_quality" value="1" />
+            <enum name="low_quality" value="2" />
+            <enum name="high_quality" value="3" />
+        </attr>
 
     </declare-styleable>
 </resources>

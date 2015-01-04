@@ -7,18 +7,36 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="#222222"
-        android:orientation="vertical"
-        android:padding="15dp">
+        android:orientation="horizontal"
+        android:weightSum="100"
+        android:padding="7dp">
 
         <TextView
             android:id="@+id/debugButton"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/simple_button__background"
+            android:clickable="true"
+            android:layout_weight="50"
+            android:layout_margin="7dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="TOGGLE DEBUG"
+            android:textColor="#aaaaaa"
+            android:textSize="13dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/cacheButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/simple_button__background"
             android:clickable="true"
             android:gravity="center"
+            android:layout_margin="7dp"
+            android:layout_weight="50"
             android:padding="10dp"
-            android:text="TOGGLE DEBUG"
+            android:text="CHANGE CACHE_CONFIG"
             android:textColor="#aaaaaa"
             android:textSize="13dp"
             android:textStyle="bold" />

@@ -49,13 +49,12 @@ public class DocumentView extends View {
 
     public static final int PLAIN_TEXT = 0;
     public static final int FORMATTED_TEXT = 1;
-
-    private DocumentLayout layout;
-    private TextPaint paint;
+    private DocumentLayout mLayout;
+    private TextPaint mPaint;
 
     // Caching content
-    private boolean cacheEnabled = false;
-    private Bitmap cacheBitmap = null;
+    private CacheConfig mCacheConfig = CacheConfig.AUTO_QUALITY;
+    private Bitmap mCacheBitmap = null;
 
     public DocumentView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -78,10 +77,10 @@ public class DocumentView extends View {
     }
 
     private void init(Context context, AttributeSet attrs, int type) {
-        this.paint = new TextPaint();
+        this.mPaint = new TextPaint();
 
-        // Initialize paint
-        initPaint(this.paint);
+        // Initialize mPaint
+        initPaint(this.mPaint);
 
         // Set default padding
         setPadding(0, 0, 0, 0);
@@ -93,21 +92,21 @@ public class DocumentView extends View {
             final int N = a.getIndexCount();
             boolean layoutSet = false;
 
-            // find and set project layout
+            // find and set project mLayout
             for (int i = 0; i < N; ++i) {
                 int attr = a.getIndex(i);
                 if (R.styleable.DocumentView_textFormat == attr) {
-                    this.layout = getDocumentLayoutInstance(a.getInt(attr, DocumentView.PLAIN_TEXT), paint);
+                    this.mLayout = getDocumentLayoutInstance(a.getInt(attr, DocumentView.PLAIN_TEXT), mPaint);
                     layoutSet = true;
                     break;
                 }
             }
 
             if (!layoutSet) {
-                this.layout = getDocumentLayoutInstance(DocumentView.PLAIN_TEXT, paint);
+                this.mLayout = getDocumentLayoutInstance(DocumentView.PLAIN_TEXT, mPaint);
             }
 
-            DocumentLayout.LayoutParams layoutParams = this.layout.getLayoutParams();
+            DocumentLayout.LayoutParams layoutParams = this.mLayout.getLayoutParams();
 
             for (int i = 0; i < N; ++i) {
 
@@ -138,7 +137,7 @@ public class DocumentView extends View {
                 } else if (attr == R.styleable.DocumentView_lineHeightMultiplier) {
                     layoutParams.setLineHeightMulitplier(a.getFloat(attr, 1.0f));
                 } else if (attr == R.styleable.DocumentView_textAlignment) {
-                    layoutParams.setTextAlignment(TextAlignment.getAlignment(a.getInt(attr, TextAlignment.LEFT.getCode())));
+                    layoutParams.setTextAlignment(TextAlignment.getById(a.getInt(attr, TextAlignment.LEFT.getId())));
                 } else if (attr == R.styleable.DocumentView_reverse) {
                     layoutParams.setReverse(a.getBoolean(attr, false));
                 } else if (attr == R.styleable.DocumentView_wordSpacingMultiplier) {
@@ -146,41 +145,50 @@ public class DocumentView extends View {
                 } else if (attr == R.styleable.DocumentView_textColor) {
                     setColor(a.getColor(attr, Color.BLACK));
                 } else if (attr == R.styleable.DocumentView_textSize) {
-                    setTextSize(a.getDimension(attr, paint.getTextSize()));
+                    setTextSize(a.getDimension(attr, mPaint.getTextSize()));
                 } else if (attr == R.styleable.DocumentView_textStyle) {
                     int style = a.getInt(attr, 0);
-                    paint.setFakeBoldText((style & 1) > 0);
-                    paint.setUnderlineText(((style >> 1) & 1) > 0);
-                    paint.setStrikeThruText(((style >> 2) & 1) > 0);
+                    mPaint.setFakeBoldText((style & 1) > 0);
+                    mPaint.setUnderlineText(((style >> 1) & 1) > 0);
+                    mPaint.setStrikeThruText(((style >> 2) & 1) > 0);
                 } else if (attr == R.styleable.DocumentView_textTypefacePath) {
-                        setTypeface(Typeface.createFromAsset(getResources().getAssets(), a.getString(attr)));
+                    setTypeface(Typeface.createFromAsset(getResources().getAssets(), a.getString(attr)));
                 } else if (attr == R.styleable.DocumentView_antialias) {
-                    paint.setAntiAlias(a.getBoolean(attr, true));
+                    mPaint.setAntiAlias(a.getBoolean(attr, true));
                 } else if (attr == R.styleable.DocumentView_textSubpixel) {
-                    paint.setSubpixelText(a.getBoolean(attr, true));
+                    mPaint.setSubpixelText(a.getBoolean(attr, true));
                 } else if (attr == R.styleable.DocumentView_text) {
-                    layout.setText(a.getString(attr));
+                    mLayout.setText(a.getString(attr));
+                } else if (attr == R.styleable.DocumentView_cacheConfig) {
+                    setCacheConfig(CacheConfig.getById(a.getInt(attr, CacheConfig.AUTO_QUALITY.getId())));
                 }
             }
 
             a.recycle();
 
         } else {
-            this.layout = getDocumentLayoutInstance(type, paint);
+            this.mLayout = getDocumentLayoutInstance(type, mPaint);
         }
 
     }
 
+    public void destroyCache() {
+        if (mCacheBitmap != null) {
+            mCacheBitmap.recycle();
+            mCacheBitmap = null;
+        }
+    }
+
     public void setTextSize(float textSize) {
-        paint.setTextSize(textSize);
+        mPaint.setTextSize(textSize);
     }
 
     public void setColor(int textColor) {
-        paint.setColor(textColor);
+        mPaint.setColor(textColor);
     }
 
     public void setTypeface(Typeface typeface) {
-        paint.setTypeface(typeface);
+        mPaint.setTypeface(typeface);
     }
 
     protected void initPaint(Paint paint) {
@@ -199,39 +207,60 @@ public class DocumentView extends View {
         }
     }
 
-    @Override
-    public void setDrawingCacheEnabled(boolean cacheEnabled) {
-        this.cacheEnabled = cacheEnabled;
-    }
-
     public CharSequence getText() {
-        return this.layout.getText();
+        return this.mLayout.getText();
     }
 
     public void setText(CharSequence text) {
-        this.layout.setText(text);
+        this.mLayout.setText(text);
         requestLayout();
     }
 
     public DocumentLayout.LayoutParams getDocumentLayoutParams() {
-        return this.layout.getLayoutParams();
+        return this.mLayout.getLayoutParams();
     }
 
     public DocumentLayout getLayout() {
-        return this.layout;
+        return this.mLayout;
+    }
+
+    public CacheConfig getCacheConfig() {
+        return mCacheConfig;
+    }
+
+    public void setCacheConfig(CacheConfig quality) {
+        mCacheConfig = quality;
+    }
+
+    @Override
+    public void invalidate() {
+        destroyCache();
+        super.invalidate();
+    }
+
+    @Override
+    public void postInvalidate() {
+        destroyCache();
+        super.postInvalidate();
+    }
+
+    @Override
+    public void requestLayout() {
+        this.mLayout.getLayoutParams().invalidate();
+        super.requestLayout();
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = MeasureSpec.getSize(widthMeasureSpec);
-        this.layout.getLayoutParams().setParentWidth((float) width);
-        this.layout.measure();
-        this.setMeasuredDimension(width, this.layout.getMeasuredHeight());
+        this.mLayout.getLayoutParams().setParentWidth((float) width);
+        this.mLayout.measure();
+        this.setMeasuredDimension(width, this.mLayout.getMeasuredHeight());
     }
 
     @SuppressLint("DrawAllocation")
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected final void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
         // Android studio render
@@ -239,23 +268,25 @@ public class DocumentView extends View {
             return;
         }
 
+        boolean cacheEnabled = mCacheConfig != CacheConfig.NO_CACHE;
+
         // Active canas needs to be set
-        // based on cacheEnabled
+        // based on mCacheEnabled
         Canvas activeCanvas;
 
         // Set the active canvas based on
         // whether cache is enabled
         if (cacheEnabled) {
-            if (cacheBitmap != null) {
+            if (mCacheBitmap != null) {
                 // Draw to the OS provided canvas
                 // if the cache is not empty
-                canvas.drawBitmap(cacheBitmap, 0, 0, paint);
+                canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
                 return;
             } else {
                 // Create a bitmap and set the activeCanvas
                 // to the one derived from the bitmap
-                cacheBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Config.ARGB_4444);
-                activeCanvas = new Canvas(cacheBitmap);
+                mCacheBitmap = Bitmap.createBitmap(getWidth(), getHeight(), mCacheConfig.getConfig());
+                activeCanvas = new Canvas(mCacheBitmap);
             }
         } else {
             // Active canvas is the OS
@@ -263,12 +294,50 @@ public class DocumentView extends View {
             activeCanvas = canvas;
         }
 
-        this.layout.draw(activeCanvas);
+        onDocumentViewDraw(activeCanvas);
 
         if (cacheEnabled) {
             // Draw the cache onto the OS provided
             // canvas.
-            canvas.drawBitmap(cacheBitmap, 0, 0, paint);
+            canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
+        }
+    }
+    
+    protected void onDocumentViewDraw(Canvas canvas) {
+        this.mLayout.draw(canvas);
+    }
+
+    public static enum CacheConfig {
+        NO_CACHE(null, 0), AUTO_QUALITY(Config.ARGB_4444, 1), LOW_QUALITY(Config.RGB_565, 2), HIGH_QUALITY(Config.ARGB_4444, 3);
+
+        private final Config mConfig;
+        private final int mId;
+
+        private CacheConfig(Config config, int id) {
+            mConfig = config;
+            mId = id;
+        }
+
+        public static CacheConfig getById(int id) {
+            switch (id) {
+                default:
+                case 0:
+                    return NO_CACHE;
+                case 1:
+                    return AUTO_QUALITY;
+                case 2:
+                    return LOW_QUALITY;
+                case 3:
+                    return HIGH_QUALITY;
+            }
+        }
+
+        private Config getConfig() {
+            return mConfig;
+        }
+
+        public int getId() {
+            return mId;
         }
     }
 }

@@ -33,14 +33,14 @@ package com.bluejamesbond.text.style;
 public enum TextAlignment {
     LEFT(0), RIGHT(1), JUSTIFIED(2), CENTER(3);
 
-    private final int mCode;
+    private final int mId;
 
-    private TextAlignment(int code) {
-        mCode = code;
+    private TextAlignment(int id) {
+        mId = id;
     }
 
-    public static TextAlignment getAlignment(int i) {
-        switch (i) {
+    public static TextAlignment getById(int id) {
+        switch (id) {
             default:
             case 0:
                 return LEFT;
@@ -53,7 +53,7 @@ public enum TextAlignment {
         }
     }
 
-    public int getCode() {
-        return mCode;
+    public int getId() {
+        return mId;
     }
 }

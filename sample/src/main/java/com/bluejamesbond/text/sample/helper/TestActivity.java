@@ -35,6 +35,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bluejamesbond.text.DocumentView;
 import com.bluejamesbond.text.sample.R;
@@ -44,6 +45,7 @@ public class TestActivity extends Activity {
 
     public String testName;
     private boolean debugging = false;
+    private int cacheConfig = 0;
 
     protected int getContentView() {
         return R.layout.test_activity;
@@ -83,19 +85,42 @@ public class TestActivity extends Activity {
         LinearLayout articleList = (LinearLayout) findViewById(R.id.articleList);
         articleList.addView(linearLayout);
 
-        TextView debugButton = (TextView) findViewById(R.id.debugButton);
+        debugging = documentView.getLayout().isDebugging();
+        cacheConfig = documentView.getCacheConfig().getId();
+
+        final TextView debugButton = (TextView) findViewById(R.id.debugButton);
 
         if (debugButton != null) {
+            debugButton.setText((debugging ? "DISABLE" : "ENABLE") + " DEBUG");
             debugButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     debugging = !debugging;
+                    debugButton.setText((debugging ? "DISABLE" : "ENABLE") + " DEBUG");
                     documentView.getLayout().setDebugging(debugging);
-                    documentView.postInvalidate();
+                    documentView.invalidate();
                 }
             });
         }
 
+        final TextView cacheButton = (TextView) findViewById(R.id.cacheButton);
+        final Toast cacheConfigToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+
+        if (cacheButton != null) {
+            cacheConfigToast.setText("Activated " + documentView.getCacheConfig().name());
+            cacheConfigToast.show();
+            cacheButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cacheConfig = (cacheConfig + 1) % 4;
+                    DocumentView.CacheConfig newCacheConfig = DocumentView.CacheConfig.getById(cacheConfig);
+                    cacheConfigToast.setText("Activated " + newCacheConfig.name());
+                    cacheConfigToast.show();
+                    documentView.setCacheConfig(newCacheConfig);
+                    documentView.invalidate();
+                }
+            });
+        }
         return documentView;
     }
 

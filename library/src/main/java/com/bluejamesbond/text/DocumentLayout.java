@@ -683,6 +683,7 @@ public class DocumentLayout {
         public boolean hasChanged() {
             return this.changed;
         }
+        public void invalidate() { this.changed = true; }
     }
 
     private static abstract class Token {

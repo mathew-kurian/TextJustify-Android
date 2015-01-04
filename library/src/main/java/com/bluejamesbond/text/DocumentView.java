@@ -113,7 +113,7 @@ public class DocumentView extends View {
                 int attr = a.getIndex(i);
 
                 if (attr == R.styleable.DocumentView_padding) {
-                    Float pad = a.getFloat(attr, 0f);
+                    Float pad = a.getDimension(attr, 0f);
                     layoutParams.setPaddingLeft(pad);
                     layoutParams.setPaddingBottom(pad);
                     layoutParams.setPaddingRight(pad);

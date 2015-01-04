@@ -112,7 +112,7 @@ public class TestActivity extends Activity {
             cacheButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    cacheConfig = (cacheConfig + 1) % 4;
+                    cacheConfig = (cacheConfig + 1) % 5;
                     DocumentView.CacheConfig newCacheConfig = DocumentView.CacheConfig.getById(cacheConfig);
                     cacheConfigToast.setText("Activated " + newCacheConfig.name());
                     cacheConfigToast.show();

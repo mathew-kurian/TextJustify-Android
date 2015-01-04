@@ -302,7 +302,7 @@ public class DocumentView extends View {
     }
 
     public static enum CacheConfig {
-        NO_CACHE(null, 0), AUTO_QUALITY(Config.ARGB_4444, 1), LOW_QUALITY(Config.RGB_565, 2), HIGH_QUALITY(Config.ARGB_4444, 3);
+        NO_CACHE(null, 0), AUTO_QUALITY(Config.ARGB_4444, 1), LOW_QUALITY(Config.RGB_565, 2), HIGH_QUALITY(Config.ARGB_8888, 3), GRAYSCALE(Config.ALPHA_8, 4);
 
         private final Config mConfig;
         private final int mId;
@@ -323,6 +323,8 @@ public class DocumentView extends View {
                     return LOW_QUALITY;
                 case 3:
                     return HIGH_QUALITY;
+                case 4:
+                    return GRAYSCALE;
             }
         }
 

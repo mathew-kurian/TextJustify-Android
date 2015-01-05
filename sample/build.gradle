@@ -28,7 +28,7 @@ android {
     defaultConfig {
         applicationId 'com.bluejamesbond.text.sample'
         minSdkVersion 8
-        targetSdkVersion 8
+        targetSdkVersion 21
         versionCode 7
         versionName '4.3'
     }
@@ -41,7 +41,7 @@ android {
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
-        targetCompatibility JavaVersion.VERSION_1_6
+        sourceCompatibility JavaVersion.VERSION_1_7
     }
 }
 

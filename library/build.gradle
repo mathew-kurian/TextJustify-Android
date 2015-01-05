@@ -4,7 +4,7 @@ android {
     buildToolsVersion '21.1.2'
     defaultConfig {
         minSdkVersion 8
-        targetSdkVersion 8
+        targetSdkVersion 21
         versionCode 2
         versionName '2.0'
     }
@@ -15,6 +15,7 @@ android {
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
+        sourceCompatibility JavaVersion.VERSION_1_7
     }
 }
 

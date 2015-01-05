@@ -443,7 +443,7 @@ public class SpannedDocumentLayout extends DocumentLayout {
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, int scrollX, int scrollY, int viewHeight) {
 
         boolean isReverse = params.reverse;
 

@@ -30,6 +30,7 @@ package com.bluejamesbond.text;
  */
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -38,23 +39,32 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.opengl.GLES10;
+import android.os.Build;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.bluejamesbond.text.style.TextAlignment;
 
+import javax.microedition.khronos.opengles.GL10;
+
 @SuppressWarnings("unused")
-public class DocumentView extends View {
+public class DocumentView extends ScrollView {
 
     public static final int PLAIN_TEXT = 0;
     public static final int FORMATTED_TEXT = 1;
     private DocumentLayout mLayout;
     private TextPaint mPaint;
+    private View mView;
 
     // Caching content
-    private CacheConfig mCacheConfig = CacheConfig.AUTO_QUALITY;
+    private boolean mInvalidateCache = false;
+    private CacheConfig mCacheConfig = CacheConfig.NO_CACHE;
     private Bitmap mCacheBitmap = null;
+    private static int MAX_TEXTURE_SIZE = 0;
 
     public DocumentView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -76,14 +86,29 @@ public class DocumentView extends View {
         init(context, null, type);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public DocumentView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init(context, attrs, PLAIN_TEXT);
+    }
+
     private void init(Context context, AttributeSet attrs, int type) {
         this.mPaint = new TextPaint();
+        this.mView = new View(context);
 
         // Initialize mPaint
         initPaint(this.mPaint);
 
         // Set default padding
         setPadding(0, 0, 0, 0);
+
+        addView(mView);
+
+        if(MAX_TEXTURE_SIZE == 0){
+            int[] maxSize = new int[1];
+            GLES10.glGetIntegerv(GL10.GL_MAX_TEXTURE_SIZE, maxSize, 0);
+            MAX_TEXTURE_SIZE = maxSize[0];
+        }
 
         if (attrs != null && !isInEditMode()) {
             TypedArray a = context.obtainStyledAttributes(attrs,
@@ -170,6 +195,7 @@ public class DocumentView extends View {
             this.mLayout = getDocumentLayoutInstance(type, mPaint);
         }
 
+        Toast.makeText(context, "HERERE", Toast.LENGTH_LONG).show();
     }
 
     public void destroyCache() {
@@ -234,22 +260,29 @@ public class DocumentView extends View {
 
     @Override
     public void invalidate() {
-        destroyCache();
+        if (mCacheBitmap != null) {
+            mInvalidateCache = true;
+        }
         super.invalidate();
     }
 
     @Override
     public void requestLayout() {
-        this.mLayout.getLayoutParams().invalidate();
+        if(this.mLayout != null){
+            this.mLayout.getLayoutParams().invalidate();
+        }
         super.requestLayout();
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
         this.mLayout.getLayoutParams().setParentWidth((float) width);
         this.mLayout.measure();
-        this.setMeasuredDimension(width, this.mLayout.getMeasuredHeight());
+        mView.setMinimumHeight(this.mLayout.getMeasuredHeight());
+        mView.setMinimumWidth(width);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @SuppressLint("DrawAllocation")
@@ -272,10 +305,14 @@ public class DocumentView extends View {
         // whether cache is enabled
         if (cacheEnabled) {
             if (mCacheBitmap != null) {
-                // Draw to the OS provided canvas
-                // if the cache is not empty
-                canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
-                return;
+                if (mInvalidateCache) {
+                    activeCanvas = new Canvas(mCacheBitmap);
+                } else {
+                    // Draw to the OS provided canvas
+                    // if the cache is not empty
+                    canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
+                    return;
+                }
             } else {
                 // Create a bitmap and set the activeCanvas
                 // to the one derived from the bitmap
@@ -294,11 +331,12 @@ public class DocumentView extends View {
             // Draw the cache onto the OS provided
             // canvas.
             canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
+            mInvalidateCache = false;
         }
     }
 
     protected void onLayoutDraw(Canvas canvas) {
-        this.mLayout.draw(canvas);
+        this.mLayout.draw(canvas, getScrollX(), getScrollY(), getHeight());
     }
 
     public static enum CacheConfig {

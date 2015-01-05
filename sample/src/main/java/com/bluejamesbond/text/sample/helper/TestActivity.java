@@ -30,6 +30,7 @@
 package com.bluejamesbond.text.sample.helper;
 
 import android.app.Activity;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
@@ -61,10 +62,17 @@ public class TestActivity extends Activity {
     }
 
     public DocumentView addDocumentView(CharSequence article, int type, boolean rtl) {
-        final DocumentView documentView = new DocumentView(this, type);
+        final DocumentView documentView = new DocumentView(this, type){
+            @Override
+            protected void initPaint(Paint paint) {
+                super.initPaint(paint);
+                paint.setAntiAlias(false);
+                paint.setSubpixelText(false);
+            }
+        };
         documentView.setColor(0xffffffff);
         documentView.setTypeface(Typeface.DEFAULT);
-        documentView.setTextSize(33);
+        documentView.setTextSize(30);
         documentView.getDocumentLayoutParams().setTextAlignment(TextAlignment.JUSTIFIED);
         documentView.getDocumentLayoutParams().setPaddingLeft(0f);
         documentView.getDocumentLayoutParams().setPaddingRight(0f);
@@ -79,7 +87,7 @@ public class TestActivity extends Activity {
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setLayoutParams(
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT));
+                        LinearLayout.LayoutParams.MATCH_PARENT));
         linearLayout.addView(documentView);
 
         LinearLayout articleList = (LinearLayout) findViewById(R.id.articleList);

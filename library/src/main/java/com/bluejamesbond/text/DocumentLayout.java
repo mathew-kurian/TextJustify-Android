@@ -39,6 +39,7 @@ import com.bluejamesbond.text.style.TextAlignment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ListIterator;
 
 @SuppressWarnings("unused")
@@ -56,7 +57,7 @@ public class DocumentLayout {
     // Main content
     private String text;
     // Parsing objects
-    private ConcurrentModifiableLinkedList<Token> tokens;
+    private Token [] mTokens;
     private ConcurrentModifiableLinkedList<String> chunks;
 
     public DocumentLayout(TextPaint paint) {
@@ -71,7 +72,7 @@ public class DocumentLayout {
 
         measuredHeight = 0;
 
-        tokens = new ConcurrentModifiableLinkedList<Token>();
+        mTokens = new Token[0];
         chunks = new ConcurrentModifiableLinkedList<String>();
     }
 
@@ -144,8 +145,8 @@ public class DocumentLayout {
             textChange = false;
         }
 
-        // Empty out any existing tokens
-        tokens.clear();
+        // Empty out any existing mTokens
+        List<Token> tokens = new ConcurrentModifiableLinkedList<Token>();
 
         Paint paint = getPaint();
         paint.setTextAlign(Paint.Align.LEFT);
@@ -239,7 +240,7 @@ public class DocumentLayout {
                     unit.lineNumber = lineNumber;
                     x += offset + paint.measureText(unit.unit) + spaceOffset;
 
-                    // Add to all tokens
+                    // Add to all mTokens
                     tokens.add(unit);
                 }
 
@@ -249,11 +250,11 @@ public class DocumentLayout {
                 // Next line
                 lineNumber++;
 
-                // If there are more tokens leftover,
+                // If there are more mTokens leftover,
                 // continue
                 if (leftOverTokens) {
 
-                    // Next start index for tokens
+                    // Next start index for mTokens
                     start = format.end;
 
                     continue;
@@ -265,11 +266,16 @@ public class DocumentLayout {
             }
         }
 
+        Token [] tokensArr = new Token[tokens.size()];
+        tokens.toArray(tokensArr);
+        tokens.clear();
+
+        mTokens = tokensArr;
         params.changed = false;
         measuredHeight = (int) (y - getFontAscent() + params.paddingBottom);
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, int scrollX, int scrollY, int viewHeight) {
 
         int lastColor = 0;
         float lastStrokeWidth = 0;
@@ -292,8 +298,11 @@ public class DocumentLayout {
                     measuredHeight - params.paddingBottom, paint);
         }
 
-        for (Token token : tokens) {
-            token.draw(canvas, paint, params);
+        int tokenStart = (int) ((float) mTokens.length * (float) scrollY / (float) getMeasuredHeight());
+        int tokenEnd = (int) ((float) mTokens.length * (float)(scrollY + viewHeight) / (float) getMeasuredHeight());
+
+        for(int i = Math.max(0, tokenStart - 50); i < tokenEnd + 50 && i < mTokens.length; i++) {
+            mTokens[i].draw(canvas, paint, params);
         }
 
         if (debugging) {
@@ -658,11 +667,11 @@ public class DocumentLayout {
         }
 
         public void setMaxLines(Integer maxLines) {
-            if (this.maxLines.equals(maxLines)) {
+            if (maxLines.equals(maxLines)) {
                 return;
             }
 
-            this.maxLines = maxLines;
+            maxLines = maxLines;
             this.changed = true;
         }
 
@@ -698,6 +707,8 @@ public class DocumentLayout {
         }
 
         abstract void draw(Canvas canvas, Paint paint, LayoutParams params);
+
+        public boolean isVisible(int scrollX, int scrollY, int viewHeight){ return false; }
     }
 
     private static class Unit extends Token {
@@ -721,6 +732,11 @@ public class DocumentLayout {
         @Override
         void draw(Canvas canvas, Paint paint, LayoutParams params) {
             canvas.drawText(unit, x + params.getOffsetX(), y + params.getOffsetY(), paint);
+        }
+
+        @Override
+        public boolean isVisible(int scrollX, int scrollY, int viewHeight) {
+            return y >= scrollY && y <= scrollY + viewHeight;
         }
     }
 

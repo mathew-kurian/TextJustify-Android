@@ -50,6 +50,7 @@ import com.bluejamesbond.text.sample.test.LineBreakTest;
 import com.bluejamesbond.text.sample.test.PlainTextTest;
 import com.bluejamesbond.text.sample.test.QuoteSpanTest;
 import com.bluejamesbond.text.sample.test.RTLTest;
+import com.bluejamesbond.text.sample.test.TextViewTest;
 import com.bluejamesbond.text.sample.test.WordSpacingTest;
 import com.bluejamesbond.text.sample.test.XMLTest;
 
@@ -65,7 +66,8 @@ public class TestList extends TestActivity {
             HyphenatedTest.class,
             WordSpacingTest.class,
             RTLTest.class,
-            XMLTest.class
+            XMLTest.class,
+            TextViewTest.class
     };
 
     @Override

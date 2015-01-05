@@ -46,6 +46,9 @@
         <activity
             android:name="com.bluejamesbond.text.sample.test.WordSpacingTest"
             android:theme="@android:style/Theme.NoTitleBar" />
+        <activity
+            android:name="com.bluejamesbond.text.sample.test.TextViewTest"
+            android:theme="@android:style/Theme.NoTitleBar" />
     </application>
 
 </manifest>

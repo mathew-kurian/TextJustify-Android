@@ -1,6 +1,9 @@
+
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-TextJustify--Android-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1318)   
 ![Logo](https://raw.githubusercontent.com/bluejamesbond/TextJustify-Android/master/misc/logo.png?)
 =======
-**Android Full Justification**
+
+**Android Full Justification** 
 
 #About
 This library will provide you a way to justify text. It supports both plain text and Spannables. Additionally, the library can auto-hyphentate your displayed content (thanks to [@muriloandrade](https://github.com/muriloandrade)).

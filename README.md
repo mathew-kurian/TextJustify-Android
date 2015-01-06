@@ -10,6 +10,12 @@ This library will provide you a way to justify text. It supports both plain text
 
 *Compatible for Android 2.2 to 5.X*
 
+#Screenshot
+![Preview](http://i.imgur.com/k6bAWd0.jpg)
+
+#Demo
+[![Imgur](http://i.imgur.com/hSGF1fV.png)](https://play.google.com/store/apps/details?id=com.bluejamesbond.text.sample)
+
 #Recent
 **1/4/2014** ► Improved caching support which allows for smooth scrolling  
 **1/2/2014** ► Added XML attributes for `DocumentView`
@@ -44,9 +50,3 @@ dependencies {
 |  **`OPEN`**       | Improve text strike-through |
 |  **`OPEN`**       | Improve text underline  |
 |  **`OPEN`**       | Support more features like `TextView` in terms of `Paint` settings  |
-
-#Demo
-Download the demo on [Google Play Store](https://play.google.com/store/apps/details?id=com.bluejamesbond.text.sample).
-
-#Screenshot
-![Preview](https://raw.githubusercontent.com/bluejamesbond/TextJustify-Android/master/screenshots/quoteSpan.png)

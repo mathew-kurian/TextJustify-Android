@@ -183,12 +183,24 @@ public class DocumentView extends View {
         mPaint.setTextSize(textSize);
     }
 
+    public float getTextSize() {
+        return mPaint.getTextSize();
+    }
+
     public void setColor(int textColor) {
         mPaint.setColor(textColor);
     }
 
+    public int getColor() {
+        return mPaint.getColor();
+    }
+
     public void setTypeface(Typeface typeface) {
         mPaint.setTypeface(typeface);
+    }
+
+    public Typeface getTypeface() {
+        return mPaint.getTypeface();
     }
 
     protected void initPaint(Paint paint) {

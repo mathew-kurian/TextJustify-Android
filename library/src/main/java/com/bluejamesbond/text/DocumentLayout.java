@@ -30,7 +30,6 @@ package com.bluejamesbond.text;
  */
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -45,16 +44,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
-import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.egl.EGLContext;
-import javax.microedition.khronos.egl.EGLDisplay;
-
 @SuppressWarnings("unused")
 public class DocumentLayout {
 
-    private static Integer bitmapHeight = -1;
 
+    protected int mLineCount = 0;
     // Debugging
     protected boolean debugging = false;
     // Basic client-set properties
@@ -70,16 +64,7 @@ public class DocumentLayout {
     private Token[] mTokens;
     private ConcurrentModifiableLinkedList<String> chunks;
 
-    private CacheBitmap mCacheBitmapTop;
-    private CacheBitmap mCacheBitmapBottom;
-
     public DocumentLayout(Context context, TextPaint paint) {
-
-        synchronized (bitmapHeight) {
-            if (DocumentLayout.bitmapHeight.equals(-1)) {
-                DocumentLayout.bitmapHeight = Math.min(context.getResources().getDisplayMetrics().heightPixels * 7 / 6, getMaxTextureSize());
-            }
-        }
 
         this.paint = paint;
         this.text = "";
@@ -93,49 +78,6 @@ public class DocumentLayout {
 
         mTokens = new Token[0];
         chunks = new ConcurrentModifiableLinkedList<String>();
-    }
-
-    private static int getMaxTextureSize() {
-        // Code from
-        // http://stackoverflow.com/a/26823209/1100536
-
-        // Safe minimum default size
-        final int GL_MAX_TEXTURE_SIZE = 2048;
-
-        // Get EGL Display
-        EGL10 egl = (EGL10) EGLContext.getEGL();
-        EGLDisplay display = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
-
-        // Initialise
-        int[] version = new int[2];
-        egl.eglInitialize(display, version);
-
-        // Query total number of configurations
-        int[] totalConfigurations = new int[1];
-        egl.eglGetConfigs(display, null, 0, totalConfigurations);
-
-        // Query actual list configurations
-        EGLConfig[] configurationsList = new EGLConfig[totalConfigurations[0]];
-        egl.eglGetConfigs(display, configurationsList, totalConfigurations[0], totalConfigurations);
-
-        int[] textureSize = new int[1];
-        int maximumTextureSize = 0;
-
-        // Iterate through all the configurations to located the maximum texture size
-        for (int i = 0; i < totalConfigurations[0]; i++) {
-            // Only need to check for width since opengl textures are always squared
-            egl.eglGetConfigAttrib(display, configurationsList[i], EGL10.EGL_MAX_PBUFFER_WIDTH, textureSize);
-
-            // Keep track of the maximum texture size
-            if (maximumTextureSize < textureSize[0])
-                maximumTextureSize = textureSize[0];
-        }
-
-        // Release
-        egl.eglTerminate(display);
-
-        // Return largest texture size found, or default
-        return Math.max(maximumTextureSize, GL_MAX_TEXTURE_SIZE);
     }
 
     public boolean isDebugging() {
@@ -178,6 +120,10 @@ public class DocumentLayout {
     protected void onTextNull() {
         params.changed = false;
         measuredHeight = (int) (params.paddingTop + params.paddingBottom);
+    }
+
+    public int getLineCount() {
+        return mLineCount;
     }
 
     public void measure() {
@@ -332,73 +278,19 @@ public class DocumentLayout {
         tokens.toArray(tokensArr);
         tokens.clear();
 
+        mLineCount = lineNumber;
         mTokens = tokensArr;
         params.changed = false;
         measuredHeight = (int) (y - getFontAscent() + params.paddingBottom);
-
-        if (mCacheBitmapTop == null) {
-            mCacheBitmapTop = new CacheBitmap((int) params.getParentWidth(), bitmapHeight, Bitmap.Config.ARGB_8888);
-            mCacheBitmapBottom = new CacheBitmap((int) params.getParentWidth(), bitmapHeight, Bitmap.Config.ARGB_8888);
-        }
     }
 
-    public void draw(Canvas canvas, int scrollX, int scrollTop, int viewHeight) {
+    public void draw(Canvas canvas, int startTop, int startBottom) {
 
-        int scrollBottom = scrollTop + viewHeight;
+        int tokenStart = resolveTokenIndex(startTop);
+        int tokenEnd = resolveTokenIndex(startBottom);
 
-        CacheBitmap top = scrollTop % (bitmapHeight * 2) < bitmapHeight ? mCacheBitmapTop : mCacheBitmapBottom;
-        CacheBitmap bottom = scrollBottom % (bitmapHeight * 2) >= bitmapHeight ? mCacheBitmapBottom : mCacheBitmapTop;
-
-        if (top == bottom) {
-            int startTop = scrollTop - (scrollTop % (bitmapHeight * 2)) + (top == mCacheBitmapTop ? 0 : bitmapHeight);
-
-            if (startTop != top.getStart()) {
-                top.setStart(startTop);
-                drawTokens(top, -startTop, resolveTokenIndex(startTop), resolveTokenIndex(startTop + bitmapHeight));
-            }
-
-            canvas.drawBitmap(top.getBitmap(), 0, startTop, paint);
-
-        } else {
-
-            int startTop = scrollTop - (scrollTop % (bitmapHeight * 2)) + (top == mCacheBitmapTop ? 0 : bitmapHeight);
-            int startBottom = startTop + bitmapHeight;
-
-            if (startTop != top.getStart()) {
-                top.setStart(startTop);
-                drawTokens(top, -startTop, resolveTokenIndex(startTop), resolveTokenIndex(startTop + bitmapHeight));
-            }
-
-            if (startBottom != bottom.getStart()) {
-                bottom.setStart(startBottom);
-                drawTokens(bottom, -startBottom, resolveTokenIndex(startBottom), resolveTokenIndex(startBottom + bitmapHeight));
-            }
-
-            canvas.drawBitmap(top.getBitmap(), 0, startTop, paint);
-            canvas.drawBitmap(bottom.getBitmap(), 0, startBottom, paint);
-        }
-    }
-
-    private void drawTokens(CacheBitmap bitmap, float offsetY, int tokenStart, int tokenEnd) {
-
-        Canvas canvas = new Canvas(bitmap.getBitmap());
-
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-
-        if (debugging) {
-            int lastColor = paint.getColor();
-            float lastStrokeWidth = paint.getStrokeWidth();
-            Paint.Style lastStyle = paint.getStyle();
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(8);
-            paint.setColor(bitmap == mCacheBitmapTop ? Color.RED : Color.GREEN);
-            canvas.drawRect(0, 0, params.parentWidth, bitmapHeight, paint);
-            paint.setStrokeWidth(lastStrokeWidth);
-            paint.setColor(lastColor);
-            paint.setStyle(lastStyle);
-        }
-        for (int i = Math.max(0, tokenStart - 50); i < tokenEnd + 50 && i < mTokens.length; i++) {
-            mTokens[i].draw(canvas, offsetY, paint, params);
+        for (int i = Math.max(0, tokenStart - 25); i < tokenEnd + 25 && i < mTokens.length; i++) {
+            mTokens[i].draw(canvas, -startTop, paint, params);
         }
     }
 
@@ -466,7 +358,6 @@ public class DocumentLayout {
     /**
      * By contract, parameter "block" must not have any line breaks
      */
-
     private LineAnalysis fit(ListIterator<Unit> iterator, int startIndex, float spaceOffset,
                              float availableWidth) {
 
@@ -853,39 +744,6 @@ public class DocumentLayout {
     private static class SingleLine extends Unit {
         public SingleLine(int lineNumber, float x, float y, String unit) {
             super(lineNumber, x, y, unit);
-        }
-    }
-
-    private class CacheBitmap {
-
-        Bitmap mBitmap;
-        int mStart;
-        int mHeight;
-
-        public CacheBitmap(int width, int height, Bitmap.Config config) {
-            mBitmap = Bitmap.createBitmap(width, height, config);
-            mStart = -1;
-            mHeight = -1;
-        }
-
-        public Bitmap getBitmap() {
-            return mBitmap;
-        }
-
-        public void setBitmap(Bitmap bitmap) {
-            this.mBitmap = bitmap;
-        }
-
-        public int getStart() {
-            return mStart;
-        }
-
-        public void setStart(int start) {
-            this.mStart = start;
-        }
-
-        public int getHeight() {
-            return mHeight;
         }
     }
 

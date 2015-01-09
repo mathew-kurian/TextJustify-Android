@@ -38,6 +38,7 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.style.LeadingMarginSpan;
+import android.util.Log;
 
 import com.bluejamesbond.text.style.TextAlignment;
 import com.bluejamesbond.text.style.TextAlignmentSpan;
@@ -58,17 +59,20 @@ public class SpannedDocumentLayout extends DocumentLayout {
     private CharSequence text;
     private LinkedList<LeadingMarginSpanDrawParameters> mLeadMarginSpanDrawEvents;
     private int[] tokens;
+    private int[] mLineBreaks;
+    private int mTokenMaxIndex;
 
     public SpannedDocumentLayout(Context context, TextPaint paint) {
         super(context, paint);
         workPaint = new TextPaint(paint);
         tokens = new int[0];
+        mLineBreaks = new int[0];
     }
 
     private static int pushToken(int[] tokens, int index, int start, int end, float x, float y,
                                  float ascent, float descent) {
 
-        assert index % TOKEN_LENGTH == 0;
+        // assert index % TOKEN_LENGTH == 0;
 
         tokens[index + TOKEN_START] = start;
         tokens[index + TOKEN_END] = end;
@@ -125,6 +129,10 @@ public class SpannedDocumentLayout extends DocumentLayout {
         return units;
     }
 
+    public int getLineCount() {
+        return mLineCount;
+    }
+
     @Override
     public CharSequence getText() {
         return text;
@@ -161,6 +169,7 @@ public class SpannedDocumentLayout extends DocumentLayout {
         int lines = staticLayout.getLineCount();
         int enableLineBreak = 0;
         int index = 0;
+        int lineNumber;
 
         float x;
         float y = params.paddingTop;
@@ -173,23 +182,26 @@ public class SpannedDocumentLayout extends DocumentLayout {
         boolean isParaStart = true;
         boolean isReverse = params.reverse;
 
-        for (int i = 0; i < lines; i++) {
+        int[] lineBreaks = new int[lines];
+
+        for (lineNumber = 0; lineNumber < lines; lineNumber++) {
+            lineBreaks[lineNumber] = index;
 
             newTokens = ammortizeArray(newTokens, index);
 
-            int start = staticLayout.getLineStart(i);
-            int end = staticLayout.getLineEnd(i);
+            int start = staticLayout.getLineStart(lineNumber);
+            int end = staticLayout.getLineEnd(lineNumber);
 
             float realWidth = boundWidth;
 
             if (debugging) {
-                Console.log(start + " => " + end + " :: " + " " + -staticLayout.getLineAscent(i)
-                        + " " + staticLayout.getLineDescent(i) + " " + text.subSequence(start, end)
+                Console.log(start + " => " + end + " :: " + " " + -staticLayout.getLineAscent(lineNumber)
+                        + " " + staticLayout.getLineDescent(lineNumber) + " " + text.subSequence(start, end)
                         .toString());
             }
 
             // start == end => end of text
-            if (start == end || i >= params.maxLines) {
+            if (start == end || lineNumber >= params.maxLines) {
                 break;
             }
 
@@ -200,8 +212,8 @@ public class SpannedDocumentLayout extends DocumentLayout {
                     textAlignmentSpans[0].getTextAlignment();
 
             // Calculate components of line height
-            lastAscent = -staticLayout.getLineAscent(i);
-            lastDescent = staticLayout.getLineDescent(i) + lineHeightAdd;
+            lastAscent = -staticLayout.getLineAscent(lineNumber);
+            lastDescent = staticLayout.getLineDescent(lineNumber) + lineHeightAdd;
 
             // Line is ONLY a <br/> or \n
             if (start + 1 == end &&
@@ -213,8 +225,8 @@ public class SpannedDocumentLayout extends DocumentLayout {
                 isParaStart = true;
 
                 // Use the line-height of the next line
-                y += enableLineBreak * (-staticLayout.getLineAscent(i + 1) + staticLayout
-                        .getLineDescent(i + 1));
+                y += enableLineBreak * (-staticLayout.getLineAscent(lineNumber + 1) + staticLayout
+                        .getLineDescent(lineNumber + 1));
 
                 // Don't ignore the next line breaks
                 enableLineBreak = 1;
@@ -437,6 +449,9 @@ public class SpannedDocumentLayout extends DocumentLayout {
             y += lastDescent;
         }
 
+        mTokenMaxIndex = index;
+        mLineBreaks = lineBreaks;
+        mLineCount = lineNumber;
         tokens = newTokens;
         params.changed = false;
         textChange = false;
@@ -444,7 +459,7 @@ public class SpannedDocumentLayout extends DocumentLayout {
     }
 
     @Override
-    public void draw(Canvas canvas, int scrollX, int scrollTop, int viewHeight) {
+    public void draw(Canvas canvas, int scrollTop, int scrollBottom) {
 
         boolean isReverse = params.reverse;
 
@@ -469,17 +484,25 @@ public class SpannedDocumentLayout extends DocumentLayout {
         }
 
         for (LeadingMarginSpanDrawParameters parameters : mLeadMarginSpanDrawEvents) {
+            // FIXME sort by Y and break out of loop
+            if (parameters.top > scrollBottom) continue;
             parameters.span.drawLeadingMargin(canvas, paint, parameters.x,
                     parameters.dir, parameters.top, parameters.baseline,
                     parameters.bottom, text, parameters.start,
                     parameters.end, parameters.first, null);
         }
 
-        for (int index = 0; index < tokens.length; index += TOKEN_LENGTH) {
+        int startIndex = ((int) Math.min((float) scrollTop / (float) measuredHeight * (float) mLineBreaks.length, mLineBreaks.length - 1));
+        int endIndex = ((int) Math.min((float) scrollBottom / (float) measuredHeight * (float) mLineBreaks.length, mLineBreaks.length - 1));
+
+        startIndex = mLineBreaks[startIndex];
+        endIndex = endIndex == mLineBreaks.length - 1 ? mTokenMaxIndex : mLineBreaks[endIndex];
+
+        for (int index = startIndex; index < endIndex; index += TOKEN_LENGTH) {
             Styled.drawText(canvas, text, tokens[index + TOKEN_START],
                     tokens[index + TOKEN_END], Layout.DIR_LEFT_TO_RIGHT, isReverse,
                     tokens[index + TOKEN_X], 0,
-                    tokens[index + TOKEN_Y], 0, paint, workPaint, false);
+                    tokens[index + TOKEN_Y] - scrollTop, 0, paint, workPaint, false);
             if (debugging) {
                 int lastColor = paint.getColor();
                 float lastStrokeWidth = paint.getStrokeWidth();

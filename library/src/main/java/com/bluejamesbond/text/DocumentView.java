@@ -38,6 +38,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.opengl.GLES10;
 import android.os.Build;
@@ -45,10 +46,13 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ScrollView;
-import android.widget.Toast;
 
 import com.bluejamesbond.text.style.TextAlignment;
 
+import javax.microedition.khronos.egl.EGL10;
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.egl.EGLContext;
+import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.opengles.GL10;
 
 @SuppressWarnings("unused")
@@ -56,14 +60,16 @@ public class DocumentView extends ScrollView {
 
     public static final int PLAIN_TEXT = 0;
     public static final int FORMATTED_TEXT = 1;
+    private static Integer bitmapHeight = -1;
     private static int MAX_TEXTURE_SIZE = 0;
     private DocumentLayout mLayout;
     private TextPaint mPaint;
     private View mView;
     // Caching content
-    private boolean mInvalidateCache = false;
     private CacheConfig mCacheConfig = CacheConfig.NO_CACHE;
-    private Bitmap mCacheBitmap = null;
+
+    private CacheBitmap mCacheBitmapTop;
+    private CacheBitmap mCacheBitmapBottom;
 
     public DocumentView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -91,7 +97,57 @@ public class DocumentView extends ScrollView {
         init(context, attrs, PLAIN_TEXT);
     }
 
+    private static int getMaxTextureSize() {
+        // Code from
+        // http://stackoverflow.com/a/26823209/1100536
+
+        // Safe minimum default size
+        final int GL_MAX_TEXTURE_SIZE = 2048;
+
+        // Get EGL Display
+        EGL10 egl = (EGL10) EGLContext.getEGL();
+        EGLDisplay display = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
+
+        // Initialise
+        int[] version = new int[2];
+        egl.eglInitialize(display, version);
+
+        // Query total number of configurations
+        int[] totalConfigurations = new int[1];
+        egl.eglGetConfigs(display, null, 0, totalConfigurations);
+
+        // Query actual list configurations
+        EGLConfig[] configurationsList = new EGLConfig[totalConfigurations[0]];
+        egl.eglGetConfigs(display, configurationsList, totalConfigurations[0], totalConfigurations);
+
+        int[] textureSize = new int[1];
+        int maximumTextureSize = 0;
+
+        // Iterate through all the configurations to located the maximum texture size
+        for (int i = 0; i < totalConfigurations[0]; i++) {
+            // Only need to check for width since opengl textures are always squared
+            egl.eglGetConfigAttrib(display, configurationsList[i], EGL10.EGL_MAX_PBUFFER_WIDTH, textureSize);
+
+            // Keep track of the maximum texture size
+            if (maximumTextureSize < textureSize[0])
+                maximumTextureSize = textureSize[0];
+        }
+
+        // Release
+        egl.eglTerminate(display);
+
+        // Return largest texture size found, or default
+        return Math.max(maximumTextureSize, GL_MAX_TEXTURE_SIZE);
+    }
+
     private void init(Context context, AttributeSet attrs, int type) {
+
+        synchronized (bitmapHeight) {
+            if (DocumentView.bitmapHeight.equals(-1)) {
+                DocumentView.bitmapHeight = Math.min(context.getResources().getDisplayMetrics().heightPixels * 7 / 6, getMaxTextureSize());
+            }
+        }
+
         this.mPaint = new TextPaint();
         this.mView = new View(context);
 
@@ -193,14 +249,17 @@ public class DocumentView extends ScrollView {
         } else {
             this.mLayout = getDocumentLayoutInstance(type, mPaint);
         }
-
-        Toast.makeText(context, "HERERE", Toast.LENGTH_LONG).show();
     }
 
     public void destroyCache() {
-        if (mCacheBitmap != null) {
-            mCacheBitmap.recycle();
-            mCacheBitmap = null;
+        if (mCacheBitmapTop != null) {
+            mCacheBitmapTop.recycle();
+            mCacheBitmapTop = null;
+        }
+
+        if (mCacheBitmapBottom != null) {
+            mCacheBitmapBottom.recycle();
+            mCacheBitmapBottom = null;
         }
     }
 
@@ -258,14 +317,6 @@ public class DocumentView extends ScrollView {
     }
 
     @Override
-    public void invalidate() {
-        if (mCacheBitmap != null) {
-            mInvalidateCache = true;
-        }
-        super.invalidate();
-    }
-
-    @Override
     public void requestLayout() {
         if (this.mLayout != null) {
             this.mLayout.getLayoutParams().invalidate();
@@ -274,13 +325,16 @@ public class DocumentView extends ScrollView {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int width = MeasureSpec.getSize(widthMeasureSpec);
-        int height = MeasureSpec.getSize(heightMeasureSpec);
-        this.mLayout.getLayoutParams().setParentWidth((float) width);
-        this.mLayout.measure();
-        mView.setMinimumHeight(this.mLayout.getMeasuredHeight());
+    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
+
+        final int width = MeasureSpec.getSize(widthMeasureSpec);
+        final int height = MeasureSpec.getSize(heightMeasureSpec);
+
+        mLayout.getLayoutParams().setParentWidth((float) width);
+        mLayout.measure();
+        mView.setMinimumHeight(mLayout.getMeasuredHeight());
         mView.setMinimumWidth(width);
+
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
@@ -296,46 +350,79 @@ public class DocumentView extends ScrollView {
 
         boolean cacheEnabled = mCacheConfig != CacheConfig.NO_CACHE;
 
-        // Active canas needs to be set
-        // based on mCacheEnabled
-        Canvas activeCanvas;
-
-        // Set the active canvas based on
-        // whether cache is enabled
         if (cacheEnabled) {
-            if (mCacheBitmap != null) {
-                if (mInvalidateCache) {
-                    activeCanvas = new Canvas(mCacheBitmap);
-                } else {
-                    // Draw to the OS provided canvas
-                    // if the cache is not empty
-                    canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
-                    return;
-                }
-            } else {
-                // Create a bitmap and set the activeCanvas
-                // to the one derived from the bitmap
-                mCacheBitmap = Bitmap.createBitmap(getWidth(), getHeight(), mCacheConfig.getConfig());
-                activeCanvas = new Canvas(mCacheBitmap);
+
+            if (mCacheBitmapTop == null) {
+                mCacheBitmapTop = new CacheBitmap(getWidth(), bitmapHeight, mCacheConfig.getConfig());
             }
+
+            if (mCacheBitmapBottom == null) {
+                mCacheBitmapBottom = new CacheBitmap(getWidth(), bitmapHeight, mCacheConfig.getConfig());
+            }
+
+            int scrollTop = getScrollY();
+            int scrollBottom = scrollTop + getHeight();
+
+            CacheBitmap top = scrollTop % (bitmapHeight * 2) < bitmapHeight ? mCacheBitmapTop : mCacheBitmapBottom;
+            CacheBitmap bottom = scrollBottom % (bitmapHeight * 2) >= bitmapHeight ? mCacheBitmapBottom : mCacheBitmapTop;
+
+            if (top == bottom) {
+                int startTop = scrollTop - (scrollTop % (bitmapHeight * 2)) + (top == mCacheBitmapTop ? 0 : bitmapHeight);
+
+                if (startTop != top.getStart()) {
+                    Canvas bitCanvas = new Canvas(bottom.getBitmap());
+                    bitCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                    top.setStart(startTop);
+                    mLayout.draw(bitCanvas, startTop, startTop + bitmapHeight);
+                    debugCache(bitCanvas);
+                }
+
+                canvas.drawBitmap(top.getBitmap(), 0, startTop, mPaint);
+
+            } else {
+
+                int startTop = scrollTop - (scrollTop % (bitmapHeight * 2)) + (top == mCacheBitmapTop ? 0 : bitmapHeight);
+                int startBottom = startTop + bitmapHeight;
+
+                if (startTop != top.getStart()) {
+                    Canvas bitCanvas = new Canvas(top.getBitmap());
+                    bitCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                    top.setStart(startTop);
+                    mLayout.draw(bitCanvas, startTop, startTop + bitmapHeight);
+                    debugCache(bitCanvas);
+                }
+
+                if (startBottom != bottom.getStart()) {
+                    Canvas bitCanvas = new Canvas(bottom.getBitmap());
+                    bitCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                    bottom.setStart(startBottom);
+                    mLayout.draw(bitCanvas, startBottom, startBottom + bitmapHeight);
+                    debugCache(bitCanvas);
+                }
+
+                canvas.drawBitmap(top.getBitmap(), 0, startTop, mPaint);
+                canvas.drawBitmap(bottom.getBitmap(), 0, startBottom, mPaint);
+            }
+
         } else {
-            // Active canvas is the OS
-            // provided canvas
-            activeCanvas = canvas;
-        }
-
-        onLayoutDraw(activeCanvas);
-
-        if (cacheEnabled) {
-            // Draw the cache onto the OS provided
-            // canvas.
-            canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
-            mInvalidateCache = false;
+            mLayout.draw(canvas, 0, mLayout.getMeasuredHeight());
         }
     }
 
-    protected void onLayoutDraw(Canvas canvas) {
-        this.mLayout.draw(canvas, getScrollX(), getScrollY(), getHeight());
+    private void debugCache(Canvas canvas){
+        if (mLayout.isDebugging()) {
+            int lastColor = mPaint.getColor();
+            float lastStrokeWidth = mPaint.getStrokeWidth();
+            Paint.Style lastStyle = mPaint.getStyle();
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeWidth(8);
+            mPaint.setColor(Color.GREEN);
+            canvas.drawRect(0, 0, getWidth(), canvas.getHeight(), mPaint);
+            mPaint.setStrokeWidth(lastStrokeWidth);
+            mPaint.setColor(lastColor);
+            mPaint.setStyle(lastStyle);
+        }
+
     }
 
     public static enum CacheConfig {
@@ -371,6 +458,44 @@ public class DocumentView extends ScrollView {
 
         public int getId() {
             return mId;
+        }
+    }
+
+    private class CacheBitmap {
+
+        Bitmap mBitmap;
+        int mStart;
+        int mHeight;
+
+        public CacheBitmap(int width, int height, Bitmap.Config config) {
+            mBitmap = Bitmap.createBitmap(width, height, config);
+            mStart = -1;
+            mHeight = -1;
+        }
+
+        public Bitmap getBitmap() {
+            return mBitmap;
+        }
+
+        public void setBitmap(Bitmap bitmap) {
+            this.mBitmap = bitmap;
+        }
+
+        public int getStart() {
+            return mStart;
+        }
+
+        public void setStart(int start) {
+            this.mStart = start;
+        }
+
+        public int getHeight() {
+            return mHeight;
+        }
+
+        public void recycle() {
+            mBitmap.recycle();
+            mBitmap = null;
         }
     }
 }

@@ -62,14 +62,7 @@ public class TestActivity extends Activity {
     }
 
     public DocumentView addDocumentView(CharSequence article, int type, boolean rtl) {
-        final DocumentView documentView = new DocumentView(this, type){
-            @Override
-            protected void initPaint(Paint paint) {
-                super.initPaint(paint);
-                paint.setAntiAlias(false);
-                paint.setSubpixelText(false);
-            }
-        };
+        final DocumentView documentView = new DocumentView(this, type);
         documentView.setColor(0xffffffff);
         documentView.setTypeface(Typeface.DEFAULT);
         documentView.setTextSize(30);

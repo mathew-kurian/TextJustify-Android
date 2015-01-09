@@ -29,6 +29,7 @@ package com.bluejamesbond.text;
  * Date: 10/27/14 1:36 PM
  */
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -58,8 +59,8 @@ public class SpannedDocumentLayout extends DocumentLayout {
     private LinkedList<LeadingMarginSpanDrawParameters> mLeadMarginSpanDrawEvents;
     private int[] tokens;
 
-    public SpannedDocumentLayout(TextPaint paint) {
-        super(paint);
+    public SpannedDocumentLayout(Context context, TextPaint paint) {
+        super(context, paint);
         workPaint = new TextPaint(paint);
         tokens = new int[0];
     }
@@ -443,7 +444,7 @@ public class SpannedDocumentLayout extends DocumentLayout {
     }
 
     @Override
-    public void draw(Canvas canvas, int scrollX, int scrollY, int viewHeight) {
+    public void draw(Canvas canvas, int scrollX, int scrollTop, int viewHeight) {
 
         boolean isReverse = params.reverse;
 

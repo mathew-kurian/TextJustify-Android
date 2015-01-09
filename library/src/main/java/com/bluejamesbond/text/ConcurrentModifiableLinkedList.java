@@ -853,11 +853,9 @@ public class ConcurrentModifiableLinkedList<E>
             }
         }
 
-        private Entry<E> lastReturned = header;
-
         public boolean hasNext() {
             return nextIndex != size;
-        }
+        }        private Entry<E> lastReturned = header;
 
         public E next() {
             if (nextIndex == size)
@@ -915,6 +913,8 @@ public class ConcurrentModifiableLinkedList<E>
             addBefore(e, next);
             nextIndex++;
         }
+
+
 
 
     }

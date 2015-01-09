@@ -29,9 +29,13 @@ package com.bluejamesbond.text;
  * Date: 10/27/14 1:36 PM
  */
 
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.opengl.GLES10;
 import android.text.TextPaint;
 
 import com.bluejamesbond.text.hyphen.Hyphenator;
@@ -42,8 +46,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.microedition.khronos.opengles.GL10;
+
 @SuppressWarnings("unused")
 public class DocumentLayout {
+
+    public static final int GL_MAX_TEXTURE_SIZE = 4096;
+    private static Integer bitmapHeight = -1;
 
     // Debugging
     protected boolean debugging = false;
@@ -57,10 +66,19 @@ public class DocumentLayout {
     // Main content
     private String text;
     // Parsing objects
-    private Token [] mTokens;
+    private Token[] mTokens;
     private ConcurrentModifiableLinkedList<String> chunks;
 
-    public DocumentLayout(TextPaint paint) {
+    private CacheBitmap mCacheBitmapTop;
+    private CacheBitmap mCacheBitmapBottom;
+
+    public DocumentLayout(Context context, TextPaint paint) {
+
+        synchronized (bitmapHeight) {
+            if (DocumentLayout.bitmapHeight.equals(-1)) {
+                DocumentLayout.bitmapHeight = Math.min(context.getResources().getDisplayMetrics().heightPixels * 7 / 6, GL_MAX_TEXTURE_SIZE);
+            }
+        }
 
         this.paint = paint;
         this.text = "";
@@ -266,49 +284,82 @@ public class DocumentLayout {
             }
         }
 
-        Token [] tokensArr = new Token[tokens.size()];
+        Token[] tokensArr = new Token[tokens.size()];
         tokens.toArray(tokensArr);
         tokens.clear();
 
         mTokens = tokensArr;
         params.changed = false;
         measuredHeight = (int) (y - getFontAscent() + params.paddingBottom);
+
+        if (mCacheBitmapTop == null) {
+            mCacheBitmapTop = new CacheBitmap((int) params.getParentWidth(), bitmapHeight, Bitmap.Config.ARGB_8888);
+            mCacheBitmapBottom = new CacheBitmap((int) params.getParentWidth(), bitmapHeight, Bitmap.Config.ARGB_8888);
+        }
     }
 
-    public void draw(Canvas canvas, int scrollX, int scrollY, int viewHeight) {
+    public void draw(Canvas canvas, int scrollX, int scrollTop, int viewHeight) {
 
-        int lastColor = 0;
-        float lastStrokeWidth = 0;
+        int scrollBottom = scrollTop + viewHeight;
+
+        CacheBitmap top = scrollTop % (bitmapHeight * 2) < bitmapHeight ? mCacheBitmapTop : mCacheBitmapBottom;
+        CacheBitmap bottom = scrollBottom % (bitmapHeight * 2) >= bitmapHeight ? mCacheBitmapBottom : mCacheBitmapTop;
+
+        if (top == bottom) {
+            int startTop = scrollTop - (scrollTop % (bitmapHeight * 2)) + (top == mCacheBitmapTop ? 0 : bitmapHeight);
+
+            if (startTop != top.getStart()) {
+                top.setStart(startTop);
+                drawTokens(top, -startTop, resolveTokenIndex(startTop), resolveTokenIndex(startTop + bitmapHeight));
+            }
+
+            canvas.drawBitmap(top.getBitmap(), 0, startTop, paint);
+
+        } else {
+
+            int startTop = scrollTop - (scrollTop % (bitmapHeight * 2)) + (top == mCacheBitmapTop ? 0 : bitmapHeight);
+            int startBottom = startTop + bitmapHeight;
+
+            if (startTop != top.getStart()) {
+                top.setStart(startTop);
+                drawTokens(top, -startTop, resolveTokenIndex(startTop), resolveTokenIndex(startTop + bitmapHeight));
+            }
+
+            if (startBottom != bottom.getStart()) {
+                bottom.setStart(startBottom);
+                drawTokens(bottom, -startBottom, resolveTokenIndex(startBottom), resolveTokenIndex(startBottom + bitmapHeight));
+            }
+
+            canvas.drawBitmap(top.getBitmap(), 0, startTop, paint);
+            canvas.drawBitmap(bottom.getBitmap(), 0, startBottom, paint);
+        }
+    }
+
+    private void drawTokens(CacheBitmap bitmap, float offsetY, int tokenStart, int tokenEnd) {
+
+        Canvas canvas = new Canvas(bitmap.getBitmap());
+
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 
         if (debugging) {
-            lastColor = paint.getColor();
-            lastStrokeWidth = paint.getStrokeWidth();
-            paint.setStrokeWidth(2);
-            paint.setColor(Color.DKGRAY);
-            canvas.drawRect(params.paddingLeft, params.paddingTop,
-                    params.parentWidth - params.paddingRight,
-                    measuredHeight - params.paddingBottom, paint);
-            paint.setColor(Color.GREEN);
-            canvas.drawLine(params.paddingLeft, 0, params.paddingLeft, measuredHeight, paint);
-            canvas.drawLine(params.parentWidth - params.paddingRight, 0,
-                    params.parentWidth - params.paddingRight, measuredHeight, paint);
-            paint.setColor(Color.MAGENTA);
-            canvas.drawRect(0, params.paddingTop, params.parentWidth, params.paddingTop, paint);
-            canvas.drawRect(0, measuredHeight - params.paddingBottom, params.parentWidth,
-                    measuredHeight - params.paddingBottom, paint);
-        }
-
-        int tokenStart = (int) ((float) mTokens.length * (float) scrollY / (float) getMeasuredHeight());
-        int tokenEnd = (int) ((float) mTokens.length * (float)(scrollY + viewHeight) / (float) getMeasuredHeight());
-
-        for(int i = Math.max(0, tokenStart - 50); i < tokenEnd + 50 && i < mTokens.length; i++) {
-            mTokens[i].draw(canvas, paint, params);
-        }
-
-        if (debugging) {
+            int lastColor = paint.getColor();
+            float lastStrokeWidth = paint.getStrokeWidth();
+            Paint.Style lastStyle = paint.getStyle();
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(8);
+            paint.setColor(bitmap == mCacheBitmapTop ? Color.RED : Color.GREEN);
+            canvas.drawRect(0, 0, params.parentWidth, bitmapHeight, paint);
             paint.setStrokeWidth(lastStrokeWidth);
             paint.setColor(lastColor);
+            paint.setStyle(lastStyle);
         }
+        for (int i = Math.max(0, tokenStart - 50); i < tokenEnd + 50 && i < mTokens.length; i++) {
+            mTokens[i].draw(canvas, offsetY, paint, params);
+        }
+    }
+
+    private int resolveTokenIndex(int y) {
+        return (int) ((float) mTokens.length * (float) y / (float) getMeasuredHeight());
     }
 
     private ConcurrentModifiableLinkedList<Unit> tokenize(String s) {
@@ -671,7 +722,7 @@ public class DocumentLayout {
                 return;
             }
 
-            maxLines = maxLines;
+            this.maxLines = maxLines;
             this.changed = true;
         }
 
@@ -691,7 +742,10 @@ public class DocumentLayout {
         public boolean hasChanged() {
             return this.changed;
         }
-        public void invalidate() { this.changed = true; }
+
+        public void invalidate() {
+            this.changed = true;
+        }
     }
 
     private static abstract class Token {
@@ -706,9 +760,11 @@ public class DocumentLayout {
             return lineNumber;
         }
 
-        abstract void draw(Canvas canvas, Paint paint, LayoutParams params);
+        abstract void draw(Canvas canvas, float offsetY, Paint paint, LayoutParams params);
 
-        public boolean isVisible(int scrollX, int scrollY, int viewHeight){ return false; }
+        public boolean isVisible(int scrollX, int scrollY, int viewHeight) {
+            return false;
+        }
     }
 
     private static class Unit extends Token {
@@ -730,8 +786,8 @@ public class DocumentLayout {
         }
 
         @Override
-        void draw(Canvas canvas, Paint paint, LayoutParams params) {
-            canvas.drawText(unit, x + params.getOffsetX(), y + params.getOffsetY(), paint);
+        void draw(Canvas canvas, float offsetY, Paint paint, LayoutParams params) {
+            canvas.drawText(unit, x + params.getOffsetX(), y + params.getOffsetY() + offsetY, paint);
         }
 
         @Override
@@ -746,13 +802,46 @@ public class DocumentLayout {
         }
 
         @Override
-        void draw(Canvas canvas, Paint paint, LayoutParams params) {
+        void draw(Canvas canvas, float offsetY, Paint paint, LayoutParams params) {
         }
     }
 
     private static class SingleLine extends Unit {
         public SingleLine(int lineNumber, float x, float y, String unit) {
             super(lineNumber, x, y, unit);
+        }
+    }
+
+    private class CacheBitmap {
+
+        Bitmap mBitmap;
+        int mStart;
+        int mHeight;
+
+        public CacheBitmap(int width, int height, Bitmap.Config config) {
+            mBitmap = Bitmap.createBitmap(width, height, config);
+            mStart = -1;
+            mHeight = -1;
+        }
+
+        public Bitmap getBitmap() {
+            return mBitmap;
+        }
+
+        public void setBitmap(Bitmap bitmap) {
+            this.mBitmap = bitmap;
+        }
+
+        public int getStart() {
+            return mStart;
+        }
+
+        public void setStart(int start) {
+            this.mStart = start;
+        }
+
+        public int getHeight() {
+            return mHeight;
         }
     }
 

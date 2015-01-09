@@ -56,15 +56,14 @@ public class DocumentView extends ScrollView {
 
     public static final int PLAIN_TEXT = 0;
     public static final int FORMATTED_TEXT = 1;
+    private static int MAX_TEXTURE_SIZE = 0;
     private DocumentLayout mLayout;
     private TextPaint mPaint;
     private View mView;
-
     // Caching content
     private boolean mInvalidateCache = false;
     private CacheConfig mCacheConfig = CacheConfig.NO_CACHE;
     private Bitmap mCacheBitmap = null;
-    private static int MAX_TEXTURE_SIZE = 0;
 
     public DocumentView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -104,7 +103,7 @@ public class DocumentView extends ScrollView {
 
         addView(mView);
 
-        if(MAX_TEXTURE_SIZE == 0){
+        if (MAX_TEXTURE_SIZE == 0) {
             int[] maxSize = new int[1];
             GLES10.glGetIntegerv(GL10.GL_MAX_TEXTURE_SIZE, maxSize, 0);
             MAX_TEXTURE_SIZE = maxSize[0];
@@ -226,10 +225,10 @@ public class DocumentView extends ScrollView {
     public DocumentLayout getDocumentLayoutInstance(int type, TextPaint paint) {
         switch (type) {
             case FORMATTED_TEXT:
-                return new SpannedDocumentLayout(paint);
+                return new SpannedDocumentLayout(getContext(), paint);
             default:
             case PLAIN_TEXT:
-                return new DocumentLayout(paint);
+                return new DocumentLayout(getContext(), paint);
         }
     }
 
@@ -268,7 +267,7 @@ public class DocumentView extends ScrollView {
 
     @Override
     public void requestLayout() {
-        if(this.mLayout != null){
+        if (this.mLayout != null) {
             this.mLayout.getLayoutParams().invalidate();
         }
         super.requestLayout();

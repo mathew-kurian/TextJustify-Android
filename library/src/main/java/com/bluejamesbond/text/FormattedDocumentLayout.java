@@ -126,7 +126,6 @@ public class FormattedDocumentLayout extends IDocumentLayout {
         return units;
     }
 
-
     /**
      * Returns the length that the specified CharSequence would have if
      * spaces and control characters were trimmed from the start and end,
@@ -449,7 +448,7 @@ public class FormattedDocumentLayout extends IDocumentLayout {
             y += lastDescent;
         }
 
-        mLineCount = lineNumber;
+        lineCount = lineNumber;
         tokens = newTokens;
         params.changed = false;
         textChange = false;

@@ -221,7 +221,7 @@ public class PlainDocumentLayout extends IDocumentLayout {
         tokensList.toArray(tokensArr);
         tokensList.clear();
 
-        mLineCount = lineNumber;
+        lineCount = lineNumber;
         tokens = tokensArr;
         params.changed = false;
         measuredHeight = (int) (y - getFontAscent() + params.paddingBottom);

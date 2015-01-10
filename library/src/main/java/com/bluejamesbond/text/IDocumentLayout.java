@@ -1,5 +1,6 @@
 package com.bluejamesbond.text;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -46,26 +47,28 @@ public abstract class IDocumentLayout {
 
     // Main content
     protected CharSequence text;
-    protected int mLineCount = 0;
-    protected int measuredHeight = 0;
-    protected boolean debugging = false;
-    protected boolean textChange = true;
+    protected int lineCount;
+    protected int measuredHeight;
+    protected boolean debugging;
+    protected boolean textChange;
     protected LayoutParams params;
     protected TextPaint paint;
     private Toast toast;
 
+    @SuppressLint("ShowToast")
     public IDocumentLayout(Context context, TextPaint textPaint) {
         paint = textPaint;
         text = "";
-
+        measuredHeight = 0;
+        lineCount = 0;
+        debugging = false;
+        textChange = false;
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
 
         params = new LayoutParams();
         params.setLineHeightMulitplier(1.0f);
         params.setHyphenated(false);
         params.setReverse(false);
-
-        measuredHeight = 0;
     }
 
     protected void showToast(String s){
@@ -108,7 +111,7 @@ public abstract class IDocumentLayout {
     }
 
     public int getLineCount() {
-        return mLineCount;
+        return lineCount;
     }
 
     public abstract void measure();

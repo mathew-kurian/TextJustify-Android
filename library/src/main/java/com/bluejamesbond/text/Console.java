@@ -56,7 +56,6 @@ public class Console {
         android.util.Log.d(tag, s + "");
     }
 
-
     public static void log(String s) {
         android.util.Log.d("", s);
     }

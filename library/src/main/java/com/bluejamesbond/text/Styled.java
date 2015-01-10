@@ -73,9 +73,7 @@ public class Styled {
         workPaint.set(paint);
 
         if (spans.length > 0) {
-            for (int i = 0; i < spans.length; i++) {
-                CharacterStyle span = spans[i];
-
+            for (CharacterStyle span : spans) {
                 if (span instanceof ReplacementSpan) {
                     replacement = (ReplacementSpan) span;
                 } else {
@@ -198,8 +196,7 @@ public class Styled {
         ReplacementSpan replacement = null;
         workPaint.set(paint);
 
-        for (int i = 0; i < spans.length; i++) {
-            MetricAffectingSpan span = spans[i];
+        for (MetricAffectingSpan span : spans) {
             if (span instanceof ReplacementSpan) {
                 replacement = (ReplacementSpan) span;
             } else {

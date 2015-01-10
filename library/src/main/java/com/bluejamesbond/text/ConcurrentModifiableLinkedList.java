@@ -865,11 +865,11 @@ public class ConcurrentModifiableLinkedList<E>
             next = next.next;
             nextIndex++;
             return lastReturned.element;
-        }        private Entry<E> lastReturned = header;
+        }
 
         public boolean hasPrevious() {
             return nextIndex != 0;
-        }
+        }        private Entry<E> lastReturned = header;
 
         public E previous() {
             if (nextIndex == 0)

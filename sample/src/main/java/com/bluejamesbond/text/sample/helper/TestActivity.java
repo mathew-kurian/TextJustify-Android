@@ -118,6 +118,7 @@ public class TestActivity extends Activity {
                     cacheConfigToast.setText("Activated " + newCacheConfig.name());
                     cacheConfigToast.show();
                     documentView.setCacheConfig(newCacheConfig);
+                    documentView.destroyCache();
                     documentView.invalidate();
                 }
             });

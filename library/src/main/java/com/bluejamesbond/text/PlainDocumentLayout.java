@@ -41,17 +41,9 @@ import java.util.ListIterator;
 @SuppressWarnings("unused")
 public class PlainDocumentLayout extends IDocumentLayout {
 
-    @SuppressWarnings("serial")
-    class PlainDocumentException extends Exception {
-        public PlainDocumentException(String message) {
-            super(message);
-        }
-    }
-
     // Parsing objects
     private Token[] tokens;
     private ConcurrentModifiableLinkedList<String> chunks;
-
     public PlainDocumentLayout(Context context, TextPaint paint) {
         super(context, paint);
         tokens = new Token[0];
@@ -244,7 +236,7 @@ public class PlainDocumentLayout extends IDocumentLayout {
     }
 
     @Override
-    public String getTokenStringAt(int index) {
+    public CharSequence getTokenTextAt(int index) {
         return tokens[index].toString();
     }
 
@@ -501,6 +493,13 @@ public class PlainDocumentLayout extends IDocumentLayout {
     private static class SingleLine extends Unit {
         public SingleLine(int lineNumber, float x, float y, String unit) {
             super(lineNumber, x, y, unit);
+        }
+    }
+
+    @SuppressWarnings("serial")
+    class PlainDocumentException extends Exception {
+        public PlainDocumentException(String message) {
+            super(message);
         }
     }
 

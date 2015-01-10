@@ -71,7 +71,7 @@ public abstract class IDocumentLayout {
         params.setReverse(false);
     }
 
-    protected void showToast(String s){
+    protected void showToast(String s) {
         toast.setText(s);
         toast.show();
     }
@@ -122,7 +122,7 @@ public abstract class IDocumentLayout {
 
     public abstract float getTokenTopAt(int index);
 
-    public abstract String getTokenStringAt(int index);
+    public abstract CharSequence getTokenTextAt(int index);
 
     public abstract boolean isTokenized();
 

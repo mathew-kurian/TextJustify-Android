@@ -42,6 +42,8 @@ import android.text.style.LeadingMarginSpan;
 import com.bluejamesbond.text.style.TextAlignment;
 import com.bluejamesbond.text.style.TextAlignmentSpan;
 
+import junit.framework.Assert;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -68,7 +70,7 @@ public class FormattedDocumentLayout extends IDocumentLayout {
     private static int pushToken(int[] tokens, int index, int start, int end, float x, float y,
                                  float ascent, float descent) {
 
-        // assert index % TOKEN_LENGTH == 0;
+        Assert.assertTrue(index % TOKEN_LENGTH == 0);
 
         tokens[index + TOKEN_START] = start;
         tokens[index + TOKEN_END] = end;
@@ -536,7 +538,8 @@ public class FormattedDocumentLayout extends IDocumentLayout {
 
         while (low + 1 < high) {
             int mid = (high + low) / 2;
-            int fY = tokens[mid - (mid % TOKEN_LENGTH) + TOKEN_Y];
+            int midx = mid - (mid % TOKEN_LENGTH);
+            int fY = tokens[midx + TOKEN_Y];
 
             if (fY > y) {
                 high = mid;
@@ -566,12 +569,12 @@ public class FormattedDocumentLayout extends IDocumentLayout {
 
     @Override
     public float getTokenTopAt(int index) {
-        return 0;
+        return tokens[index + TOKEN_Y];
     }
 
     @Override
-    public String getTokenStringAt(int index) {
-        return null;
+    public CharSequence getTokenTextAt(int index) {
+        return text.subSequence(tokens[index + TOKEN_START], tokens[index + TOKEN_END]);
     }
 
     @Override

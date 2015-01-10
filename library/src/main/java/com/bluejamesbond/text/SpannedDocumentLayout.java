@@ -39,10 +39,12 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.style.LeadingMarginSpan;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.bluejamesbond.text.style.TextAlignment;
 import com.bluejamesbond.text.style.TextAlignmentSpan;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -59,14 +61,14 @@ public class SpannedDocumentLayout extends DocumentLayout {
     private CharSequence text;
     private LinkedList<LeadingMarginSpanDrawParameters> mLeadMarginSpanDrawEvents;
     private int[] tokens;
-    private int[] mLineBreaks;
     private int mTokenMaxIndex;
+    private Toast mToast;
 
     public SpannedDocumentLayout(Context context, TextPaint paint) {
         super(context, paint);
         workPaint = new TextPaint(paint);
         tokens = new int[0];
-        mLineBreaks = new int[0];
+        mToast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
     }
 
     private static int pushToken(int[] tokens, int index, int start, int end, float x, float y,
@@ -86,6 +88,7 @@ public class SpannedDocumentLayout extends DocumentLayout {
     private static int[] ammortizeArray(int[] array, int index) {
         if (index >= array.length) {
             int[] newArray = new int[array.length * 2];
+            Arrays.fill(newArray, Integer.MAX_VALUE);
             System.arraycopy(array, 0, newArray, 0, array.length);
             return newArray;
         }
@@ -182,10 +185,7 @@ public class SpannedDocumentLayout extends DocumentLayout {
         boolean isParaStart = true;
         boolean isReverse = params.reverse;
 
-        int[] lineBreaks = new int[lines];
-
         for (lineNumber = 0; lineNumber < lines; lineNumber++) {
-            lineBreaks[lineNumber] = index;
 
             newTokens = ammortizeArray(newTokens, index);
 
@@ -450,7 +450,6 @@ public class SpannedDocumentLayout extends DocumentLayout {
         }
 
         mTokenMaxIndex = index;
-        mLineBreaks = lineBreaks;
         mLineCount = lineNumber;
         tokens = newTokens;
         params.changed = false;
@@ -485,20 +484,20 @@ public class SpannedDocumentLayout extends DocumentLayout {
 
         for (LeadingMarginSpanDrawParameters parameters : mLeadMarginSpanDrawEvents) {
             // FIXME sort by Y and break out of loop
-            if (parameters.top > scrollBottom) continue;
+            int top = parameters.top - scrollTop;
+            int bottom = parameters.bottom - scrollTop;
+            if (bottom < 0 || top > scrollBottom) continue;
             parameters.span.drawLeadingMargin(canvas, paint, parameters.x,
-                    parameters.dir, parameters.top, parameters.baseline,
-                    parameters.bottom, text, parameters.start,
+                    parameters.dir, top, parameters.baseline,
+                    bottom, text, parameters.start,
                     parameters.end, parameters.first, null);
         }
 
-        int startIndex = ((int) Math.min((float) scrollTop / (float) measuredHeight * (float) mLineBreaks.length, mLineBreaks.length - 1));
-        int endIndex = ((int) Math.min((float) scrollBottom / (float) measuredHeight * (float) mLineBreaks.length, mLineBreaks.length - 1));
-
-        startIndex = mLineBreaks[startIndex];
-        endIndex = endIndex == mLineBreaks.length - 1 ? mTokenMaxIndex : mLineBreaks[endIndex];
+        int startIndex = resolveTokenIndex(scrollTop, true);
+        int endIndex = resolveTokenIndex(scrollBottom, false);
 
         for (int index = startIndex; index < endIndex; index += TOKEN_LENGTH) {
+            if(tokens[index + TOKEN_START] == Integer.MAX_VALUE) break;
             Styled.drawText(canvas, text, tokens[index + TOKEN_START],
                     tokens[index + TOKEN_END], Layout.DIR_LEFT_TO_RIGHT, isReverse,
                     tokens[index + TOKEN_X], 0,
@@ -521,6 +520,36 @@ public class SpannedDocumentLayout extends DocumentLayout {
                 paint.setColor(lastColor);
                 paint.setStrokeWidth(lastStrokeWidth);
             }
+        }
+    }
+
+    private int resolveTokenIndex(int y, boolean first) {
+        int high = tokens.length - 1;
+        int low = 0;
+
+        while (low + 1 < high) {
+            int mid = (high + low) / 2;
+            int fY = tokens[mid - (mid % TOKEN_LENGTH) + TOKEN_Y];
+
+            if (fY > y) {
+                high = mid;
+            } else {
+                low = mid;
+            }
+        }
+
+        if (first) {
+            low -= low % TOKEN_LENGTH;
+            for (int s = low; tokens[s + TOKEN_Y] >= y && s > 0; s -= TOKEN_LENGTH) {
+                low -= TOKEN_LENGTH;
+            }
+            return low;
+        } else {
+            high -= high % TOKEN_LENGTH;
+            for (int s = high; tokens[s + TOKEN_Y] <= y && s < tokens.length; s += TOKEN_LENGTH) {
+                high += TOKEN_LENGTH;
+            }
+            return high;
         }
     }
 

@@ -93,7 +93,7 @@ public class FormattedDocumentLayout extends IDocumentLayout {
                                                 int start,
                                                 int end) {
 
-        LinkedList<Integer> units = new LinkedList<Integer>();
+        LinkedList<Integer> units = new LinkedList<>();
 
         if (start >= end) {
             return units;
@@ -145,6 +145,7 @@ public class FormattedDocumentLayout extends IDocumentLayout {
         return endCpy - start;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void measure() {
 
@@ -156,13 +157,13 @@ public class FormattedDocumentLayout extends IDocumentLayout {
         float boundWidth =
                 params.getParentWidth() - params.getPaddingLeft() - params.getPaddingRight();
 
-        mLeadMarginSpanDrawEvents = new LinkedList<LeadingMarginSpanDrawParameters>();
+        mLeadMarginSpanDrawEvents = new LinkedList<>();
 
         StaticLayout staticLayout = new StaticLayout(getText(), (TextPaint) getPaint(),
                 (int) boundWidth, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
         int[] newTokens = new int[TOKEN_LENGTH * 1000];
         LeadingMarginSpan[] activeLeadSpans = new LeadingMarginSpan[0];
-        HashMap<LeadingMarginSpan, Integer> leadSpans = new HashMap<LeadingMarginSpan, Integer>();
+        HashMap<LeadingMarginSpan, Integer> leadSpans = new HashMap<>();
         TextAlignment defAlign = params.textAlignment;
         Spanned text = (Spanned) this.text;
         Paint.FontMetricsInt fmi = paint.getFontMetricsInt();

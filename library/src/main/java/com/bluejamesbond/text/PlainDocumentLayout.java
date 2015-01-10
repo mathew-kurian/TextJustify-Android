@@ -55,7 +55,7 @@ public class PlainDocumentLayout extends IDocumentLayout {
     public PlainDocumentLayout(Context context, TextPaint paint) {
         super(context, paint);
         tokens = new Token[0];
-        chunks = new ConcurrentModifiableLinkedList<String>();
+        chunks = new ConcurrentModifiableLinkedList<>();
     }
 
     private float getFontAscent() {
@@ -97,7 +97,7 @@ public class PlainDocumentLayout extends IDocumentLayout {
         }
 
         // Empty out any existing tokens
-        List<Token> tokensList = new ConcurrentModifiableLinkedList<Token>();
+        List<Token> tokensList = new ConcurrentModifiableLinkedList<>();
 
         Paint paint = getPaint();
         paint.setTextAlign(Paint.Align.LEFT);
@@ -288,7 +288,7 @@ public class PlainDocumentLayout extends IDocumentLayout {
 
     private ConcurrentModifiableLinkedList<Unit> tokenize(String s) {
 
-        ConcurrentModifiableLinkedList<Unit> units = new ConcurrentModifiableLinkedList<Unit>();
+        ConcurrentModifiableLinkedList<Unit> units = new ConcurrentModifiableLinkedList<>();
 
         // If empty string, just return one group
         if (s.trim().length() <= 1) {

@@ -855,7 +855,7 @@ public class ConcurrentModifiableLinkedList<E>
 
         public boolean hasNext() {
             return nextIndex != size;
-        }        private Entry<E> lastReturned = header;
+        }
 
         public E next() {
             if (nextIndex == size)
@@ -865,7 +865,7 @@ public class ConcurrentModifiableLinkedList<E>
             next = next.next;
             nextIndex++;
             return lastReturned.element;
-        }
+        }        private Entry<E> lastReturned = header;
 
         public boolean hasPrevious() {
             return nextIndex != 0;

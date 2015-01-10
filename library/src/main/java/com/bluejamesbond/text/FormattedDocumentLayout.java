@@ -38,8 +38,6 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.style.LeadingMarginSpan;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.bluejamesbond.text.style.TextAlignment;
 import com.bluejamesbond.text.style.TextAlignmentSpan;
@@ -48,7 +46,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class SpannedDocumentLayout extends DocumentLayout {
+public class FormattedDocumentLayout extends IDocumentLayout {
 
     private static final int TOKEN_START = 0;
     private static final int TOKEN_END = 1;
@@ -58,17 +56,13 @@ public class SpannedDocumentLayout extends DocumentLayout {
     private static final int TOKEN_DESCENT = 5;
     private static final int TOKEN_LENGTH = 6;
     private TextPaint workPaint;
-    private CharSequence text;
     private LinkedList<LeadingMarginSpanDrawParameters> mLeadMarginSpanDrawEvents;
     private int[] tokens;
-    private int mTokenMaxIndex;
-    private Toast mToast;
 
-    public SpannedDocumentLayout(Context context, TextPaint paint) {
+    public FormattedDocumentLayout(Context context, TextPaint paint) {
         super(context, paint);
         workPaint = new TextPaint(paint);
         tokens = new int[0];
-        mToast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
     }
 
     private static int pushToken(int[] tokens, int index, int start, int end, float x, float y,
@@ -132,18 +126,23 @@ public class SpannedDocumentLayout extends DocumentLayout {
         return units;
     }
 
-    public int getLineCount() {
-        return mLineCount;
-    }
 
-    @Override
-    public CharSequence getText() {
-        return text;
-    }
+    /**
+     * Returns the length that the specified CharSequence would have if
+     * spaces and control characters were trimmed from the start and end,
+     * as by {@link String#trim}.
+     */
+    protected int getTrimmedLength(CharSequence s, int start, int end) {
+        while (start < end && s.charAt(start) <= ' ') {
+            start++;
+        }
 
-    @Override
-    public void setText(CharSequence text) {
-        this.text = text;
+        int endCpy = end;
+        while (endCpy > start && s.charAt(endCpy - 1) <= ' ') {
+            endCpy--;
+        }
+
+        return endCpy - start;
     }
 
     @Override
@@ -449,7 +448,6 @@ public class SpannedDocumentLayout extends DocumentLayout {
             y += lastDescent;
         }
 
-        mTokenMaxIndex = index;
         mLineCount = lineNumber;
         tokens = newTokens;
         params.changed = false;
@@ -493,11 +491,22 @@ public class SpannedDocumentLayout extends DocumentLayout {
                     parameters.end, parameters.first, null);
         }
 
-        int startIndex = resolveTokenIndex(scrollTop, true);
-        int endIndex = resolveTokenIndex(scrollBottom, false);
+        int startIndex = getTokenIndex(scrollTop, TokenPosition.FIRST_OCCURRENCE);
+        int endIndex = getTokenIndex(scrollBottom, TokenPosition.LAST_OCCURRENCE);
+        int lastEndIndexY = tokens[endIndex + TOKEN_Y];
+        int diffEndIndexYCount = 1;
+
+        // FIXME Find next pos-y
+        for (int s = endIndex; diffEndIndexYCount > 0 && s < tokens.length; s += TOKEN_LENGTH) {
+            endIndex += TOKEN_LENGTH;
+            if (lastEndIndexY != tokens[s + TOKEN_Y]) {
+                diffEndIndexYCount--;
+                lastEndIndexY = tokens[s + TOKEN_Y];
+            }
+        }
 
         for (int index = startIndex; index < endIndex; index += TOKEN_LENGTH) {
-            if(tokens[index + TOKEN_START] == Integer.MAX_VALUE) break;
+            if (tokens[index + TOKEN_START] == Integer.MAX_VALUE) break;
             Styled.drawText(canvas, text, tokens[index + TOKEN_START],
                     tokens[index + TOKEN_END], Layout.DIR_LEFT_TO_RIGHT, isReverse,
                     tokens[index + TOKEN_X], 0,
@@ -510,9 +519,6 @@ public class SpannedDocumentLayout extends DocumentLayout {
                 canvas.drawLine(0, tokens[index + TOKEN_Y] - tokens[index + TOKEN_ASCENT],
                         params.parentWidth, tokens[index + TOKEN_Y] - tokens[index + TOKEN_ASCENT],
                         paint);
-                paint.setColor(Color.MAGENTA);
-                canvas.drawLine(0, tokens[index + TOKEN_Y], params.parentWidth,
-                        tokens[index + TOKEN_Y], paint);
                 paint.setColor(Color.CYAN);
                 canvas.drawLine(0, tokens[index + TOKEN_Y] + tokens[index + TOKEN_DESCENT],
                         params.parentWidth, tokens[index + TOKEN_Y] + tokens[index + TOKEN_DESCENT],
@@ -523,7 +529,8 @@ public class SpannedDocumentLayout extends DocumentLayout {
         }
     }
 
-    private int resolveTokenIndex(int y, boolean first) {
+    @Override
+    public int getTokenIndex(float y, TokenPosition position) {
         int high = tokens.length - 1;
         int low = 0;
 
@@ -538,19 +545,38 @@ public class SpannedDocumentLayout extends DocumentLayout {
             }
         }
 
-        if (first) {
-            low -= low % TOKEN_LENGTH;
-            for (int s = low; tokens[s + TOKEN_Y] >= y && s > 0; s -= TOKEN_LENGTH) {
-                low -= TOKEN_LENGTH;
+        switch (position) {
+            default:
+            case FIRST_OCCURRENCE: {
+                low -= low % TOKEN_LENGTH;
+                for (int s = low; s > 0 && tokens[s + TOKEN_Y] >= y; s -= TOKEN_LENGTH) {
+                    low -= TOKEN_LENGTH;
+                }
+                return low;
             }
-            return low;
-        } else {
-            high -= high % TOKEN_LENGTH;
-            for (int s = high; tokens[s + TOKEN_Y] <= y && s < tokens.length; s += TOKEN_LENGTH) {
-                high += TOKEN_LENGTH;
+            case LAST_OCCURRENCE: {
+                high -= high % TOKEN_LENGTH;
+                for (int s = high; s + TOKEN_LENGTH < tokens.length && tokens[s + TOKEN_Y] <= y; s += TOKEN_LENGTH) {
+                    high += TOKEN_LENGTH;
+                }
+                return high;
             }
-            return high;
         }
+    }
+
+    @Override
+    public float getTokenTopAt(int index) {
+        return 0;
+    }
+
+    @Override
+    public String getTokenStringAt(int index) {
+        return null;
+    }
+
+    @Override
+    public boolean isTokenized() {
+        return tokens != null;
     }
 
     /**

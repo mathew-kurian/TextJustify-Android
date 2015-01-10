@@ -40,7 +40,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.opengl.GLES10;
 import android.os.Build;
 import android.text.TextPaint;
 import android.util.AttributeSet;
@@ -49,27 +48,36 @@ import android.widget.ScrollView;
 
 import com.bluejamesbond.text.style.TextAlignment;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
-import javax.microedition.khronos.opengles.GL10;
 
 @SuppressWarnings("unused")
 public class DocumentView extends ScrollView {
 
     public static final int PLAIN_TEXT = 0;
     public static final int FORMATTED_TEXT = 1;
-    private static Integer bitmapHeight = -1;
-    private static int MAX_TEXTURE_SIZE = 0;
-    private DocumentLayout mLayout;
-    private TextPaint mPaint;
-    private View mView;
-    // Caching content
-    private CacheConfig mCacheConfig = CacheConfig.NO_CACHE;
 
-    private CacheBitmap mCacheBitmapTop;
-    private CacheBitmap mCacheBitmapBottom;
+    private static Lock oglBitmapHeightLock;
+    private static int oglBitmapHeight;
+
+    private IDocumentLayout layout;
+    private TextPaint paint;
+    private View view;
+
+    // Caching content
+    private CacheConfig cacheConfig;
+    private CacheBitmap cacheBitmapTop;
+    private CacheBitmap cacheBitmapBottom;
+
+    static {
+        oglBitmapHeightLock = new ReentrantLock();
+        oglBitmapHeight = -1;
+    }
 
     public DocumentView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -142,28 +150,29 @@ public class DocumentView extends ScrollView {
 
     private void init(Context context, AttributeSet attrs, int type) {
 
-        synchronized (bitmapHeight) {
-            if (DocumentView.bitmapHeight.equals(-1)) {
-                DocumentView.bitmapHeight = Math.min(context.getResources().getDisplayMetrics().heightPixels * 7 / 6, getMaxTextureSize());
+        try {
+            oglBitmapHeightLock.lock();
+
+            if (DocumentView.oglBitmapHeight == -1) {
+                DocumentView.oglBitmapHeight = Math.min(context.getResources().getDisplayMetrics().heightPixels * 7 / 6, getMaxTextureSize());
             }
+
+        } catch (Exception e) {
+            oglBitmapHeightLock.unlock();
+            e.printStackTrace();
         }
 
-        this.mPaint = new TextPaint();
-        this.mView = new View(context);
+        cacheConfig = CacheConfig.AUTO_QUALITY;
+        paint = new TextPaint();
+        view = new View(context);
 
-        // Initialize mPaint
-        initPaint(this.mPaint);
+        // Initialize paint
+        initPaint(this.paint);
 
         // Set default padding
         setPadding(0, 0, 0, 0);
 
-        addView(mView);
-
-        if (MAX_TEXTURE_SIZE == 0) {
-            int[] maxSize = new int[1];
-            GLES10.glGetIntegerv(GL10.GL_MAX_TEXTURE_SIZE, maxSize, 0);
-            MAX_TEXTURE_SIZE = maxSize[0];
-        }
+        addView(view);
 
         if (attrs != null && !isInEditMode()) {
             TypedArray a = context.obtainStyledAttributes(attrs,
@@ -172,21 +181,21 @@ public class DocumentView extends ScrollView {
             final int N = a.getIndexCount();
             boolean layoutSet = false;
 
-            // find and set project mLayout
+            // find and set project layout
             for (int i = 0; i < N; ++i) {
                 int attr = a.getIndex(i);
                 if (R.styleable.DocumentView_textFormat == attr) {
-                    this.mLayout = getDocumentLayoutInstance(a.getInt(attr, DocumentView.PLAIN_TEXT), mPaint);
+                    this.layout = getDocumentLayoutInstance(a.getInt(attr, DocumentView.PLAIN_TEXT), paint);
                     layoutSet = true;
                     break;
                 }
             }
 
             if (!layoutSet) {
-                this.mLayout = getDocumentLayoutInstance(DocumentView.PLAIN_TEXT, mPaint);
+                this.layout = getDocumentLayoutInstance(DocumentView.PLAIN_TEXT, paint);
             }
 
-            DocumentLayout.LayoutParams layoutParams = this.mLayout.getLayoutParams();
+            PlainDocumentLayout.LayoutParams layoutParams = this.layout.getLayoutParams();
 
             for (int i = 0; i < N; ++i) {
 
@@ -225,20 +234,20 @@ public class DocumentView extends ScrollView {
                 } else if (attr == R.styleable.DocumentView_textColor) {
                     setColor(a.getColor(attr, Color.BLACK));
                 } else if (attr == R.styleable.DocumentView_textSize) {
-                    setTextSize(a.getDimension(attr, mPaint.getTextSize()));
+                    setTextSize(a.getDimension(attr, paint.getTextSize()));
                 } else if (attr == R.styleable.DocumentView_textStyle) {
                     int style = a.getInt(attr, 0);
-                    mPaint.setFakeBoldText((style & 1) > 0);
-                    mPaint.setUnderlineText(((style >> 1) & 1) > 0);
-                    mPaint.setStrikeThruText(((style >> 2) & 1) > 0);
+                    paint.setFakeBoldText((style & 1) > 0);
+                    paint.setUnderlineText(((style >> 1) & 1) > 0);
+                    paint.setStrikeThruText(((style >> 2) & 1) > 0);
                 } else if (attr == R.styleable.DocumentView_textTypefacePath) {
                     setTypeface(Typeface.createFromAsset(getResources().getAssets(), a.getString(attr)));
                 } else if (attr == R.styleable.DocumentView_antialias) {
-                    mPaint.setAntiAlias(a.getBoolean(attr, true));
+                    paint.setAntiAlias(a.getBoolean(attr, true));
                 } else if (attr == R.styleable.DocumentView_textSubpixel) {
-                    mPaint.setSubpixelText(a.getBoolean(attr, true));
+                    paint.setSubpixelText(a.getBoolean(attr, true));
                 } else if (attr == R.styleable.DocumentView_text) {
-                    mLayout.setText(a.getString(attr));
+                    layout.setText(a.getString(attr));
                 } else if (attr == R.styleable.DocumentView_cacheConfig) {
                     setCacheConfig(CacheConfig.getById(a.getInt(attr, CacheConfig.AUTO_QUALITY.getId())));
                 }
@@ -247,32 +256,32 @@ public class DocumentView extends ScrollView {
             a.recycle();
 
         } else {
-            this.mLayout = getDocumentLayoutInstance(type, mPaint);
+            this.layout = getDocumentLayoutInstance(type, paint);
         }
     }
 
     public void destroyCache() {
-        if (mCacheBitmapTop != null) {
-            mCacheBitmapTop.recycle();
-            mCacheBitmapTop = null;
+        if (cacheBitmapTop != null) {
+            cacheBitmapTop.recycle();
+            cacheBitmapTop = null;
         }
 
-        if (mCacheBitmapBottom != null) {
-            mCacheBitmapBottom.recycle();
-            mCacheBitmapBottom = null;
+        if (cacheBitmapBottom != null) {
+            cacheBitmapBottom.recycle();
+            cacheBitmapBottom = null;
         }
     }
 
     public void setTextSize(float textSize) {
-        mPaint.setTextSize(textSize);
+        paint.setTextSize(textSize);
     }
 
     public void setColor(int textColor) {
-        mPaint.setColor(textColor);
+        paint.setColor(textColor);
     }
 
     public void setTypeface(Typeface typeface) {
-        mPaint.setTypeface(typeface);
+        paint.setTypeface(typeface);
     }
 
     protected void initPaint(Paint paint) {
@@ -281,45 +290,45 @@ public class DocumentView extends ScrollView {
         paint.setAntiAlias(true);
     }
 
-    public DocumentLayout getDocumentLayoutInstance(int type, TextPaint paint) {
+    public IDocumentLayout getDocumentLayoutInstance(int type, TextPaint paint) {
         switch (type) {
             case FORMATTED_TEXT:
-                return new SpannedDocumentLayout(getContext(), paint);
+                return new FormattedDocumentLayout(getContext(), paint);
             default:
             case PLAIN_TEXT:
-                return new DocumentLayout(getContext(), paint);
+                return new PlainDocumentLayout(getContext(), paint);
         }
     }
 
     public CharSequence getText() {
-        return this.mLayout.getText();
+        return this.layout.getText();
     }
 
     public void setText(CharSequence text) {
-        this.mLayout.setText(text);
+        this.layout.setText(text);
         requestLayout();
     }
 
-    public DocumentLayout.LayoutParams getDocumentLayoutParams() {
-        return this.mLayout.getLayoutParams();
+    public PlainDocumentLayout.LayoutParams getDocumentLayoutParams() {
+        return this.layout.getLayoutParams();
     }
 
-    public DocumentLayout getLayout() {
-        return this.mLayout;
+    public IDocumentLayout getLayout() {
+        return this.layout;
     }
 
     public CacheConfig getCacheConfig() {
-        return mCacheConfig;
+        return cacheConfig;
     }
 
     public void setCacheConfig(CacheConfig quality) {
-        mCacheConfig = quality;
+        cacheConfig = quality;
     }
 
     @Override
     public void requestLayout() {
-        if (this.mLayout != null) {
-            this.mLayout.getLayoutParams().invalidate();
+        if (this.layout != null) {
+            this.layout.getLayoutParams().invalidate();
         }
         super.requestLayout();
     }
@@ -330,10 +339,10 @@ public class DocumentView extends ScrollView {
         final int width = MeasureSpec.getSize(widthMeasureSpec);
         final int height = MeasureSpec.getSize(heightMeasureSpec);
 
-        mLayout.getLayoutParams().setParentWidth((float) width);
-        mLayout.measure();
-        mView.setMinimumHeight(mLayout.getMeasuredHeight());
-        mView.setMinimumWidth(width);
+        layout.getLayoutParams().setParentWidth((float) width);
+        layout.measure();
+        view.setMinimumHeight(layout.getMeasuredHeight());
+        view.setMinimumWidth(width);
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
@@ -348,47 +357,47 @@ public class DocumentView extends ScrollView {
             return;
         }
 
-        boolean cacheEnabled = mCacheConfig != CacheConfig.NO_CACHE;
+        boolean cacheEnabled = cacheConfig != CacheConfig.NO_CACHE;
 
         if (cacheEnabled) {
 
-            if (mCacheBitmapTop == null) {
-                mCacheBitmapTop = new CacheBitmap(getWidth(), bitmapHeight, mCacheConfig.getConfig());
+            if (cacheBitmapTop == null) {
+                cacheBitmapTop = new CacheBitmap(getWidth(), oglBitmapHeight, cacheConfig.getConfig());
             }
 
-            if (mCacheBitmapBottom == null) {
-                mCacheBitmapBottom = new CacheBitmap(getWidth(), bitmapHeight, mCacheConfig.getConfig());
+            if (cacheBitmapBottom == null) {
+                cacheBitmapBottom = new CacheBitmap(getWidth(), oglBitmapHeight, cacheConfig.getConfig());
             }
 
             int scrollTop = getScrollY();
             int scrollBottom = scrollTop + getHeight();
 
-            CacheBitmap top = scrollTop % (bitmapHeight * 2) < bitmapHeight ? mCacheBitmapTop : mCacheBitmapBottom;
-            CacheBitmap bottom = scrollBottom % (bitmapHeight * 2) >= bitmapHeight ? mCacheBitmapBottom : mCacheBitmapTop;
+            CacheBitmap top = scrollTop % (oglBitmapHeight * 2) < oglBitmapHeight ? cacheBitmapTop : cacheBitmapBottom;
+            CacheBitmap bottom = scrollBottom % (oglBitmapHeight * 2) >= oglBitmapHeight ? cacheBitmapBottom : cacheBitmapTop;
 
             if (top == bottom) {
-                int startTop = scrollTop - (scrollTop % (bitmapHeight * 2)) + (top == mCacheBitmapTop ? 0 : bitmapHeight);
+                int startTop = scrollTop - (scrollTop % (oglBitmapHeight * 2)) + (top == cacheBitmapTop ? 0 : oglBitmapHeight);
 
                 if (startTop != top.getStart()) {
                     Canvas bitCanvas = new Canvas(bottom.getBitmap());
                     bitCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                     top.setStart(startTop);
-                    mLayout.draw(bitCanvas, startTop, startTop + bitmapHeight);
+                    layout.draw(bitCanvas, startTop, startTop + oglBitmapHeight);
                     debugCache(bitCanvas);
                 }
 
-                canvas.drawBitmap(top.getBitmap(), 0, startTop, mPaint);
+                canvas.drawBitmap(top.getBitmap(), 0, startTop, paint);
 
             } else {
 
-                int startTop = scrollTop - (scrollTop % (bitmapHeight * 2)) + (top == mCacheBitmapTop ? 0 : bitmapHeight);
-                int startBottom = startTop + bitmapHeight;
+                int startTop = scrollTop - (scrollTop % (oglBitmapHeight * 2)) + (top == cacheBitmapTop ? 0 : oglBitmapHeight);
+                int startBottom = startTop + oglBitmapHeight;
 
                 if (startTop != top.getStart()) {
                     Canvas bitCanvas = new Canvas(top.getBitmap());
                     bitCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                     top.setStart(startTop);
-                    mLayout.draw(bitCanvas, startTop, startTop + bitmapHeight);
+                    layout.draw(bitCanvas, startTop, startTop + oglBitmapHeight);
                     debugCache(bitCanvas);
                 }
 
@@ -396,31 +405,31 @@ public class DocumentView extends ScrollView {
                     Canvas bitCanvas = new Canvas(bottom.getBitmap());
                     bitCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                     bottom.setStart(startBottom);
-                    mLayout.draw(bitCanvas, startBottom, startBottom + bitmapHeight);
+                    layout.draw(bitCanvas, startBottom, startBottom + oglBitmapHeight);
                     debugCache(bitCanvas);
                 }
 
-                canvas.drawBitmap(top.getBitmap(), 0, startTop, mPaint);
-                canvas.drawBitmap(bottom.getBitmap(), 0, startBottom, mPaint);
+                canvas.drawBitmap(top.getBitmap(), 0, startTop, paint);
+                canvas.drawBitmap(bottom.getBitmap(), 0, startBottom, paint);
             }
 
         } else {
-            mLayout.draw(canvas, 0, mLayout.getMeasuredHeight());
+            layout.draw(canvas, 0, layout.getMeasuredHeight());
         }
     }
 
-    private void debugCache(Canvas canvas){
-        if (mLayout.isDebugging()) {
-            int lastColor = mPaint.getColor();
-            float lastStrokeWidth = mPaint.getStrokeWidth();
-            Paint.Style lastStyle = mPaint.getStyle();
-            mPaint.setStyle(Paint.Style.STROKE);
-            mPaint.setStrokeWidth(8);
-            mPaint.setColor(Color.GREEN);
-            canvas.drawRect(0, 0, getWidth(), canvas.getHeight(), mPaint);
-            mPaint.setStrokeWidth(lastStrokeWidth);
-            mPaint.setColor(lastColor);
-            mPaint.setStyle(lastStyle);
+    private void debugCache(Canvas canvas) {
+        if (layout.isDebugging()) {
+            int lastColor = paint.getColor();
+            float lastStrokeWidth = paint.getStrokeWidth();
+            Paint.Style lastStyle = paint.getStyle();
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(8);
+            paint.setColor(Color.GREEN);
+            canvas.drawRect(0, 0, getWidth(), canvas.getHeight(), paint);
+            paint.setStrokeWidth(lastStrokeWidth);
+            paint.setColor(lastColor);
+            paint.setStyle(lastStyle);
         }
 
     }

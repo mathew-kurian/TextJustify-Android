@@ -31,78 +31,31 @@ package com.bluejamesbond.text;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.text.TextPaint;
 
-import com.bluejamesbond.text.hyphen.Hyphenator;
-import com.bluejamesbond.text.style.TextAlignment;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
 @SuppressWarnings("unused")
-public class DocumentLayout {
+public class PlainDocumentLayout extends IDocumentLayout {
 
+    @SuppressWarnings("serial")
+    class PlainDocumentException extends Exception {
+        public PlainDocumentException(String message) {
+            super(message);
+        }
+    }
 
-    protected int mLineCount = 0;
-    // Debugging
-    protected boolean debugging = false;
-    // Basic client-set properties
-    protected LayoutParams params;
-    protected boolean textChange = true;
-    // Rendering
-    protected TextPaint paint;
-    // Measurement output
-    protected int measuredHeight;
-    // Main content
-    private String text;
     // Parsing objects
-    private Token[] mTokens;
+    private Token[] tokens;
     private ConcurrentModifiableLinkedList<String> chunks;
 
-    public DocumentLayout(Context context, TextPaint paint) {
-
-        this.paint = paint;
-        this.text = "";
-
-        params = new LayoutParams();
-        params.setLineHeightMulitplier(1.0f);
-        params.setHyphenated(false);
-        params.setReverse(false);
-
-        measuredHeight = 0;
-
-        mTokens = new Token[0];
+    public PlainDocumentLayout(Context context, TextPaint paint) {
+        super(context, paint);
+        tokens = new Token[0];
         chunks = new ConcurrentModifiableLinkedList<String>();
-    }
-
-    public boolean isDebugging() {
-        return debugging;
-    }
-
-    public void setDebugging(boolean debugging) {
-        this.debugging = debugging;
-    }
-
-    public Paint getPaint() {
-        return paint;
-    }
-
-    public LayoutParams getLayoutParams() {
-        return params;
-    }
-
-    public CharSequence getText() {
-        return this.text;
-    }
-
-    public void setText(CharSequence text) {
-        this.text = text == null ? "" : text.toString();
-        this.textChange = true;
     }
 
     private float getFontAscent() {
@@ -113,20 +66,10 @@ public class DocumentLayout {
         return paint.descent() * params.lineHeightMulitplier;
     }
 
-    public int getMeasuredHeight() {
-        return measuredHeight;
-    }
-
-    protected void onTextNull() {
-        params.changed = false;
-        measuredHeight = (int) (params.paddingTop + params.paddingBottom);
-    }
-
-    public int getLineCount() {
-        return mLineCount;
-    }
-
+    @Override
     public void measure() {
+
+        String text = this.text.toString();
 
         if (!params.changed && !textChange) {
             return;
@@ -153,8 +96,8 @@ public class DocumentLayout {
             textChange = false;
         }
 
-        // Empty out any existing mTokens
-        List<Token> tokens = new ConcurrentModifiableLinkedList<Token>();
+        // Empty out any existing tokens
+        List<Token> tokensList = new ConcurrentModifiableLinkedList<Token>();
 
         Paint paint = getPaint();
         paint.setTextAlign(Paint.Align.LEFT);
@@ -180,7 +123,7 @@ public class DocumentLayout {
 
             // If the line contains only spaces or line breaks
             if (trimParagraph.length() == 0) {
-                tokens.add(new LineBreak(lineNumber++));
+                tokensList.add(new LineBreak(lineNumber++, y));
                 y += lineHeight;
                 continue;
             }
@@ -190,7 +133,7 @@ public class DocumentLayout {
             // Line fits, then don't wrap
             if (wrappedWidth < width) {
                 // activeCanvas.drawText(paragraph, x, y, paint);
-                tokens.add(new SingleLine(lineNumber++, x, y, trimParagraph));
+                tokensList.add(new SingleLine(lineNumber++, x, y, trimParagraph));
                 y += lineHeight;
                 continue;
             }
@@ -213,7 +156,7 @@ public class DocumentLayout {
                 boolean leftOverTokens = justifyIterator.hasNext();
 
                 if (tokenCount == 0 && leftOverTokens) {
-                    new DocumentException("Cannot fit word(s) into one line. Font size too large?")
+                    new PlainDocumentException("Cannot fit word(s) into one line. Font size too large?")
                             .printStackTrace();
                     return;
                 }
@@ -248,8 +191,8 @@ public class DocumentLayout {
                     unit.lineNumber = lineNumber;
                     x += offset + paint.measureText(unit.unit) + spaceOffset;
 
-                    // Add to all mTokens
-                    tokens.add(unit);
+                    // Add to all tokens
+                    tokensList.add(unit);
                 }
 
                 // Increment to next line
@@ -258,11 +201,11 @@ public class DocumentLayout {
                 // Next line
                 lineNumber++;
 
-                // If there are more mTokens leftover,
+                // If there are more tokens leftover,
                 // continue
                 if (leftOverTokens) {
 
-                    // Next start index for mTokens
+                    // Next start index for tokens
                     start = format.end;
 
                     continue;
@@ -274,28 +217,73 @@ public class DocumentLayout {
             }
         }
 
-        Token[] tokensArr = new Token[tokens.size()];
-        tokens.toArray(tokensArr);
-        tokens.clear();
+        Token[] tokensArr = new Token[tokensList.size()];
+        tokensList.toArray(tokensArr);
+        tokensList.clear();
 
         mLineCount = lineNumber;
-        mTokens = tokensArr;
+        tokens = tokensArr;
         params.changed = false;
         measuredHeight = (int) (y - getFontAscent() + params.paddingBottom);
     }
 
+    @Override
     public void draw(Canvas canvas, int startTop, int startBottom) {
 
-        int tokenStart = resolveTokenIndex(startTop);
-        int tokenEnd = resolveTokenIndex(startBottom);
+        int tokenStart = getTokenIndex(startTop, TokenPosition.FIRST_OCCURRENCE);
+        int tokenEnd = getTokenIndex(startBottom, TokenPosition.LAST_OCCURRENCE);
 
-        for (int i = Math.max(0, tokenStart - 25); i < tokenEnd + 25 && i < mTokens.length; i++) {
-            mTokens[i].draw(canvas, -startTop, paint, params);
+        for (int i = Math.max(0, tokenStart - 25); i < tokenEnd + 25 && i < tokens.length; i++) {
+            tokens[i].draw(canvas, -startTop, paint, params);
         }
     }
 
-    private int resolveTokenIndex(int y) {
-        return (int) ((float) mTokens.length * (float) y / (float) getMeasuredHeight());
+    @Override
+    public boolean isTokenized() {
+        return tokens != null;
+    }
+
+    @Override
+    public String getTokenStringAt(int index) {
+        return tokens[index].toString();
+    }
+
+    @Override
+    public float getTokenTopAt(int index) {
+        return tokens[index].getY();
+    }
+
+    @Override
+    public int getTokenIndex(float y, TokenPosition position) {
+        int high = tokens.length - 1;
+        int low = 0;
+
+        while (low + 1 < high) {
+            int mid = (high + low) / 2;
+            float fY = tokens[mid].getY();
+
+            if (fY > y) {
+                high = mid;
+            } else {
+                low = mid;
+            }
+        }
+
+        switch (position) {
+            default:
+            case FIRST_OCCURRENCE: {
+                for (int s = low; s > 0 && tokens[s].getY() >= y; s--) {
+                    low--;
+                }
+                return low;
+            }
+            case LAST_OCCURRENCE: {
+                for (int s = high; s < tokens.length && tokens[s].getY() <= y; s++) {
+                    high++;
+                }
+                return high;
+            }
+        }
     }
 
     private ConcurrentModifiableLinkedList<Unit> tokenize(String s) {
@@ -447,248 +435,18 @@ public class DocumentLayout {
         return new LineAnalysis(startIndex, i, availableWidth + spaceOffset);
     }
 
-    public static class LayoutParams {
-
-        /**
-         * All the customizable parameters
-         */
-        protected Hyphenator hyphenator = null;
-        protected Float paddingLeft = 0.0f;
-        protected Float paddingTop = 0.0f;
-        protected Float paddingBottom = 0.0f;
-        protected Float paddingRight = 0.0f;
-        protected Float parentWidth = 800.0f;
-        protected Float offsetX = 0.0f;
-        protected Float offsetY = 0.0f;
-
-        protected Float wordSpacingMultiplier = 1.0f;
-        protected Float lineHeightMulitplier = 0.0f;
-        protected Boolean hyphenated = false;
-        protected Boolean reverse = false;
-        protected Integer maxLines = Integer.MAX_VALUE;
-        protected String hyphen = "-";
-        protected TextAlignment textAlignment = TextAlignment.LEFT;
-
-        /**
-         * If any settings have changed.
-         */
-        protected boolean changed = false;
-
-        public int hashCode() {
-            return Arrays.hashCode(
-                    new Object[]{hyphenator, paddingLeft, paddingTop, paddingBottom, paddingRight,
-                            parentWidth, offsetX, offsetX,
-                            lineHeightMulitplier, hyphenated, reverse, maxLines, hyphen, textAlignment, wordSpacingMultiplier});
-        }
-
-        public Float getWordSpacingMultiplier() {
-            return wordSpacingMultiplier;
-        }
-
-        public void setWordSpacingMultiplier(Float wordSpacingMultiplier) {
-            if (this.wordSpacingMultiplier.equals(wordSpacingMultiplier)) {
-                return;
-            }
-
-            this.wordSpacingMultiplier = wordSpacingMultiplier;
-            this.changed = true;
-        }
-
-        public TextAlignment getTextAlignment() {
-            return textAlignment;
-        }
-
-        public void setTextAlignment(TextAlignment textAlignment) {
-            if (this.textAlignment == textAlignment) {
-                return;
-            }
-
-            this.textAlignment = textAlignment;
-            this.changed = true;
-        }
-
-        public Hyphenator getHyphenator() {
-            return hyphenator;
-        }
-
-        public void setHyphenator(Hyphenator hyphenator) {
-            if (hyphenator == null) {
-                return;
-            }
-
-            if (this.hyphenator != null && this.hyphenator.equals(hyphenator)) {
-                return;
-            }
-
-            this.hyphenator = hyphenator;
-            this.changed = true;
-        }
-
-        public float getPaddingLeft() {
-            return paddingLeft;
-        }
-
-        public void setPaddingLeft(Float paddingLeft) {
-            if (this.paddingLeft.equals(paddingLeft)) {
-                return;
-            }
-
-            this.paddingLeft = paddingLeft;
-            this.changed = true;
-        }
-
-        public float getPaddingTop() {
-            return paddingTop;
-        }
-
-        public void setPaddingTop(Float paddingTop) {
-            if (this.paddingTop.equals(paddingTop)) {
-                return;
-            }
-
-            this.paddingTop = paddingTop;
-            this.changed = true;
-        }
-
-        public float getPaddingBottom() {
-            return paddingBottom;
-        }
-
-        public void setPaddingBottom(Float paddingBottom) {
-            if (this.paddingBottom.equals(paddingBottom)) {
-                return;
-            }
-
-            this.paddingBottom = paddingBottom;
-            this.changed = true;
-        }
-
-        public float getPaddingRight() {
-            return paddingRight;
-        }
-
-        public void setPaddingRight(Float paddingRight) {
-            if (this.paddingRight.equals(paddingRight)) {
-                return;
-            }
-
-            this.paddingRight = paddingRight;
-            this.changed = true;
-        }
-
-        public float getParentWidth() {
-            return parentWidth;
-        }
-
-        public void setParentWidth(Float parentWidth) {
-            if (this.parentWidth.equals(parentWidth)) {
-                return;
-            }
-
-            this.parentWidth = parentWidth;
-            this.changed = true;
-        }
-
-        public float getOffsetX() {
-            return offsetX;
-        }
-
-        public void setOffsetX(Float offsetX) {
-            this.offsetX = offsetX;
-        }
-
-        public float getOffsetY() {
-            return offsetY;
-        }
-
-        public void setOffsetY(Float offsetY) {
-            this.offsetY = offsetY;
-        }
-
-        public float getLineHeightMulitplier() {
-            return lineHeightMulitplier;
-        }
-
-        public void setLineHeightMulitplier(Float lineHeightMulitplier) {
-            if (this.lineHeightMulitplier.equals(lineHeightMulitplier)) {
-                return;
-            }
-
-            this.lineHeightMulitplier = lineHeightMulitplier;
-            this.changed = true;
-        }
-
-        public boolean isHyphenated() {
-            return hyphenated;
-        }
-
-        public void setHyphenated(Boolean hyphenated) {
-            if (this.hyphenated.equals(hyphenated)) {
-                return;
-            }
-
-            this.hyphenated = hyphenated && hyphenator != null;
-            this.changed = true;
-        }
-
-        public boolean isReverse() {
-            return reverse;
-        }
-
-        public void setReverse(Boolean reverse) {
-            if (this.reverse.equals(reverse)) {
-                return;
-            }
-
-            if (reverse) {
-                textAlignment = TextAlignment.RIGHT;
-            }
-
-            this.reverse = reverse;
-            this.changed = true;
-        }
-
-        public int getMaxLines() {
-            return maxLines;
-        }
-
-        public void setMaxLines(Integer maxLines) {
-            if (maxLines.equals(maxLines)) {
-                return;
-            }
-
-            this.maxLines = maxLines;
-            this.changed = true;
-        }
-
-        public String getHyphen() {
-            return hyphen;
-        }
-
-        public void setHyphen(String hyphen) {
-            if (this.hyphen.equals(hyphen)) {
-                return;
-            }
-
-            this.hyphen = hyphen;
-            this.changed = true;
-        }
-
-        public boolean hasChanged() {
-            return this.changed;
-        }
-
-        public void invalidate() {
-            this.changed = true;
-        }
-    }
-
     private static abstract class Token {
 
         public int lineNumber;
+        public float y;
 
-        public Token(int lineNumber) {
+        public Token(int lineNumber, float y) {
             this.lineNumber = lineNumber;
+            this.y = y;
+        }
+
+        public float getY() {
+            return y;
         }
 
         public int getLineNumber() {
@@ -696,27 +454,21 @@ public class DocumentLayout {
         }
 
         abstract void draw(Canvas canvas, float offsetY, Paint paint, LayoutParams params);
-
-        public boolean isVisible(int scrollX, int scrollY, int viewHeight) {
-            return false;
-        }
     }
 
     private static class Unit extends Token {
 
         public float x;
-        public float y;
         public String unit;
 
         public Unit(String unit) {
-            super(0);
+            super(0, 0);
             this.unit = unit;
         }
 
         public Unit(int lineNumber, float x, float y, String unit) {
-            super(lineNumber);
+            super(lineNumber, y);
             this.x = x;
-            this.y = y;
             this.unit = unit;
         }
 
@@ -726,18 +478,23 @@ public class DocumentLayout {
         }
 
         @Override
-        public boolean isVisible(int scrollX, int scrollY, int viewHeight) {
-            return y >= scrollY && y <= scrollY + viewHeight;
+        public String toString() {
+            return unit;
         }
     }
 
     private static class LineBreak extends Token {
-        public LineBreak(int lineNumber) {
-            super(lineNumber);
+        public LineBreak(int lineNumber, float y) {
+            super(lineNumber, y);
         }
 
         @Override
         void draw(Canvas canvas, float offsetY, Paint paint, LayoutParams params) {
+        }
+
+        @Override
+        public String toString() {
+            return "\n";
         }
     }
 
@@ -763,12 +520,5 @@ public class DocumentLayout {
             this.end = end;
             this.remainWidth = remainWidth;
         }
-    }
-}
-
-@SuppressWarnings("serial")
-class DocumentException extends Exception {
-    public DocumentException(String message) {
-        super(message);
     }
 }

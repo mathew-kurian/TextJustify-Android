@@ -62,6 +62,9 @@ import javax.microedition.khronos.egl.EGLDisplay;
 @SuppressWarnings("unused")
 public class DocumentView extends ScrollView {
 
+    public static final int PROGRESS_COLOR = 0xffe74c3c;
+    public static final int PROGRESS_HEIGHT = 30;
+
     public static final float FADE_IN_DURATION_MS = 250f;
     public static final int FADE_IN_STEP_MS = 35;
 
@@ -185,7 +188,7 @@ public class DocumentView extends ScrollView {
         // Set default padding
         setPadding(0, 0, 0, 0);
 
-        dummyView.setMinimumHeight(10);
+        dummyView.setMinimumHeight(PROGRESS_HEIGHT);
         addView(dummyView);
 
         if (attrs != null && !isInEditMode()) {
@@ -377,7 +380,9 @@ public class DocumentView extends ScrollView {
     protected void onDrawProgress(Canvas canvas, float prog) {
         Paint.Style lastStyle = paint.getStyle();
         int lastColor = paint.getColor();
-        canvas.drawRect(0, 0, getWidth() * prog, 10, paint);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(PROGRESS_COLOR);
+        canvas.drawRect(0, 0, getWidth() * prog, PROGRESS_HEIGHT, paint);
         paint.setColor(lastColor);
         paint.setStyle(lastStyle);
     }
@@ -513,7 +518,7 @@ public class DocumentView extends ScrollView {
     }
 
     protected void destroy() {
-        dummyView.setMinimumHeight(10);
+        dummyView.setMinimumHeight(PROGRESS_HEIGHT);
 
         if (measureTask != null) {
             measureTask.cancel(true);

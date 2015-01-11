@@ -62,7 +62,7 @@ import javax.microedition.khronos.egl.EGLDisplay;
 public class DocumentView extends ScrollView {
 
     public static final float FADE_IN_DURATION_MS = 250f;
-    public static final int FADE_IN_STEP_MS = 20;
+    public static final int FADE_IN_STEP_MS = 35;
 
     public static final int PLAIN_TEXT = 0;
     public static final int FORMATTED_TEXT = 1;
@@ -74,7 +74,7 @@ public class DocumentView extends ScrollView {
     private TextPaint paint;
     private View dummyView;
     private volatile MeasureTask measureTask;
-    private volatile boolean measureCompleted;
+    private volatile MeasureTaskState measureState;
 
     // Caching content
     private CacheConfig cacheConfig;
@@ -173,7 +173,7 @@ public class DocumentView extends ScrollView {
         cacheConfig = CacheConfig.AUTO_QUALITY;
         paint = new TextPaint();
         dummyView = new View(context);
-        measureCompleted = false;
+        measureState = MeasureTaskState.START;
 
         // Initialize paint
         initPaint(this.paint);
@@ -336,32 +336,34 @@ public class DocumentView extends ScrollView {
 
     @Override
     public void requestLayout() {
-        if (layout != null) {
-            layout.getLayoutParams().invalidate();
-        }
+        measureState = MeasureTaskState.START;
         super.requestLayout();
     }
 
+    @SuppressWarnings("DrawAllocation")
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
         final int width = MeasureSpec.getSize(widthMeasureSpec);
 
-        dummyView.setMinimumWidth(width);
+        switch (measureState) {
+            case AWAIT:
+                break;
+            case FINISH:
+                dummyView.setMinimumWidth(width);
+                dummyView.setMinimumHeight(layout.getMeasuredHeight());
+                measureState = MeasureTaskState.AWAIT;
+                break;
+            case START:
+                if (measureTask != null) {
+                    measureTask.cancel(true);
+                    measureTask = null;
+                }
+                measureTask = new MeasureTask(width);
+                measureTask.execute();
+                measureState = MeasureTaskState.AWAIT;
+                break;
 
-        if (measureCompleted) {
-            measureCompleted = false;
-            dummyView.setMinimumHeight(layout.getMeasuredHeight());
-        } else {
-            if (measureTask != null) {
-                measureTask.cancel(true);
-                measureTask = null;
-                measureCompleted = false;
-            }
-
-            measureTask = new MeasureTask(width);
-            measureTask.execute();
         }
     }
 
@@ -375,7 +377,7 @@ public class DocumentView extends ScrollView {
             return;
         }
 
-        boolean cacheEnabled = cacheConfig != CacheConfig.NO_CACHE;
+        boolean cacheEnabled = cacheConfig != CacheConfig.NO_CACHE && layout.getMeasuredHeight() > getHeight();
 
         if (cacheEnabled) {
 
@@ -486,7 +488,7 @@ public class DocumentView extends ScrollView {
         if (measureTask != null) {
             measureTask.cancel(true);
             measureTask = null;
-            measureCompleted = false;
+            measureState = MeasureTaskState.START;
         }
 
         if (cacheBitmapTop != null) {
@@ -536,6 +538,10 @@ public class DocumentView extends ScrollView {
         }
     }
 
+    enum MeasureTaskState {
+        AWAIT, FINISH, START
+    }
+
     private class MeasureTask extends AsyncTask<Void, Void, Void> {
         public MeasureTask(float parentWidth) {
             layout.getLayoutParams().setParentWidth(parentWidth);
@@ -555,8 +561,8 @@ public class DocumentView extends ScrollView {
         @Override
         protected void onPostExecute(Void aVoid) {
             measureTask = null;
-            measureCompleted = true;
-            requestLayout();
+            measureState = MeasureTaskState.FINISH;
+            DocumentView.super.requestLayout();
         }
     }
 

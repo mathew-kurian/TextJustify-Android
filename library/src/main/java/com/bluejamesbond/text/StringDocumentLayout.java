@@ -44,6 +44,7 @@ public class StringDocumentLayout extends IDocumentLayout {
     // Parsing objects
     private Token[] tokens;
     private ConcurrentModifiableLinkedList<String> chunks;
+
     public StringDocumentLayout(Context context, TextPaint paint) {
         super(context, paint);
         tokens = new Token[0];
@@ -59,7 +60,7 @@ public class StringDocumentLayout extends IDocumentLayout {
     }
 
     @Override
-    public void measure() {
+    public void measure(ISet<Float> progress, IGet<Boolean> cancelled) {
 
         String text = this.text.toString();
 
@@ -73,12 +74,13 @@ public class StringDocumentLayout extends IDocumentLayout {
             int start = 0;
 
             while (start > -1) {
-                int next = text.indexOf('\n', start + 1);
+                int next = text.indexOf('\n', start);
 
                 if (next < 0) {
                     chunks.add(text.substring(start, text.length()));
                 } else {
                     chunks.add(text.substring(start, next));
+                    chunks.add("");
                     next += 1;
                 }
 
@@ -98,11 +100,17 @@ public class StringDocumentLayout extends IDocumentLayout {
         int lineNumber = 0;
         float width = params.parentWidth - params.paddingRight - params.paddingLeft;
         float lineHeight = getFontAscent() + getFontDescent();
-        float x;
+        float x, prog = 0, chunksLen = chunks.size();
         float y = params.paddingTop + getFontAscent();
         float spaceOffset = paint.measureText(" ") * params.wordSpacingMultiplier;
 
         for (String paragraph : chunks) {
+
+            if(cancelled.get()){
+                break;
+            }
+
+            progress.set(prog++ / chunksLen);
 
             if (lineNumber >= params.maxLines) {
                 break;
@@ -192,6 +200,11 @@ public class StringDocumentLayout extends IDocumentLayout {
 
                 // Next line
                 lineNumber++;
+
+                // Chcek cancelled
+                if(cancelled.get()){
+                    break;
+                }
 
                 // If there are more tokens leftover,
                 // continue

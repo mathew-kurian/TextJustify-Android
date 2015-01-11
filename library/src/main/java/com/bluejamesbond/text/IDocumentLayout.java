@@ -114,7 +114,7 @@ public abstract class IDocumentLayout {
         return lineCount;
     }
 
-    public abstract void measure();
+    public abstract void measure(ISet<Float> progress, IGet<Boolean> cancelled);
 
     public abstract void draw(Canvas canvas, int startTop, int startBottom);
 
@@ -128,6 +128,14 @@ public abstract class IDocumentLayout {
 
     public static enum TokenPosition {
         START_OF_LINE, END_OF_LINE
+    }
+
+    interface ISet<T> {
+        public void set(T val);
+    }
+
+    interface IGet<T> {
+        public T get();
     }
 
     public static class LayoutParams {

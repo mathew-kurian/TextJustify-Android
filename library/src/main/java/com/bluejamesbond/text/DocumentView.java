@@ -32,6 +32,7 @@ package com.bluejamesbond.text;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -75,6 +76,7 @@ public class DocumentView extends ScrollView {
     private View dummyView;
     private volatile MeasureTask measureTask;
     private volatile MeasureTaskState measureState;
+    private int orientation;
 
     // Caching content
     private CacheConfig cacheConfig;
@@ -85,6 +87,8 @@ public class DocumentView extends ScrollView {
         eglBitmapHeightLock = new ReentrantLock();
         eglBitmapHeight = -1;
     }
+
+    private volatile float progress = 0.0f;
 
     public DocumentView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -181,6 +185,7 @@ public class DocumentView extends ScrollView {
         // Set default padding
         setPadding(0, 0, 0, 0);
 
+        dummyView.setMinimumHeight(10);
         addView(dummyView);
 
         if (attrs != null && !isInEditMode()) {
@@ -347,12 +352,14 @@ public class DocumentView extends ScrollView {
         final int width = MeasureSpec.getSize(widthMeasureSpec);
 
         switch (measureState) {
+            case FINISH_AWAIT:
+                break;
             case AWAIT:
                 break;
             case FINISH:
                 dummyView.setMinimumWidth(width);
                 dummyView.setMinimumHeight(layout.getMeasuredHeight());
-                measureState = MeasureTaskState.AWAIT;
+                measureState = MeasureTaskState.FINISH_AWAIT;
                 break;
             case START:
                 if (measureTask != null) {
@@ -367,6 +374,14 @@ public class DocumentView extends ScrollView {
         }
     }
 
+    protected void onDrawProgress(Canvas canvas, float prog) {
+        Paint.Style lastStyle = paint.getStyle();
+        int lastColor = paint.getColor();
+        canvas.drawRect(0, 0, getWidth() * prog, 10, paint);
+        paint.setColor(lastColor);
+        paint.setStyle(lastStyle);
+    }
+
     @SuppressLint("DrawAllocation")
     @Override
     protected final void onDraw(Canvas canvas) {
@@ -375,6 +390,12 @@ public class DocumentView extends ScrollView {
         // Android studio render
         if (isInEditMode()) {
             return;
+        }
+
+        switch (measureState) {
+            case AWAIT:
+                onDrawProgress(canvas, progress);
+                return;
         }
 
         boolean cacheEnabled = cacheConfig != CacheConfig.NO_CACHE && layout.getMeasuredHeight() > getHeight();
@@ -482,8 +503,17 @@ public class DocumentView extends ScrollView {
     }
 
     @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
+    protected void onConfigurationChanged(Configuration newConfig) {
+        if (orientation != newConfig.orientation) {
+            orientation = newConfig.orientation;
+            destroy();
+        }
+
+        super.onConfigurationChanged(newConfig);
+    }
+
+    protected void destroy() {
+        dummyView.setMinimumHeight(10);
 
         if (measureTask != null) {
             measureTask.cancel(true);
@@ -491,15 +521,21 @@ public class DocumentView extends ScrollView {
             measureState = MeasureTaskState.START;
         }
 
-        if (cacheBitmapTop != null) {
-            cacheBitmapTop.recycle();
-            cacheBitmapTop = null;
-        }
+        destroyCache();
 
-        if (cacheBitmapBottom != null) {
-            cacheBitmapBottom.recycle();
-            cacheBitmapBottom = null;
-        }
+        progress = 0;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        orientation = getResources().getConfiguration().orientation;
+        super.onAttachedToWindow();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        destroy();
+        super.onDetachedFromWindow();
     }
 
     public static enum CacheConfig {
@@ -539,27 +575,49 @@ public class DocumentView extends ScrollView {
     }
 
     enum MeasureTaskState {
-        AWAIT, FINISH, START
+        AWAIT, FINISH, START, FINISH_AWAIT
     }
 
-    private class MeasureTask extends AsyncTask<Void, Void, Void> {
+    private class MeasureTask extends AsyncTask<Void, Float, Void> {
+
+        private IDocumentLayout.ISet<Float> progress;
+        private IDocumentLayout.IGet<Boolean> cancelled;
+
         public MeasureTask(float parentWidth) {
             layout.getLayoutParams().setParentWidth(parentWidth);
+            progress = new IDocumentLayout.ISet<Float>() {
+                @Override
+                public void set(Float progress) {
+                    publishProgress(progress);
+                }
+            };
+
+            cancelled = new IDocumentLayout.IGet<Boolean>() {
+                @Override
+                public Boolean get() {
+                    return isCancelled();
+                }
+            };
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            layout.measure();
+            layout.measure(progress, cancelled);
             return null;
         }
 
         @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
+        protected void onProgressUpdate(Float... values) {
+            DocumentView.this.progress = values[0];
+            postInvalidateDelayed(10);
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
+            if (isCancelled()) {
+                return;
+            }
+
             measureTask = null;
             measureState = MeasureTaskState.FINISH;
             DocumentView.super.requestLayout();

@@ -35,7 +35,7 @@ import com.bluejamesbond.text.DocumentView;
 import com.bluejamesbond.text.sample.R;
 import com.bluejamesbond.text.sample.helper.TestActivity;
 
-public class PlainTextTest extends TestActivity {
+public class LongPlainTextTest extends TestActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

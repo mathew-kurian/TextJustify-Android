@@ -148,7 +148,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public void measure() {
+    public void measure(ISet<Float> progress, IGet<Boolean> cancelled) {
 
         if (!params.changed && !textChange) {
             return;
@@ -187,6 +187,12 @@ public class SpannableDocumentLayout extends IDocumentLayout {
         boolean isReverse = params.reverse;
 
         for (lineNumber = 0; lineNumber < lines; lineNumber++) {
+
+            if(cancelled.get()){
+                break;
+            }
+
+            progress.set((float) lineNumber / (float) lines);
 
             newTokens = ammortizeArray(newTokens, index);
 

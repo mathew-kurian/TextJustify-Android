@@ -17,37 +17,48 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.bluejamesbond.text.sample.test.FormattedTextTest"
+            android:name=".test.LongFormattedTextTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
         <activity
             android:name="com.bluejamesbond.text.sample.test.LeadingMarginSpan2Test"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
         <activity
             android:name="com.bluejamesbond.text.sample.test.LineBreakTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
         <activity
-            android:name="com.bluejamesbond.text.sample.test.PlainTextTest"
+            android:name=".test.LongPlainTextTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
         <activity
             android:name="com.bluejamesbond.text.sample.test.QuoteSpanTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
         <activity
             android:name="com.bluejamesbond.text.sample.test.ChineseCharacterTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
         <activity
             android:name="com.bluejamesbond.text.sample.test.RTLTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
         <activity
             android:name="com.bluejamesbond.text.sample.test.XMLTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
         <activity
             android:name="com.bluejamesbond.text.sample.test.HyphenatedTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
         <activity
             android:name="com.bluejamesbond.text.sample.test.WordSpacingTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
         <activity
             android:name="com.bluejamesbond.text.sample.test.TextViewTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
     </application>
 

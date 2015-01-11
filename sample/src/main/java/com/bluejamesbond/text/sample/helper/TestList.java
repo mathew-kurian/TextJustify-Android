@@ -43,11 +43,11 @@ import android.widget.TextView;
 
 import com.bluejamesbond.text.sample.R;
 import com.bluejamesbond.text.sample.test.ChineseCharacterTest;
-import com.bluejamesbond.text.sample.test.FormattedTextTest;
+import com.bluejamesbond.text.sample.test.LongFormattedTextTest;
 import com.bluejamesbond.text.sample.test.HyphenatedTest;
 import com.bluejamesbond.text.sample.test.LeadingMarginSpan2Test;
 import com.bluejamesbond.text.sample.test.LineBreakTest;
-import com.bluejamesbond.text.sample.test.PlainTextTest;
+import com.bluejamesbond.text.sample.test.LongPlainTextTest;
 import com.bluejamesbond.text.sample.test.QuoteSpanTest;
 import com.bluejamesbond.text.sample.test.RTLTest;
 import com.bluejamesbond.text.sample.test.TextViewTest;
@@ -58,10 +58,10 @@ public class TestList extends TestActivity {
 
     private Class[] tests = new Class[]{
             ChineseCharacterTest.class,
-            FormattedTextTest.class,
+            LongFormattedTextTest.class,
             LeadingMarginSpan2Test.class,
             LineBreakTest.class,
-            PlainTextTest.class,
+            LongPlainTextTest.class,
             QuoteSpanTest.class,
             HyphenatedTest.class,
             WordSpacingTest.class,

@@ -79,4 +79,8 @@ public class Console {
     public static void log(boolean s) {
         android.util.Log.d("", s + "");
     }
+
+    public static void log(Object s) {
+        android.util.Log.d("", s == null ? "null" : s.toString());
+    }
 }

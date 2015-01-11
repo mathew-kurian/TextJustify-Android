@@ -86,6 +86,7 @@ public class DocumentView extends ScrollView {
     private CacheConfig cacheConfig;
     private CacheBitmap cacheBitmapTop;
     private CacheBitmap cacheBitmapBottom;
+
     static {
         eglBitmapHeightLock = new ReentrantLock();
         eglBitmapHeight = -1;
@@ -361,6 +362,8 @@ public class DocumentView extends ScrollView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         final int width = MeasureSpec.getSize(widthMeasureSpec);
 
+        Console.log("measureState - " + measureState);
+
         switch (measureState) {
             case FINISH_AWAIT:
                 break;
@@ -380,7 +383,6 @@ public class DocumentView extends ScrollView {
                 measureTask.execute();
                 measureState = MeasureTaskState.AWAIT;
                 break;
-
         }
     }
 
@@ -502,13 +504,13 @@ public class DocumentView extends ScrollView {
     protected void onConfigurationChanged(Configuration newConfig) {
         if (orientation != newConfig.orientation) {
             orientation = newConfig.orientation;
-            destroy();
+            destroyResources();
         }
 
         super.onConfigurationChanged(newConfig);
     }
 
-    protected void destroy() {
+    protected void destroyResources() {
         dummyView.setMinimumHeight(minimumHeight);
 
         if (measureTask != null) {
@@ -528,7 +530,7 @@ public class DocumentView extends ScrollView {
 
     @Override
     protected void onDetachedFromWindow() {
-        destroy();
+        destroyResources();
         super.onDetachedFromWindow();
     }
 
@@ -582,7 +584,7 @@ public class DocumentView extends ScrollView {
         public void onProgressUpdate(float progress);
     }
 
-    private class MeasureTask extends AsyncTask<Void, Float, Void> {
+    private class MeasureTask extends AsyncTask<Void, Float, Boolean> {
 
         private IDocumentLayout.ISet<Float> progress;
         private IDocumentLayout.IGet<Boolean> cancelled;
@@ -595,7 +597,6 @@ public class DocumentView extends ScrollView {
                     publishProgress(progress);
                 }
             };
-
             cancelled = new IDocumentLayout.IGet<Boolean>() {
                 @Override
                 public Boolean get() {
@@ -612,12 +613,16 @@ public class DocumentView extends ScrollView {
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
             if (layoutProgressListener != null) {
                 layoutProgressListener.onProgressUpdate(0);
             }
-            layout.measure(progress, cancelled);
-            return null;
+            try {
+                return layout.measure(progress, cancelled);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
         }
 
         @Override
@@ -628,8 +633,8 @@ public class DocumentView extends ScrollView {
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            if (isCancelled()) {
+        protected void onPostExecute(Boolean done) {
+            if (!done || isCancelled()) {
                 layoutProgressListener.onCancelled();
                 return;
             }

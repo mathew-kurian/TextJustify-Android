@@ -148,10 +148,12 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public void measure(ISet<Float> progress, IGet<Boolean> cancelled) {
+    public boolean measure(ISet<Float> progress, IGet<Boolean> cancelled) {
+
+        boolean done = true;
 
         if (!params.changed && !textChange) {
-            return;
+            return done;
         }
 
         float parentWidth = params.getParentWidth();
@@ -189,6 +191,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
         for (lineNumber = 0; lineNumber < lines; lineNumber++) {
 
             if (cancelled.get()) {
+                done = false;
                 break;
             }
 
@@ -459,8 +462,10 @@ public class SpannableDocumentLayout extends IDocumentLayout {
         lineCount = lineNumber;
         tokens = newTokens;
         params.changed = false;
-        textChange = false;
+        textChange = !done;
         measuredHeight = (int) (y - lineHeightAdd + params.paddingBottom);
+
+        return done;
     }
 
     @Override

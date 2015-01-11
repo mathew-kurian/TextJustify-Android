@@ -114,7 +114,7 @@ public abstract class IDocumentLayout {
         return lineCount;
     }
 
-    public abstract void measure(ISet<Float> progress, IGet<Boolean> cancelled);
+    public abstract boolean measure(ISet<Float> progress, IGet<Boolean> cancelled);
 
     public abstract void draw(Canvas canvas, int startTop, int startBottom);
 

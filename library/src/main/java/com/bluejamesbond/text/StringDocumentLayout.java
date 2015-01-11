@@ -60,12 +60,13 @@ public class StringDocumentLayout extends IDocumentLayout {
     }
 
     @Override
-    public void measure(ISet<Float> progress, IGet<Boolean> cancelled) {
+    public boolean measure(ISet<Float> progress, IGet<Boolean> cancelled) {
 
+        boolean done = true;
         String text = this.text.toString();
 
         if (!params.changed && !textChange) {
-            return;
+            return done;
         }
 
         if (textChange) {
@@ -104,9 +105,10 @@ public class StringDocumentLayout extends IDocumentLayout {
         float y = params.paddingTop + getFontAscent();
         float spaceOffset = paint.measureText(" ") * params.wordSpacingMultiplier;
 
-        for (String paragraph : chunks) {
+        main : for (String paragraph : chunks) {
 
             if (cancelled.get()) {
+                done = false;
                 break;
             }
 
@@ -158,7 +160,8 @@ public class StringDocumentLayout extends IDocumentLayout {
                 if (tokenCount == 0 && leftOverTokens) {
                     new PlainDocumentException("Cannot fit word(s) into one line. Font size too large?")
                             .printStackTrace();
-                    return;
+                    done = false;
+                    break main;
                 }
 
                 // Draw each word here
@@ -203,6 +206,7 @@ public class StringDocumentLayout extends IDocumentLayout {
 
                 // Chcek cancelled
                 if (cancelled.get()) {
+                    done = false;
                     break;
                 }
 
@@ -228,8 +232,9 @@ public class StringDocumentLayout extends IDocumentLayout {
 
         lineCount = lineNumber;
         tokens = tokensArr;
-        params.changed = false;
+        params.changed = !done;
         measuredHeight = (int) (y - getFontAscent() + params.paddingBottom);
+        return done;
     }
 
     @Override

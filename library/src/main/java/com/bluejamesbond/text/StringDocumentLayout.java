@@ -106,7 +106,7 @@ public class StringDocumentLayout extends IDocumentLayout {
 
         for (String paragraph : chunks) {
 
-            if(cancelled.get()){
+            if (cancelled.get()) {
                 break;
             }
 
@@ -202,7 +202,7 @@ public class StringDocumentLayout extends IDocumentLayout {
                 lineNumber++;
 
                 // Chcek cancelled
-                if(cancelled.get()){
+                if (cancelled.get()) {
                     break;
                 }
 

@@ -62,9 +62,6 @@ import javax.microedition.khronos.egl.EGLDisplay;
 @SuppressWarnings("unused")
 public class DocumentView extends ScrollView {
 
-    public static final int PROGRESS_COLOR = 0xffe74c3c;
-    public static final int PROGRESS_HEIGHT = 30;
-
     public static final float FADE_IN_DURATION_MS = 250f;
     public static final int FADE_IN_STEP_MS = 35;
 
@@ -74,24 +71,25 @@ public class DocumentView extends ScrollView {
     private static Lock eglBitmapHeightLock;
     private static int eglBitmapHeight;
 
+    protected ILayoutProgressListener layoutProgressListener;
     private IDocumentLayout layout;
     private TextPaint paint;
     private View dummyView;
+
     private volatile MeasureTask measureTask;
     private volatile MeasureTaskState measureState;
+
+    private int minimumHeight;
     private int orientation;
 
     // Caching content
     private CacheConfig cacheConfig;
     private CacheBitmap cacheBitmapTop;
     private CacheBitmap cacheBitmapBottom;
-
     static {
         eglBitmapHeightLock = new ReentrantLock();
         eglBitmapHeight = -1;
     }
-
-    private volatile float progress = 0.0f;
 
     public DocumentView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -162,6 +160,16 @@ public class DocumentView extends ScrollView {
         return Math.max(maximumTextureSize, GL_MAX_TEXTURE_SIZE);
     }
 
+    public void setOnLayoutProgressListener(ILayoutProgressListener listener) {
+        layoutProgressListener = listener;
+    }
+
+    @Override
+    public void setMinimumHeight(int minHeight) {
+        minimumHeight = minHeight;
+        dummyView.setMinimumHeight(minimumHeight);
+    }
+
     private void init(Context context, AttributeSet attrs, int type) {
 
         try {
@@ -188,7 +196,6 @@ public class DocumentView extends ScrollView {
         // Set default padding
         setPadding(0, 0, 0, 0);
 
-        dummyView.setMinimumHeight(PROGRESS_HEIGHT);
         addView(dummyView);
 
         if (attrs != null && !isInEditMode()) {
@@ -377,16 +384,6 @@ public class DocumentView extends ScrollView {
         }
     }
 
-    protected void onDrawProgress(Canvas canvas, float prog) {
-        Paint.Style lastStyle = paint.getStyle();
-        int lastColor = paint.getColor();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(PROGRESS_COLOR);
-        canvas.drawRect(0, 0, getWidth() * prog, PROGRESS_HEIGHT, paint);
-        paint.setColor(lastColor);
-        paint.setStyle(lastStyle);
-    }
-
     @SuppressLint("DrawAllocation")
     @Override
     protected final void onDraw(Canvas canvas) {
@@ -395,12 +392,6 @@ public class DocumentView extends ScrollView {
         // Android studio render
         if (isInEditMode()) {
             return;
-        }
-
-        switch (measureState) {
-            case AWAIT:
-                onDrawProgress(canvas, progress);
-                return;
         }
 
         boolean cacheEnabled = cacheConfig != CacheConfig.NO_CACHE && layout.getMeasuredHeight() > getHeight();
@@ -518,7 +509,7 @@ public class DocumentView extends ScrollView {
     }
 
     protected void destroy() {
-        dummyView.setMinimumHeight(PROGRESS_HEIGHT);
+        dummyView.setMinimumHeight(minimumHeight);
 
         if (measureTask != null) {
             measureTask.cancel(true);
@@ -527,8 +518,6 @@ public class DocumentView extends ScrollView {
         }
 
         destroyCache();
-
-        progress = 0;
     }
 
     @Override
@@ -583,6 +572,16 @@ public class DocumentView extends ScrollView {
         AWAIT, FINISH, START, FINISH_AWAIT
     }
 
+    public static interface ILayoutProgressListener {
+        public void onCancelled();
+
+        public void onFinish();
+
+        public void onStart();
+
+        public void onProgressUpdate(float progress);
+    }
+
     private class MeasureTask extends AsyncTask<Void, Float, Void> {
 
         private IDocumentLayout.ISet<Float> progress;
@@ -606,26 +605,50 @@ public class DocumentView extends ScrollView {
         }
 
         @Override
+        protected void onPreExecute() {
+            if (layoutProgressListener != null) {
+                layoutProgressListener.onStart();
+            }
+        }
+
+        @Override
         protected Void doInBackground(Void... params) {
+            if (layoutProgressListener != null) {
+                layoutProgressListener.onProgressUpdate(0);
+            }
             layout.measure(progress, cancelled);
             return null;
         }
 
         @Override
         protected void onProgressUpdate(Float... values) {
-            DocumentView.this.progress = values[0];
-            postInvalidateDelayed(10);
+            if (layoutProgressListener != null) {
+                layoutProgressListener.onProgressUpdate(values[0]);
+            }
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             if (isCancelled()) {
+                layoutProgressListener.onCancelled();
                 return;
             }
 
             measureTask = null;
             measureState = MeasureTaskState.FINISH;
             DocumentView.super.requestLayout();
+
+            if (layoutProgressListener != null) {
+                layoutProgressListener.onFinish();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            if (layoutProgressListener != null) {
+                layoutProgressListener.onCancelled();
+            }
         }
     }
 

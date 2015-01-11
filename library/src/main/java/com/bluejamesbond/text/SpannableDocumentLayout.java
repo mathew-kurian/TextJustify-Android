@@ -188,7 +188,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
         for (lineNumber = 0; lineNumber < lines; lineNumber++) {
 
-            if(cancelled.get()){
+            if (cancelled.get()) {
                 break;
             }
 

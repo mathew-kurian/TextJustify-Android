@@ -20,6 +20,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 document:antialias="true"
+                document:cacheConfig="auto_quality"
                 document:hypen="-"
                 document:lineHeightMultiplier="2.0"
                 document:maxLines="100"
@@ -39,8 +40,7 @@
                 document:textStyle="bold|strikeThrough|underline"
                 document:textSubpixel="true"
                 document:textTypefacePath="fonts/helvetica.ttf"
-                document:wordSpacingMultiplier="5.0"
-                document:cacheConfig="auto_quality"/>
+                document:wordSpacingMultiplier="5.0" />
         </LinearLayout>
     </ScrollView>
 

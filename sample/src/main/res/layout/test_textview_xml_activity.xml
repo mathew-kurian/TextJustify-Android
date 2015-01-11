@@ -20,7 +20,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/plain_text"
-                android:textSize="12sp"/>
+                android:textSize="12sp" />
         </LinearLayout>
     </ScrollView>
 

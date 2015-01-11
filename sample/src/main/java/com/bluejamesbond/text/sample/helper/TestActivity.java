@@ -30,11 +30,11 @@
 package com.bluejamesbond.text.sample.helper;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,6 +75,29 @@ public class TestActivity extends Activity {
         documentView.getDocumentLayoutParams().setReverse(rtl);
         documentView.getLayout().setDebugging(debugging);
         documentView.setText(article); // true: enable justification
+
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        documentView.setOnLayoutProgressListener(new DocumentView.ILayoutProgressListener() {
+            @Override
+            public void onCancelled() {
+                progressBar.setProgress(progressBar.getMax());
+            }
+
+            @Override
+            public void onFinish() {
+                progressBar.setProgress(progressBar.getMax());
+            }
+
+            @Override
+            public void onStart() {
+                progressBar.setProgress(0);
+            }
+
+            @Override
+            public void onProgressUpdate(float progress) {
+                progressBar.setProgress((int) (progress * (float) progressBar.getMax()));
+            }
+        });
 
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.VERTICAL);

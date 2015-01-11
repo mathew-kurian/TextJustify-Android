@@ -43,10 +43,10 @@ import android.widget.TextView;
 
 import com.bluejamesbond.text.sample.R;
 import com.bluejamesbond.text.sample.test.ChineseCharacterTest;
-import com.bluejamesbond.text.sample.test.LongFormattedTextTest;
 import com.bluejamesbond.text.sample.test.HyphenatedTest;
 import com.bluejamesbond.text.sample.test.LeadingMarginSpan2Test;
 import com.bluejamesbond.text.sample.test.LineBreakTest;
+import com.bluejamesbond.text.sample.test.LongFormattedTextTest;
 import com.bluejamesbond.text.sample.test.LongPlainTextTest;
 import com.bluejamesbond.text.sample.test.QuoteSpanTest;
 import com.bluejamesbond.text.sample.test.RTLTest;

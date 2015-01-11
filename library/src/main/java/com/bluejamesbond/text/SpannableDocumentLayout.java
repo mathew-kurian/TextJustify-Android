@@ -48,7 +48,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class FormattedDocumentLayout extends IDocumentLayout {
+public class SpannableDocumentLayout extends IDocumentLayout {
 
     private static final int TOKEN_START = 0;
     private static final int TOKEN_END = 1;
@@ -61,7 +61,7 @@ public class FormattedDocumentLayout extends IDocumentLayout {
     private LinkedList<LeadingMarginSpanDrawParameters> mLeadMarginSpanDrawEvents;
     private int[] tokens;
 
-    public FormattedDocumentLayout(Context context, TextPaint paint) {
+    public SpannableDocumentLayout(Context context, TextPaint paint) {
         super(context, paint);
         workPaint = new TextPaint(paint);
         tokens = new int[0];
@@ -179,7 +179,7 @@ public class FormattedDocumentLayout extends IDocumentLayout {
         float y = params.paddingTop;
         float left = params.paddingLeft;
         float right = params.paddingRight;
-        float lineHeightAdd = params.lineHeightMulitplier;
+        float lineHeightAdd = params.lineHeightMultiplier;
         float lastAscent;
         float lastDescent;
 
@@ -493,8 +493,8 @@ public class FormattedDocumentLayout extends IDocumentLayout {
                     parameters.end, parameters.first, null);
         }
 
-        int startIndex = getTokenIndex(scrollTop, TokenPosition.FIRST_OCCURRENCE);
-        int endIndex = getTokenIndex(scrollBottom, TokenPosition.LAST_OCCURRENCE);
+        int startIndex = getTokenIndex(scrollTop, TokenPosition.START_OF_LINE);
+        int endIndex = getTokenIndex(scrollBottom, TokenPosition.END_OF_LINE);
         int lastEndIndexY = tokens[endIndex + TOKEN_Y];
         int diffEndIndexYCount = 1;
 
@@ -550,14 +550,14 @@ public class FormattedDocumentLayout extends IDocumentLayout {
 
         switch (position) {
             default:
-            case FIRST_OCCURRENCE: {
+            case START_OF_LINE: {
                 low -= low % TOKEN_LENGTH;
                 for (int s = low; s > 0 && tokens[s + TOKEN_Y] >= y; s -= TOKEN_LENGTH) {
                     low -= TOKEN_LENGTH;
                 }
                 return low;
             }
-            case LAST_OCCURRENCE: {
+            case END_OF_LINE: {
                 high -= high % TOKEN_LENGTH;
                 for (int s = high; s + TOKEN_LENGTH < tokens.length && tokens[s + TOKEN_Y] <= y; s += TOKEN_LENGTH) {
                     high += TOKEN_LENGTH;

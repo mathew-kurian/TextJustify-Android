@@ -66,7 +66,7 @@ public abstract class IDocumentLayout {
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
 
         params = new LayoutParams();
-        params.setLineHeightMulitplier(1.0f);
+        params.setLineHeightMultiplier(1.0f);
         params.setHyphenated(false);
         params.setReverse(false);
     }
@@ -127,7 +127,7 @@ public abstract class IDocumentLayout {
     public abstract boolean isTokenized();
 
     public static enum TokenPosition {
-        FIRST_OCCURRENCE, LAST_OCCURRENCE
+        START_OF_LINE, END_OF_LINE
     }
 
     public static class LayoutParams {
@@ -145,7 +145,7 @@ public abstract class IDocumentLayout {
         protected Float offsetY = 0.0f;
 
         protected Float wordSpacingMultiplier = 1.0f;
-        protected Float lineHeightMulitplier = 0.0f;
+        protected Float lineHeightMultiplier = 0.0f;
         protected Boolean hyphenated = false;
         protected Boolean reverse = false;
         protected Integer maxLines = Integer.MAX_VALUE;
@@ -161,14 +161,14 @@ public abstract class IDocumentLayout {
             return Arrays.hashCode(
                     new Object[]{hyphenator, paddingLeft, paddingTop, paddingBottom, paddingRight,
                             parentWidth, offsetX, offsetX,
-                            lineHeightMulitplier, hyphenated, reverse, maxLines, hyphen, textAlignment, wordSpacingMultiplier});
+                            lineHeightMultiplier, hyphenated, reverse, maxLines, hyphen, textAlignment, wordSpacingMultiplier});
         }
 
         public Float getWordSpacingMultiplier() {
             return wordSpacingMultiplier;
         }
 
-        public void setWordSpacingMultiplier(Float wordSpacingMultiplier) {
+        public void setWordSpacingMultiplier(float wordSpacingMultiplier) {
             if (this.wordSpacingMultiplier.equals(wordSpacingMultiplier)) {
                 return;
             }
@@ -181,7 +181,7 @@ public abstract class IDocumentLayout {
             return textAlignment;
         }
 
-        public void setTextAlignment(TextAlignment textAlignment) {
+        public void setTextAlignment(/*@NotNull*/ TextAlignment textAlignment) {
             if (this.textAlignment == textAlignment) {
                 return;
             }
@@ -211,7 +211,7 @@ public abstract class IDocumentLayout {
             return paddingLeft;
         }
 
-        public void setPaddingLeft(Float paddingLeft) {
+        public void setPaddingLeft(float paddingLeft) {
             if (this.paddingLeft.equals(paddingLeft)) {
                 return;
             }
@@ -224,7 +224,7 @@ public abstract class IDocumentLayout {
             return paddingTop;
         }
 
-        public void setPaddingTop(Float paddingTop) {
+        public void setPaddingTop(float paddingTop) {
             if (this.paddingTop.equals(paddingTop)) {
                 return;
             }
@@ -237,7 +237,7 @@ public abstract class IDocumentLayout {
             return paddingBottom;
         }
 
-        public void setPaddingBottom(Float paddingBottom) {
+        public void setPaddingBottom(float paddingBottom) {
             if (this.paddingBottom.equals(paddingBottom)) {
                 return;
             }
@@ -250,7 +250,7 @@ public abstract class IDocumentLayout {
             return paddingRight;
         }
 
-        public void setPaddingRight(Float paddingRight) {
+        public void setPaddingRight(float paddingRight) {
             if (this.paddingRight.equals(paddingRight)) {
                 return;
             }
@@ -263,7 +263,7 @@ public abstract class IDocumentLayout {
             return parentWidth;
         }
 
-        public void setParentWidth(Float parentWidth) {
+        public void setParentWidth(float parentWidth) {
             if (this.parentWidth.equals(parentWidth)) {
                 return;
             }
@@ -276,7 +276,7 @@ public abstract class IDocumentLayout {
             return offsetX;
         }
 
-        public void setOffsetX(Float offsetX) {
+        public void setOffsetX(float offsetX) {
             this.offsetX = offsetX;
         }
 
@@ -284,20 +284,20 @@ public abstract class IDocumentLayout {
             return offsetY;
         }
 
-        public void setOffsetY(Float offsetY) {
+        public void setOffsetY(float offsetY) {
             this.offsetY = offsetY;
         }
 
-        public float getLineHeightMulitplier() {
-            return lineHeightMulitplier;
+        public float getLineHeightMultiplier() {
+            return lineHeightMultiplier;
         }
 
-        public void setLineHeightMulitplier(Float lineHeightMulitplier) {
-            if (this.lineHeightMulitplier.equals(lineHeightMulitplier)) {
+        public void setLineHeightMultiplier(float lineHeightMultiplier) {
+            if (this.lineHeightMultiplier.equals(lineHeightMultiplier)) {
                 return;
             }
 
-            this.lineHeightMulitplier = lineHeightMulitplier;
+            this.lineHeightMultiplier = lineHeightMultiplier;
             this.changed = true;
         }
 
@@ -305,7 +305,7 @@ public abstract class IDocumentLayout {
             return hyphenated;
         }
 
-        public void setHyphenated(Boolean hyphenated) {
+        public void setHyphenated(boolean hyphenated) {
             if (this.hyphenated.equals(hyphenated)) {
                 return;
             }
@@ -318,7 +318,7 @@ public abstract class IDocumentLayout {
             return reverse;
         }
 
-        public void setReverse(Boolean reverse) {
+        public void setReverse(boolean reverse) {
             if (this.reverse.equals(reverse)) {
                 return;
             }
@@ -335,8 +335,8 @@ public abstract class IDocumentLayout {
             return maxLines;
         }
 
-        public void setMaxLines(Integer maxLines) {
-            if (maxLines.equals(maxLines)) {
+        public void setMaxLines(int maxLines) {
+            if (this.maxLines.equals(maxLines)) {
                 return;
             }
 
@@ -348,7 +348,7 @@ public abstract class IDocumentLayout {
             return hyphen;
         }
 
-        public void setHyphen(String hyphen) {
+        public void setHyphen(/*@NotNull*/ String hyphen) {
             if (this.hyphen.equals(hyphen)) {
                 return;
             }

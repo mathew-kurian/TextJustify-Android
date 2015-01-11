@@ -30,7 +30,6 @@
 package com.bluejamesbond.text.sample.helper;
 
 import android.app.Activity;
-import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
@@ -71,7 +70,7 @@ public class TestActivity extends Activity {
         documentView.getDocumentLayoutParams().setPaddingRight(0f);
         documentView.getDocumentLayoutParams().setPaddingTop(0f);
         documentView.getDocumentLayoutParams().setPaddingBottom(0f);
-        documentView.getDocumentLayoutParams().setLineHeightMulitplier(1f);
+        documentView.getDocumentLayoutParams().setLineHeightMultiplier(1f);
         documentView.getDocumentLayoutParams().setReverse(rtl);
         documentView.getLayout().setDebugging(debugging);
         documentView.setText(article); // true: enable justification

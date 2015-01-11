@@ -39,23 +39,23 @@ import java.util.List;
 import java.util.ListIterator;
 
 @SuppressWarnings("unused")
-public class PlainDocumentLayout extends IDocumentLayout {
+public class StringDocumentLayout extends IDocumentLayout {
 
     // Parsing objects
     private Token[] tokens;
     private ConcurrentModifiableLinkedList<String> chunks;
-    public PlainDocumentLayout(Context context, TextPaint paint) {
+    public StringDocumentLayout(Context context, TextPaint paint) {
         super(context, paint);
         tokens = new Token[0];
         chunks = new ConcurrentModifiableLinkedList<>();
     }
 
     private float getFontAscent() {
-        return -paint.ascent() * params.lineHeightMulitplier;
+        return -paint.ascent() * params.lineHeightMultiplier;
     }
 
     private float getFontDescent() {
-        return paint.descent() * params.lineHeightMulitplier;
+        return paint.descent() * params.lineHeightMultiplier;
     }
 
     @Override
@@ -222,8 +222,8 @@ public class PlainDocumentLayout extends IDocumentLayout {
     @Override
     public void draw(Canvas canvas, int startTop, int startBottom) {
 
-        int tokenStart = getTokenIndex(startTop, TokenPosition.FIRST_OCCURRENCE);
-        int tokenEnd = getTokenIndex(startBottom, TokenPosition.LAST_OCCURRENCE);
+        int tokenStart = getTokenIndex(startTop, TokenPosition.START_OF_LINE);
+        int tokenEnd = getTokenIndex(startBottom, TokenPosition.END_OF_LINE);
 
         for (int i = Math.max(0, tokenStart - 25); i < tokenEnd + 25 && i < tokens.length; i++) {
             tokens[i].draw(canvas, -startTop, paint, params);
@@ -263,13 +263,13 @@ public class PlainDocumentLayout extends IDocumentLayout {
 
         switch (position) {
             default:
-            case FIRST_OCCURRENCE: {
+            case START_OF_LINE: {
                 for (int s = low; s > 0 && tokens[s].getY() >= y; s--) {
                     low--;
                 }
                 return low;
             }
-            case LAST_OCCURRENCE: {
+            case END_OF_LINE: {
                 for (int s = high; s < tokens.length && tokens[s].getY() <= y; s++) {
                     high++;
                 }

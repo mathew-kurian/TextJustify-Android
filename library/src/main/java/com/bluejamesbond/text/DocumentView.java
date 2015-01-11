@@ -40,9 +40,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ScrollView;
 
@@ -59,15 +61,20 @@ import javax.microedition.khronos.egl.EGLDisplay;
 @SuppressWarnings("unused")
 public class DocumentView extends ScrollView {
 
+    public static final float FADE_IN_DURATION_MS = 250f;
+    public static final int FADE_IN_STEP_MS = 20;
+
     public static final int PLAIN_TEXT = 0;
     public static final int FORMATTED_TEXT = 1;
 
-    private static Lock oglBitmapHeightLock;
-    private static int oglBitmapHeight;
+    private static Lock eglBitmapHeightLock;
+    private static int eglBitmapHeight;
 
     private IDocumentLayout layout;
     private TextPaint paint;
-    private View view;
+    private View dummyView;
+    private volatile MeasureTask measureTask;
+    private volatile boolean measureCompleted;
 
     // Caching content
     private CacheConfig cacheConfig;
@@ -75,8 +82,8 @@ public class DocumentView extends ScrollView {
     private CacheBitmap cacheBitmapBottom;
 
     static {
-        oglBitmapHeightLock = new ReentrantLock();
-        oglBitmapHeight = -1;
+        eglBitmapHeightLock = new ReentrantLock();
+        eglBitmapHeight = -1;
     }
 
     public DocumentView(Context context, AttributeSet attrs, int defStyle) {
@@ -151,20 +158,22 @@ public class DocumentView extends ScrollView {
     private void init(Context context, AttributeSet attrs, int type) {
 
         try {
-            oglBitmapHeightLock.lock();
+            eglBitmapHeightLock.lock();
 
-            if (DocumentView.oglBitmapHeight == -1) {
-                DocumentView.oglBitmapHeight = Math.min(context.getResources().getDisplayMetrics().heightPixels * 7 / 6, getMaxTextureSize());
+            if (DocumentView.eglBitmapHeight == -1) {
+                DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+                DocumentView.eglBitmapHeight = Math.min(Math.max(metrics.heightPixels, metrics.widthPixels) * 7 / 6, getMaxTextureSize());
             }
 
         } catch (Exception e) {
-            oglBitmapHeightLock.unlock();
+            eglBitmapHeightLock.unlock();
             e.printStackTrace();
         }
 
         cacheConfig = CacheConfig.AUTO_QUALITY;
         paint = new TextPaint();
-        view = new View(context);
+        dummyView = new View(context);
+        measureCompleted = false;
 
         // Initialize paint
         initPaint(this.paint);
@@ -172,7 +181,7 @@ public class DocumentView extends ScrollView {
         // Set default padding
         setPadding(0, 0, 0, 0);
 
-        addView(view);
+        addView(dummyView);
 
         if (attrs != null && !isInEditMode()) {
             TypedArray a = context.obtainStyledAttributes(attrs,
@@ -195,7 +204,7 @@ public class DocumentView extends ScrollView {
                 this.layout = getDocumentLayoutInstance(DocumentView.PLAIN_TEXT, paint);
             }
 
-            PlainDocumentLayout.LayoutParams layoutParams = this.layout.getLayoutParams();
+            StringDocumentLayout.LayoutParams layoutParams = this.layout.getLayoutParams();
 
             for (int i = 0; i < N; ++i) {
 
@@ -224,7 +233,7 @@ public class DocumentView extends ScrollView {
                 } else if (attr == R.styleable.DocumentView_maxLines) {
                     layoutParams.setMaxLines(a.getInt(attr, Integer.MAX_VALUE));
                 } else if (attr == R.styleable.DocumentView_lineHeightMultiplier) {
-                    layoutParams.setLineHeightMulitplier(a.getFloat(attr, 1.0f));
+                    layoutParams.setLineHeightMultiplier(a.getFloat(attr, 1.0f));
                 } else if (attr == R.styleable.DocumentView_textAlignment) {
                     layoutParams.setTextAlignment(TextAlignment.getById(a.getInt(attr, TextAlignment.LEFT.getId())));
                 } else if (attr == R.styleable.DocumentView_reverse) {
@@ -293,10 +302,10 @@ public class DocumentView extends ScrollView {
     public IDocumentLayout getDocumentLayoutInstance(int type, TextPaint paint) {
         switch (type) {
             case FORMATTED_TEXT:
-                return new FormattedDocumentLayout(getContext(), paint);
+                return new SpannableDocumentLayout(getContext(), paint);
             default:
             case PLAIN_TEXT:
-                return new PlainDocumentLayout(getContext(), paint);
+                return new StringDocumentLayout(getContext(), paint);
         }
     }
 
@@ -309,7 +318,7 @@ public class DocumentView extends ScrollView {
         requestLayout();
     }
 
-    public PlainDocumentLayout.LayoutParams getDocumentLayoutParams() {
+    public StringDocumentLayout.LayoutParams getDocumentLayoutParams() {
         return this.layout.getLayoutParams();
     }
 
@@ -327,24 +336,33 @@ public class DocumentView extends ScrollView {
 
     @Override
     public void requestLayout() {
-        if (this.layout != null) {
-            this.layout.getLayoutParams().invalidate();
+        if (layout != null) {
+            layout.getLayoutParams().invalidate();
         }
         super.requestLayout();
     }
 
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         final int width = MeasureSpec.getSize(widthMeasureSpec);
-        final int height = MeasureSpec.getSize(heightMeasureSpec);
 
-        layout.getLayoutParams().setParentWidth((float) width);
-        layout.measure();
-        view.setMinimumHeight(layout.getMeasuredHeight());
-        view.setMinimumWidth(width);
+        dummyView.setMinimumWidth(width);
 
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        if (measureCompleted) {
+            measureCompleted = false;
+            dummyView.setMinimumHeight(layout.getMeasuredHeight());
+        } else {
+            if (measureTask != null) {
+                measureTask.cancel(true);
+                measureTask = null;
+                measureCompleted = false;
+            }
+
+            measureTask = new MeasureTask(width);
+            measureTask.execute();
+        }
     }
 
     @SuppressLint("DrawAllocation")
@@ -362,76 +380,124 @@ public class DocumentView extends ScrollView {
         if (cacheEnabled) {
 
             if (cacheBitmapTop == null) {
-                cacheBitmapTop = new CacheBitmap(getWidth(), oglBitmapHeight, cacheConfig.getConfig());
+                cacheBitmapTop = new CacheBitmap(getWidth(), eglBitmapHeight, cacheConfig.getConfig());
             }
 
             if (cacheBitmapBottom == null) {
-                cacheBitmapBottom = new CacheBitmap(getWidth(), oglBitmapHeight, cacheConfig.getConfig());
+                cacheBitmapBottom = new CacheBitmap(getWidth(), eglBitmapHeight, cacheConfig.getConfig());
             }
 
-            int scrollTop = getScrollY();
-            int scrollBottom = scrollTop + getHeight();
+            final int scrollTop = getScrollY();
+            final int scrollBottom = scrollTop + getHeight();
 
-            CacheBitmap top = scrollTop % (oglBitmapHeight * 2) < oglBitmapHeight ? cacheBitmapTop : cacheBitmapBottom;
-            CacheBitmap bottom = scrollBottom % (oglBitmapHeight * 2) >= oglBitmapHeight ? cacheBitmapBottom : cacheBitmapTop;
+            final CacheBitmap top = scrollTop % (eglBitmapHeight * 2) < eglBitmapHeight ? cacheBitmapTop : cacheBitmapBottom;
+            final CacheBitmap bottom = scrollBottom % (eglBitmapHeight * 2) >= eglBitmapHeight ? cacheBitmapBottom : cacheBitmapTop;
+
+            final int startTop = scrollTop - (scrollTop % (eglBitmapHeight * 2)) + (top == cacheBitmapTop ? 0 : eglBitmapHeight);
+
+            boolean postInvalidate;
 
             if (top == bottom) {
-                int startTop = scrollTop - (scrollTop % (oglBitmapHeight * 2)) + (top == cacheBitmapTop ? 0 : oglBitmapHeight);
 
                 if (startTop != top.getStart()) {
-                    Canvas bitCanvas = new Canvas(bottom.getBitmap());
-                    bitCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                     top.setStart(startTop);
-                    layout.draw(bitCanvas, startTop, startTop + oglBitmapHeight);
-                    debugCache(bitCanvas);
+                    top.drawInBackground(new Runnable() {
+                        @Override
+                        public void run() {
+                            drawLayout(new Canvas(bottom.getBitmap()), startTop, startTop + eglBitmapHeight, true);
+                        }
+                    });
                 }
 
-                canvas.drawBitmap(top.getBitmap(), 0, startTop, paint);
+                postInvalidate = drawCacheToView(canvas, top, startTop);
 
             } else {
 
-                int startTop = scrollTop - (scrollTop % (oglBitmapHeight * 2)) + (top == cacheBitmapTop ? 0 : oglBitmapHeight);
-                int startBottom = startTop + oglBitmapHeight;
+                final int startBottom = startTop + eglBitmapHeight;
 
                 if (startTop != top.getStart()) {
-                    Canvas bitCanvas = new Canvas(top.getBitmap());
-                    bitCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                     top.setStart(startTop);
-                    layout.draw(bitCanvas, startTop, startTop + oglBitmapHeight);
-                    debugCache(bitCanvas);
+                    top.drawInBackground(new Runnable() {
+                        @Override
+                        public void run() {
+                            drawLayout(new Canvas(top.getBitmap()), startTop, startTop + eglBitmapHeight, true);
+                        }
+                    });
                 }
 
                 if (startBottom != bottom.getStart()) {
-                    Canvas bitCanvas = new Canvas(bottom.getBitmap());
-                    bitCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                     bottom.setStart(startBottom);
-                    layout.draw(bitCanvas, startBottom, startBottom + oglBitmapHeight);
-                    debugCache(bitCanvas);
+                    bottom.drawInBackground(new Runnable() {
+                        @Override
+                        public void run() {
+                            drawLayout(new Canvas(bottom.getBitmap()), startBottom, startBottom + eglBitmapHeight, true);
+                        }
+                    });
                 }
 
-                canvas.drawBitmap(top.getBitmap(), 0, startTop, paint);
-                canvas.drawBitmap(bottom.getBitmap(), 0, startBottom, paint);
+                postInvalidate = drawCacheToView(canvas, top, startTop) | drawCacheToView(canvas, bottom, startBottom);
+            }
+
+            if (postInvalidate) {
+                postInvalidateDelayed(FADE_IN_STEP_MS);
             }
 
         } else {
-            layout.draw(canvas, 0, layout.getMeasuredHeight());
+            drawLayout(canvas, 0, layout.getMeasuredHeight(), false);
         }
     }
 
-    private void debugCache(Canvas canvas) {
-        if (layout.isDebugging()) {
-            int lastColor = paint.getColor();
-            float lastStrokeWidth = paint.getStrokeWidth();
-            Paint.Style lastStyle = paint.getStyle();
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(8);
-            paint.setColor(Color.GREEN);
-            canvas.drawRect(0, 0, getWidth(), canvas.getHeight(), paint);
-            paint.setStrokeWidth(lastStrokeWidth);
-            paint.setColor(lastColor);
-            paint.setStyle(lastStyle);
+    protected void drawLayout(Canvas canvas, int startY, int endY, boolean isCache) {
+        if (isCache) {
+            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+            if (layout.isDebugging()) {
+                int lastColor = paint.getColor();
+                float lastStrokeWidth = paint.getStrokeWidth();
+                Paint.Style lastStyle = paint.getStyle();
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(8);
+                paint.setColor(Color.GREEN);
+                canvas.drawRect(0, 0, getWidth(), canvas.getHeight(), paint);
+                paint.setStrokeWidth(lastStrokeWidth);
+                paint.setColor(lastColor);
+                paint.setStyle(lastStyle);
+            }
         }
 
+        layout.draw(canvas, startY, endY);
+    }
+
+    protected boolean drawCacheToView(Canvas canvas, CacheBitmap cache, int y) {
+        if (cache.isReady()) {
+            int lastAlpha = paint.getAlpha();
+            paint.setAlpha(cache.getAlpha());
+            canvas.drawBitmap(cache.getBitmap(), 0, y, paint);
+            paint.setAlpha(lastAlpha);
+            return cache.getAlpha() < 255;
+        }
+
+        return false;
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        if (measureTask != null) {
+            measureTask.cancel(true);
+            measureTask = null;
+            measureCompleted = false;
+        }
+
+        if (cacheBitmapTop != null) {
+            cacheBitmapTop.recycle();
+            cacheBitmapTop = null;
+        }
+
+        if (cacheBitmapBottom != null) {
+            cacheBitmapBottom.recycle();
+            cacheBitmapBottom = null;
+        }
     }
 
     public static enum CacheConfig {
@@ -470,41 +536,111 @@ public class DocumentView extends ScrollView {
         }
     }
 
+    private class MeasureTask extends AsyncTask<Void, Void, Void> {
+        public MeasureTask(float parentWidth) {
+            layout.getLayoutParams().setParentWidth(parentWidth);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            layout.measure();
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            measureTask = null;
+            measureCompleted = true;
+            requestLayout();
+        }
+    }
+
     private class CacheBitmap {
 
-        Bitmap mBitmap;
-        int mStart;
-        int mHeight;
+        private long drawFadeInStartTime;
+        private Bitmap bitmap;
+        private int start;
+        private volatile boolean drawCompleted;
+        private volatile CacheDrawTask drawTask;
+        private volatile int alpha;
 
-        public CacheBitmap(int width, int height, Bitmap.Config config) {
-            mBitmap = Bitmap.createBitmap(width, height, config);
-            mStart = -1;
-            mHeight = -1;
+        public CacheBitmap(int w, int h, Bitmap.Config config) {
+            bitmap = Bitmap.createBitmap(w, h, config);
+            start = -1;
+            drawCompleted = false;
+        }
+
+        public int getAlpha() {
+            return (int) Math.min(255f * (float) (System.currentTimeMillis() - drawFadeInStartTime) / FADE_IN_DURATION_MS, 255f);
+        }
+
+        public void drawInBackground(Runnable runnable) {
+            if (drawTask != null) {
+                drawTask.cancel(true);
+                drawTask = null;
+            }
+
+            drawCompleted = false;
+            alpha = 0;
+            drawTask = new CacheDrawTask(runnable);
+            drawTask.execute();
         }
 
         public Bitmap getBitmap() {
-            return mBitmap;
+            return bitmap;
         }
 
         public void setBitmap(Bitmap bitmap) {
-            this.mBitmap = bitmap;
+            this.bitmap = bitmap;
         }
 
         public int getStart() {
-            return mStart;
+            return start;
         }
 
         public void setStart(int start) {
-            this.mStart = start;
+            this.start = start;
         }
 
-        public int getHeight() {
-            return mHeight;
+        public boolean isReady() {
+            return drawCompleted;
         }
 
         public void recycle() {
-            mBitmap.recycle();
-            mBitmap = null;
+            if (drawTask != null) {
+                drawTask.cancel(true);
+                drawTask = null;
+                drawCompleted = false;
+            }
+
+            bitmap.recycle();
+            bitmap = null;
+        }
+
+        private class CacheDrawTask extends AsyncTask<Void, Void, Void> {
+            private Runnable drawRunnable;
+
+            public CacheDrawTask(Runnable runnable) {
+                drawRunnable = runnable;
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                drawRunnable.run();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                drawFadeInStartTime = System.currentTimeMillis();
+                drawCompleted = true;
+                invalidate();
+            }
         }
     }
 }

@@ -97,28 +97,28 @@ public class DocumentView extends ScrollView {
 
     public DocumentView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(context, attrs, PLAIN_TEXT);
+        initDocumentView(context, attrs, PLAIN_TEXT);
     }
 
     public DocumentView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context, attrs, PLAIN_TEXT);
+        initDocumentView(context, attrs, PLAIN_TEXT);
     }
 
     public DocumentView(Context context) {
         super(context);
-        init(context, null, PLAIN_TEXT);
+        initDocumentView(context, null, PLAIN_TEXT);
     }
 
     public DocumentView(Context context, int type) {
         super(context);
-        init(context, null, type);
+        initDocumentView(context, null, type);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public DocumentView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init(context, attrs, PLAIN_TEXT);
+        initDocumentView(context, attrs, PLAIN_TEXT);
     }
 
     private static int getMaxTextureSize() {
@@ -222,7 +222,7 @@ public class DocumentView extends ScrollView {
         fadeInTween = tween;
     }
 
-    private void init(Context context, AttributeSet attrs, int type) {
+    private void initDocumentView(Context context, AttributeSet attrs, int type) {
 
         synchronized (eglBitmapHeightLock) {
             if (DocumentView.eglBitmapHeight == -1) {
@@ -682,7 +682,7 @@ public class DocumentView extends ScrollView {
         public float get(float t, float b, float c, float d);
     }
 
-    private class MeasureTask extends AsyncTask<Void, Float, Boolean> {
+    public class MeasureTask extends AsyncTask<Void, Float, Boolean> {
 
         private IDocumentLayout.ISet<Float> progress;
         private IDocumentLayout.IGet<Boolean> cancelled;
@@ -810,7 +810,7 @@ public class DocumentView extends ScrollView {
             bitmap = null;
         }
 
-        private class CacheDrawTask extends AsyncTask<Void, Void, Void> {
+        public class CacheDrawTask extends AsyncTask<Void, Void, Void> {
             private Runnable drawRunnable;
 
             public CacheDrawTask(Runnable runnable) {

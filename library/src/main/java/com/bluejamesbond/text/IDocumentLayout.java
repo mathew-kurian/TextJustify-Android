@@ -147,11 +147,11 @@ public abstract class IDocumentLayout {
         START_OF_LINE, END_OF_LINE
     }
 
-    interface ISet<T> {
+    public static interface ISet<T> {
         public void set(T val);
     }
 
-    interface IGet<T> {
+    public static interface IGet<T> {
         public T get();
     }
 

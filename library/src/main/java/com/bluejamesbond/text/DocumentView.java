@@ -47,7 +47,6 @@ import android.os.Build;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -65,35 +64,38 @@ import javax.microedition.khronos.egl.EGLDisplay;
 @SuppressWarnings("unused")
 public class DocumentView extends ScrollView {
 
-    public static final float FADE_IN_DURATION_MS = 250f;
-    public static final int FADE_IN_STEP_MS = 35;
-
     public static final int PLAIN_TEXT = 0;
     public static final int FORMATTED_TEXT = 1;
+    private static final ITween LINEAR_EASE_IN;
 
     private static Lock eglBitmapHeightLock;
     private static int eglBitmapHeight;
+
+    static {
+        eglBitmapHeightLock = new ReentrantLock();
+        eglBitmapHeight = -1;
+        LINEAR_EASE_IN = new ITween() {
+            @Override
+            public float get(float t, float b, float c, float d) {
+                return c * t / d + b;
+            }
+        };
+    }
 
     protected ILayoutProgressListener layoutProgressListener;
     private IDocumentLayout layout;
     private TextPaint paint;
     private View dummyView;
-
+    private ITween fadeInTween;
+    private int fadeInDuration = 250;
+    private int fadeInAnimationStepDelay = 35;
     private volatile MeasureTask measureTask;
     private volatile MeasureTaskState measureState;
-
     private int minimumHeight;
     private int orientation;
-
-    // Caching content
     private CacheConfig cacheConfig;
     private CacheBitmap cacheBitmapTop;
     private CacheBitmap cacheBitmapBottom;
-
-    static {
-        eglBitmapHeightLock = new ReentrantLock();
-        eglBitmapHeight = -1;
-    }
 
     public DocumentView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -164,14 +166,28 @@ public class DocumentView extends ScrollView {
         return Math.max(maximumTextureSize, GL_MAX_TEXTURE_SIZE);
     }
 
-    public void setOnLayoutProgressListener(ILayoutProgressListener listener) {
-        layoutProgressListener = listener;
+    public int getFadeInAnimationStepDelay() {
+        return fadeInAnimationStepDelay;
     }
 
-    @Override
-    public void setMinimumHeight(int minHeight) {
-        minimumHeight = minHeight;
-        dummyView.setMinimumHeight(minimumHeight);
+    public void setFadeInAnimationStepDelay(int delay) {
+        fadeInAnimationStepDelay = delay;
+    }
+
+    public int getFadeInDuration() {
+        return fadeInDuration;
+    }
+
+    public void setFadeInDuration(int duration) {
+        fadeInDuration = duration;
+    }
+
+    public ITween getFadeInTween() {
+        return fadeInTween;
+    }
+
+    public void setFadeInTween(ITween tween) {
+        fadeInTween = tween;
     }
 
     private void init(Context context, AttributeSet attrs, int type) {
@@ -189,6 +205,7 @@ public class DocumentView extends ScrollView {
             e.printStackTrace();
         }
 
+        fadeInTween = LINEAR_EASE_IN;
         cacheConfig = CacheConfig.AUTO_QUALITY;
         paint = new TextPaint();
         dummyView = new View(context);
@@ -224,50 +241,54 @@ public class DocumentView extends ScrollView {
                     layoutParams.setPaddingRight(pad);
                     layoutParams.setPaddingTop(pad);
                 } else if (attr == R.styleable.DocumentView_paddingLeft) {
-                    layoutParams.setPaddingLeft(a.getDimension(attr, 0f));
+                    layoutParams.setPaddingLeft(a.getDimension(attr, layoutParams.getPaddingLeft()));
                 } else if (attr == R.styleable.DocumentView_paddingBottom) {
-                    layoutParams.setPaddingBottom(a.getDimension(attr, 0f));
+                    layoutParams.setPaddingBottom(a.getDimension(attr, layoutParams.getPaddingBottom()));
                 } else if (attr == R.styleable.DocumentView_paddingRight) {
-                    layoutParams.setPaddingRight(a.getDimension(attr, 0f));
+                    layoutParams.setPaddingRight(a.getDimension(attr, layoutParams.getPaddingRight()));
                 } else if (attr == R.styleable.DocumentView_paddingTop) {
-                    layoutParams.setPaddingTop(a.getDimension(attr, 0f));
+                    layoutParams.setPaddingTop(a.getDimension(attr, layoutParams.getPaddingTop()));
                 } else if (attr == R.styleable.DocumentView_offsetX) {
-                    layoutParams.setOffsetX(a.getDimension(attr, 0f));
+                    layoutParams.setOffsetX(a.getDimension(attr, layoutParams.getOffsetX()));
                 } else if (attr == R.styleable.DocumentView_offsetY) {
-                    layoutParams.setOffsetY(a.getDimension(attr, 0f));
+                    layoutParams.setOffsetY(a.getDimension(attr, layoutParams.getOffsetY()));
                 } else if (attr == R.styleable.DocumentView_hypen) {
                     layoutParams.setHyphen(a.getString(attr));
                 } else if (attr == R.styleable.DocumentView_maxLines) {
-                    layoutParams.setMaxLines(a.getInt(attr, Integer.MAX_VALUE));
+                    layoutParams.setMaxLines(a.getInt(attr, layoutParams.getMaxLines()));
                 } else if (attr == R.styleable.DocumentView_lineHeightMultiplier) {
-                    layoutParams.setLineHeightMultiplier(a.getFloat(attr, 1.0f));
+                    layoutParams.setLineHeightMultiplier(a.getFloat(attr, layoutParams.getLineHeightMultiplier()));
                 } else if (attr == R.styleable.DocumentView_textAlignment) {
-                    layoutParams.setTextAlignment(TextAlignment.getById(a.getInt(attr, TextAlignment.LEFT.getId())));
+                    layoutParams.setTextAlignment(TextAlignment.getById(a.getInt(attr, layoutParams.getTextAlignment().getId())));
                 } else if (attr == R.styleable.DocumentView_reverse) {
-                    layoutParams.setReverse(a.getBoolean(attr, false));
+                    layoutParams.setReverse(a.getBoolean(attr, layoutParams.isReverse()));
                 } else if (attr == R.styleable.DocumentView_wordSpacingMultiplier) {
-                    layoutParams.setWordSpacingMultiplier(a.getFloat(attr, 1.0f));
+                    layoutParams.setWordSpacingMultiplier(a.getFloat(attr, layoutParams.getWordSpacingMultiplier()));
                 } else if (attr == R.styleable.DocumentView_textColor) {
-                    setColor(a.getColor(attr, Color.BLACK));
+                    setTextColor(a.getColor(attr, getTextColor()));
                 } else if (attr == R.styleable.DocumentView_textSize) {
-                    setTextSize(a.getDimension(attr, paint.getTextSize()));
+                    setTextSize(a.getDimension(attr, getTextSize()));
                 } else if (attr == R.styleable.DocumentView_textStyle) {
                     int style = a.getInt(attr, 0);
-                    paint.setFakeBoldText((style & 1) > 0);
-                    paint.setUnderlineText(((style >> 1) & 1) > 0);
-                    paint.setStrikeThruText(((style >> 2) & 1) > 0);
+                    setFakeBoldText((style & 1) > 0);
+                    setUnderlineText(((style >> 1) & 1) > 0);
+                    setStrikeThruText(((style >> 2) & 1) > 0);
                 } else if (attr == R.styleable.DocumentView_textTypefacePath) {
                     setTypeface(Typeface.createFromAsset(getResources().getAssets(), a.getString(attr)));
                 } else if (attr == R.styleable.DocumentView_antialias) {
-                    paint.setAntiAlias(a.getBoolean(attr, true));
+                    paint.setAntiAlias(a.getBoolean(attr, isAntiAlias()));
                 } else if (attr == R.styleable.DocumentView_textSubpixel) {
-                    paint.setSubpixelText(a.getBoolean(attr, true));
+                    paint.setSubpixelText(a.getBoolean(attr, isSubpixelText()));
                 } else if (attr == R.styleable.DocumentView_text) {
                     layout.setText(a.getString(attr));
                 } else if (attr == R.styleable.DocumentView_cacheConfig) {
                     setCacheConfig(CacheConfig.getById(a.getInt(attr, CacheConfig.AUTO_QUALITY.getId())));
                 } else if (attr == R.styleable.DocumentView_progressBar) {
                     setProgressBar(a.getResourceId(R.styleable.DocumentView_progressBar, 0));
+                } else if (attr == R.styleable.DocumentView_fadeInAnimationStepDelay) {
+                    setFadeInAnimationStepDelay(a.getInteger(attr, getFadeInAnimationStepDelay()));
+                } else if (attr == R.styleable.DocumentView_fadeInDuration) {
+                    setFadeInDuration(a.getInteger(attr, getFadeInDuration()));
                 }
             }
 
@@ -278,28 +299,44 @@ public class DocumentView extends ScrollView {
         }
     }
 
-    public void destroyCache() {
-        if (cacheBitmapTop != null) {
-            cacheBitmapTop.recycle();
-            cacheBitmapTop = null;
-        }
-
-        if (cacheBitmapBottom != null) {
-            cacheBitmapBottom.recycle();
-            cacheBitmapBottom = null;
-        }
+    public boolean isUnderlineText() {
+        return paint.isUnderlineText();
     }
 
-    public void setTextSize(float textSize) {
-        paint.setTextSize(textSize);
+    public void setUnderlineText(boolean underline) {
+        paint.setUnderlineText(underline);
     }
 
-    public void setColor(int textColor) {
-        paint.setColor(textColor);
+    public boolean isStrikeThruText() {
+        return paint.isStrikeThruText();
     }
 
-    public void setTypeface(Typeface typeface) {
-        paint.setTypeface(typeface);
+    public void setStrikeThruText(boolean strikeThru) {
+        paint.setStrikeThruText(strikeThru);
+    }
+
+    public boolean isFakeBoldText() {
+        return paint.isFakeBoldText();
+    }
+
+    public void setFakeBoldText(boolean fakeBold) {
+        paint.setFakeBoldText(fakeBold);
+    }
+
+    public boolean isSubpixelText() {
+        return paint.isSubpixelText();
+    }
+
+    public void setSubpixelText(boolean subpixel) {
+        paint.setSubpixelText(subpixel);
+    }
+
+    public boolean isAntiAlias() {
+        return paint.isAntiAlias();
+    }
+
+    public void setAntialias(boolean antialias) {
+        paint.setAntiAlias(antialias);
     }
 
     protected void initPaint(Paint paint) {
@@ -316,6 +353,64 @@ public class DocumentView extends ScrollView {
             case PLAIN_TEXT:
                 return new StringDocumentLayout(getContext(), paint);
         }
+    }
+
+    public Typeface getTypeface() {
+        return paint.getTypeface();
+    }
+
+    public void setTypeface(Typeface typeface) {
+        paint.setTypeface(typeface);
+    }
+
+    public float getTextSize() {
+        return paint.getTextSize();
+    }
+
+    public void setTextSize(float textSize) {
+        paint.setTextSize(textSize);
+    }
+
+    public int getTextColor() {
+        return paint.getColor();
+    }
+
+    public void setTextColor(int textColor) {
+        paint.setColor(textColor);
+    }
+
+    public void setProgressBar(final int progressBarId) {
+        setOnLayoutProgressListener(new DocumentView.ILayoutProgressListener() {
+
+            private ProgressBar progressBar;
+
+            @Override
+            public void onCancelled() {
+                progressBar.setProgress(progressBar.getMax());
+                progressBar = null;
+            }
+
+            @Override
+            public void onFinish() {
+                progressBar.setProgress(progressBar.getMax());
+                progressBar = null;
+            }
+
+            @Override
+            public void onStart() {
+                progressBar = (ProgressBar) ((Activity) getContext()).getWindow().getDecorView().findViewById(progressBarId);
+                progressBar.setProgress(0);
+            }
+
+            @Override
+            public void onProgressUpdate(float progress) {
+                progressBar.setProgress((int) (progress * (float) progressBar.getMax()));
+            }
+        });
+    }
+
+    public void setOnLayoutProgressListener(ILayoutProgressListener listener) {
+        layoutProgressListener = listener;
     }
 
     public CharSequence getText() {
@@ -343,19 +438,11 @@ public class DocumentView extends ScrollView {
         cacheConfig = quality;
     }
 
-    @Override
-    public void requestLayout() {
-        measureState = MeasureTaskState.START;
-        super.requestLayout();
-    }
-
     @SuppressWarnings("DrawAllocation")
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         final int width = MeasureSpec.getSize(widthMeasureSpec);
-
-        Console.log("measureState - " + measureState);
 
         switch (measureState) {
             case FINISH_AWAIT:
@@ -377,6 +464,52 @@ public class DocumentView extends ScrollView {
                 measureState = MeasureTaskState.AWAIT;
                 break;
         }
+    }
+
+    @Override
+    public void requestLayout() {
+        measureState = MeasureTaskState.START;
+        super.requestLayout();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        destroyResources();
+        super.onDetachedFromWindow();
+    }
+
+    public void setProgressBar(final ProgressBar progressBar) {
+        setOnLayoutProgressListener(new DocumentView.ILayoutProgressListener() {
+            @Override
+            public void onCancelled() {
+                progressBar.setProgress(progressBar.getMax());
+            }
+
+            @Override
+            public void onFinish() {
+                progressBar.setProgress(progressBar.getMax());
+            }
+
+            @Override
+            public void onStart() {
+                progressBar.setProgress(0);
+            }
+
+            @Override
+            public void onProgressUpdate(float progress) {
+                progressBar.setProgress((int) (progress * (float) progressBar.getMax()));
+            }
+        });
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        if (orientation != newConfig.orientation) {
+            orientation = newConfig.orientation;
+            destroyResources();
+        }
+
+        super.onConfigurationChanged(newConfig);
     }
 
     @SuppressLint("DrawAllocation")
@@ -453,12 +586,18 @@ public class DocumentView extends ScrollView {
             }
 
             if (postInvalidate) {
-                postInvalidateDelayed(FADE_IN_STEP_MS);
+                postInvalidateDelayed(fadeInAnimationStepDelay);
             }
 
         } else {
             drawLayout(canvas, 0, layout.getMeasuredHeight(), false);
         }
+    }
+
+    @Override
+    public void setMinimumHeight(int minHeight) {
+        minimumHeight = minHeight;
+        dummyView.setMinimumHeight(minimumHeight);
     }
 
     protected void drawLayout(Canvas canvas, int startY, int endY, boolean isCache) {
@@ -481,80 +620,17 @@ public class DocumentView extends ScrollView {
         layout.draw(canvas, startY, endY);
     }
 
-    public void setProgressBar(final int progressBarId) {
-        setOnLayoutProgressListener(new DocumentView.ILayoutProgressListener() {
-
-            private ProgressBar progressBar;
-
-            @Override
-            public void onCancelled() {
-                progressBar.setProgress(progressBar.getMax());
-                progressBar = null;
-            }
-
-            @Override
-            public void onFinish() {
-                progressBar.setProgress(progressBar.getMax());
-                progressBar = null;
-            }
-
-            @Override
-            public void onStart() {
-                progressBar = (ProgressBar) ((Activity) getContext()).getWindow().getDecorView().findViewById(progressBarId);
-                progressBar.setProgress(0);
-            }
-
-            @Override
-            public void onProgressUpdate(float progress) {
-                progressBar.setProgress((int) (progress * (float) progressBar.getMax()));
-            }
-        });
-    }
-
-    public void setProgressBar(final ProgressBar progressBar) {
-        setOnLayoutProgressListener(new DocumentView.ILayoutProgressListener() {
-            @Override
-            public void onCancelled() {
-                progressBar.setProgress(progressBar.getMax());
-            }
-
-            @Override
-            public void onFinish() {
-                progressBar.setProgress(progressBar.getMax());
-            }
-
-            @Override
-            public void onStart() {
-                progressBar.setProgress(0);
-            }
-
-            @Override
-            public void onProgressUpdate(float progress) {
-                progressBar.setProgress((int) (progress * (float) progressBar.getMax()));
-            }
-        });
-    }
-
     protected boolean drawCacheToView(Canvas canvas, CacheBitmap cache, int y) {
-        if (cache.isReady()) {
+        // draw only if cache is ready
+        if(cache.isReady()) {
             int lastAlpha = paint.getAlpha();
             paint.setAlpha(cache.getAlpha());
             canvas.drawBitmap(cache.getBitmap(), 0, y, paint);
             paint.setAlpha(lastAlpha);
-            return cache.getAlpha() < 255;
+            return cache.getAlpha() < 255; // return true to invoke postInvalidateDelayed()
         }
 
         return false;
-    }
-
-    @Override
-    protected void onConfigurationChanged(Configuration newConfig) {
-        if (orientation != newConfig.orientation) {
-            orientation = newConfig.orientation;
-            destroyResources();
-        }
-
-        super.onConfigurationChanged(newConfig);
     }
 
     protected void destroyResources() {
@@ -569,16 +645,22 @@ public class DocumentView extends ScrollView {
         destroyCache();
     }
 
+    public void destroyCache() {
+        if (cacheBitmapTop != null) {
+            cacheBitmapTop.recycle();
+            cacheBitmapTop = null;
+        }
+
+        if (cacheBitmapBottom != null) {
+            cacheBitmapBottom.recycle();
+            cacheBitmapBottom = null;
+        }
+    }
+
     @Override
     protected void onAttachedToWindow() {
         orientation = getResources().getConfiguration().orientation;
         super.onAttachedToWindow();
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        destroyResources();
-        super.onDetachedFromWindow();
     }
 
     public static enum CacheConfig {
@@ -631,6 +713,10 @@ public class DocumentView extends ScrollView {
         public void onProgressUpdate(float progress);
     }
 
+    public static interface ITween {
+        public float get(float t, float b, float c, float d);
+    }
+
     private class MeasureTask extends AsyncTask<Void, Float, Boolean> {
 
         private IDocumentLayout.ISet<Float> progress;
@@ -655,13 +741,6 @@ public class DocumentView extends ScrollView {
         }
 
         @Override
-        protected void onPreExecute() {
-            if (layoutProgressListener != null) {
-                layoutProgressListener.onStart();
-            }
-        }
-
-        @Override
         protected Boolean doInBackground(Void... params) {
             try {
                 return layout.measure(progress, cancelled);
@@ -670,6 +749,14 @@ public class DocumentView extends ScrollView {
                 return false;
             }
         }
+
+        @Override
+        protected void onPreExecute() {
+            if (layoutProgressListener != null) {
+                layoutProgressListener.onStart();
+            }
+        }
+
 
         @Override
         protected void onPostExecute(Boolean done) {
@@ -712,7 +799,7 @@ public class DocumentView extends ScrollView {
         }
 
         public int getAlpha() {
-            return (int) Math.min(255f * (float) (System.currentTimeMillis() - drawFadeInStartTime) / FADE_IN_DURATION_MS, 255f);
+            return (int) Math.min(fadeInTween.get(System.currentTimeMillis() - drawFadeInStartTime, 0, 255f, fadeInDuration), 255f);
         }
 
         public void drawInBackground(Runnable runnable) {

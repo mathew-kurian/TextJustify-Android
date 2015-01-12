@@ -36,7 +36,7 @@
             <flag name="plain" value="0" />
             <flag name="bold" value="1" />
             <flag name="underline" value="2" />
-            <flag name="strikeThrough" value="4" />
+            <flag name="strikeThru" value="4" />
         </attr>
         <attr name="textFormat" format="enum">
             <!--
@@ -58,7 +58,9 @@
             <enum name="grayscale" value="4" />
         </attr>
 
-        <attr name="progressBar" format="reference"/>
+        <attr name="progressBar" format="reference" />
+        <attr name="fadeInAnimationStepDelay" format="integer" />
+        <attr name="fadeInDuration" format="integer" />
 
     </declare-styleable>
 </resources>

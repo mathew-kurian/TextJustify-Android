@@ -42,7 +42,7 @@ public class LongPlainTextTest extends TestActivity {
         super.onCreate(savedInstanceState);
 
         addDocumentView(new StringBuilder()
-                .append(testName + "\n")
+                .append(testName + "\n\nShort sentence.\n\n")
                 .append(getResources().getString(R.string.plain_text))
                 .toString(), DocumentView.PLAIN_TEXT);
     }

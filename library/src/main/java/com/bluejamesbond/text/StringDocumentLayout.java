@@ -81,7 +81,6 @@ public class StringDocumentLayout extends IDocumentLayout {
                     chunks.add(text.substring(start, text.length()));
                 } else {
                     chunks.add(text.substring(start, next));
-                    chunks.add("");
                     next += 1;
                 }
 
@@ -105,7 +104,8 @@ public class StringDocumentLayout extends IDocumentLayout {
         float y = params.paddingTop + getFontAscent();
         float spaceOffset = paint.measureText(" ") * params.wordSpacingMultiplier;
 
-        main : for (String paragraph : chunks) {
+        main:
+        for (String paragraph : chunks) {
 
             if (cancelled.get()) {
                 done = false;
@@ -249,21 +249,6 @@ public class StringDocumentLayout extends IDocumentLayout {
     }
 
     @Override
-    public boolean isTokenized() {
-        return tokens != null;
-    }
-
-    @Override
-    public CharSequence getTokenTextAt(int index) {
-        return tokens[index].toString();
-    }
-
-    @Override
-    public float getTokenTopAt(int index) {
-        return tokens[index].getY();
-    }
-
-    @Override
     public int getTokenIndex(float y, TokenPosition position) {
         int high = Math.max(0, tokens.length - 1);
         int low = 0;
@@ -294,6 +279,21 @@ public class StringDocumentLayout extends IDocumentLayout {
                 return high;
             }
         }
+    }
+
+    @Override
+    public float getTokenTopAt(int index) {
+        return tokens[index].getY();
+    }
+
+    @Override
+    public CharSequence getTokenTextAt(int index) {
+        return tokens[index].toString();
+    }
+
+    @Override
+    public boolean isTokenized() {
+        return tokens != null;
     }
 
     private ConcurrentModifiableLinkedList<Unit> tokenize(String s) {

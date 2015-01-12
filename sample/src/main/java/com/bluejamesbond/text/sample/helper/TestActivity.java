@@ -62,14 +62,14 @@ public class TestActivity extends Activity {
 
         TextView titleBar = ((TextView) findViewById(R.id.titlebar));
 
-        if(titleBar != null) {
+        if (titleBar != null) {
             titleBar.setText(testName);
         }
     }
 
     public DocumentView addDocumentView(CharSequence article, int type, boolean rtl) {
         final DocumentView documentView = new DocumentView(this, type);
-        documentView.setColor(0xffffffff);
+        documentView.setTextColor(0xffffffff);
         documentView.setTypeface(Typeface.DEFAULT);
         documentView.setTextSize(30);
         documentView.getDocumentLayoutParams().setTextAlignment(TextAlignment.JUSTIFIED);
@@ -80,8 +80,16 @@ public class TestActivity extends Activity {
         documentView.getDocumentLayoutParams().setLineHeightMultiplier(1f);
         documentView.getDocumentLayoutParams().setReverse(rtl);
         documentView.getLayout().setDebugging(debugging);
-        documentView.setText(article); // true: enable justification
+        documentView.setText(article);
         documentView.setProgressBar((ProgressBar) findViewById(R.id.progressBar));
+        documentView.setFadeInDuration(800);
+        documentView.setFadeInAnimationStepDelay(30);
+        documentView.setFadeInTween(new DocumentView.ITween() {
+            @Override
+            public float get(float t, float b, float c, float d) {
+                return c * (t /= d) * t * t + b;
+            }
+        });
 
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.VERTICAL);

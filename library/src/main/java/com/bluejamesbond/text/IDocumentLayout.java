@@ -192,7 +192,7 @@ public abstract class IDocumentLayout {
         public int hashCode() {
             return Arrays.hashCode(
                     new Object[]{hyphenator, paddingLeft, paddingTop, paddingBottom, paddingRight,
-                            parentWidth, offsetX, offsetX,
+                            parentWidth, offsetX, offsetY,
                             lineHeightMultiplier, hyphenated, reverse, maxLines, hyphen, textAlignment, wordSpacingMultiplier,
                             textUnderline, textStrikeThru, textFakeBold, textTypeface, textSize, textColor});
         }

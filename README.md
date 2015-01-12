@@ -1,5 +1,5 @@
 
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-TextJustify--Android-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1318)   
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-TextJustify--Android-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1318) [![Build Status](https://travis-ci.org/bluejamesbond/TextJustify-Android.svg?branch=master)](https://travis-ci.org/bluejamesbond/TextJustify-Android)
 ![Logo](https://raw.githubusercontent.com/bluejamesbond/TextJustify-Android/master/misc/logo.png?)
 =======
 

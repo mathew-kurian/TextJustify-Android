@@ -455,7 +455,7 @@ public class DocumentView extends ScrollView {
 
     @Override
     protected void onDetachedFromWindow() {
-        destroyResources();
+        freeResources();
         super.onDetachedFromWindow();
     }
 
@@ -487,7 +487,7 @@ public class DocumentView extends ScrollView {
     protected void onConfigurationChanged(Configuration newConfig) {
         if (orientation != newConfig.orientation) {
             orientation = newConfig.orientation;
-            destroyResources();
+            freeResources();
         }
 
         super.onConfigurationChanged(newConfig);
@@ -598,7 +598,7 @@ public class DocumentView extends ScrollView {
         return false;
     }
 
-    protected void destroyResources() {
+    protected void freeResources() {
         dummyView.setMinimumHeight(minimumHeight);
 
         if (measureTask != null) {

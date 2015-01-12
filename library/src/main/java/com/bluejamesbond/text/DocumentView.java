@@ -594,7 +594,9 @@ public class DocumentView extends ScrollView {
             progress = new IDocumentLayout.ISet<Float>() {
                 @Override
                 public void set(Float progress) {
-                    publishProgress(progress);
+                    if (layoutProgressListener != null) {
+                        layoutProgressListener.onProgressUpdate(progress);
+                    }
                 }
             };
             cancelled = new IDocumentLayout.IGet<Boolean>() {
@@ -614,21 +616,11 @@ public class DocumentView extends ScrollView {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            if (layoutProgressListener != null) {
-                layoutProgressListener.onProgressUpdate(0);
-            }
             try {
                 return layout.measure(progress, cancelled);
             } catch (Exception e) {
                 e.printStackTrace();
                 return false;
-            }
-        }
-
-        @Override
-        protected void onProgressUpdate(Float... values) {
-            if (layoutProgressListener != null) {
-                layoutProgressListener.onProgressUpdate(values[0]);
             }
         }
 

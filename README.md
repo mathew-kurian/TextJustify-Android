@@ -17,10 +17,10 @@ This library will provide you a way to justify text. It supports both plain text
 [![Imgur](http://i.imgur.com/hSGF1fV.png)](https://play.google.com/store/apps/details?id=com.bluejamesbond.text.sample)
 
 #Recent
-**01/11/2014** ► Added support for very long documents with fading and progress listener  
-**01/10/2014** ► Refractored / renamed classes  
-**01/04/2014** ► Improved caching support which allows for smooth scrolling  
-**01/02/2014** ► Added XML attributes for `DocumentView`
+**01/11/2015** ► Added support for very long documents with fading and progress listener  
+**01/10/2015** ► Refractored / renamed classes  
+**01/04/2015** ► Improved caching support which allows for smooth scrolling  
+**01/02/2015** ► Added XML attributes for `DocumentView`
 
 #Wiki
 For examples, tests, and API refer to the [Android-TextJustify Wiki](https://github.com/bluejamesbond/TextJustify-Android/wiki/1-%C2%B7-Home).

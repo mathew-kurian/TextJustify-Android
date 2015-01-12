@@ -34,15 +34,7 @@ If for some reason you like the library and feel like thanking me. Here you go! 
 Just add to your `build.gradle`
 ```gradle
 dependencies {
-    compile 'com.github.bluejamesbond:textjustify-android:2.0'
-    // compile 'com.github.bluejamesbond:textjustify-android:1.6'
-    // compile 'com.github.bluejamesbond:textjustify-android:1.5.1'
-    // compile 'com.github.bluejamesbond:textjustify-android:1.5'
-    // compile 'com.github.bluejamesbond:textjustify-android:1.4'
-    // compile 'com.github.bluejamesbond:textjustify-android:1.3'
-    // compile 'com.github.bluejamesbond:textjustify-android:1.2'
-    // compile 'com.github.bluejamesbond:textjustify-android:1.1'
-    // compile 'com.github.bluejamesbond:textjustify-android:1.0'
+    compile 'com.github.bluejamesbond:textjustify-android:2.0.1'
 }
 ```
 

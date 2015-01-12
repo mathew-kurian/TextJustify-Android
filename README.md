@@ -1,11 +1,20 @@
+
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-TextJustify--Android-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1318)   
 ![Logo](https://raw.githubusercontent.com/bluejamesbond/TextJustify-Android/master/misc/logo.png?)
 =======
-**Android Full Justification**
+
+**Android Full Justification** 
 
 #About
 This library will provide you a way to justify text. It supports both plain text and Spannables. Additionally, the library can auto-hyphentate your displayed content (thanks to [@muriloandrade](https://github.com/muriloandrade)).
 
 *Compatible for Android 2.2 to 5.X*
+
+#Screenshot
+![Preview](http://i.imgur.com/k6bAWd0.jpg)
+
+#Demo
+[![Imgur](http://i.imgur.com/hSGF1fV.png)](https://play.google.com/store/apps/details?id=com.bluejamesbond.text.sample)
 
 #Recent
 **1/4/2014** ► Improved caching support which allows for smooth scrolling  
@@ -41,9 +50,3 @@ dependencies {
 |  **`OPEN`**       | Improve text strike-through |
 |  **`OPEN`**       | Improve text underline  |
 |  **`OPEN`**       | Support more features like `TextView` in terms of `Paint` settings  |
-
-#Demo
-Download the demo on [Google Play Store](https://play.google.com/store/apps/details?id=com.bluejamesbond.text.sample).
-
-#Screenshot
-![Preview](https://raw.githubusercontent.com/bluejamesbond/TextJustify-Android/master/screenshots/quoteSpan.png)

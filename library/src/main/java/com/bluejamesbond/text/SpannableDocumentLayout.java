@@ -148,14 +148,9 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public boolean measure(ISet<Float> progress, IGet<Boolean> cancelled) {
+    public boolean onMeasure(ISet<Float> progress, IGet<Boolean> cancelled) {
 
         boolean done = true;
-
-        if (!params.changed && !textChange) {
-            return done;
-        }
-
         float parentWidth = params.getParentWidth();
         float boundWidth =
                 params.getParentWidth() - params.getPaddingLeft() - params.getPaddingRight();
@@ -469,29 +464,9 @@ public class SpannableDocumentLayout extends IDocumentLayout {
     }
 
     @Override
-    public void draw(Canvas canvas, int scrollTop, int scrollBottom) {
+    public void onDraw(Canvas canvas, int scrollTop, int scrollBottom) {
 
         boolean isReverse = params.reverse;
-
-        if (debugging) {
-            int lastColor = paint.getColor();
-            float lastStrokeWidth = paint.getStrokeWidth();
-            paint.setStrokeWidth(2);
-            paint.setColor(Color.DKGRAY);
-            canvas.drawRect(params.paddingLeft, params.paddingTop,
-                    params.parentWidth - params.paddingRight,
-                    measuredHeight - params.paddingBottom, paint);
-            paint.setColor(Color.GREEN);
-            canvas.drawLine(params.paddingLeft, 0, params.paddingLeft, measuredHeight, paint);
-            canvas.drawLine(params.parentWidth - params.paddingRight, 0,
-                    params.parentWidth - params.paddingRight, measuredHeight, paint);
-            paint.setColor(Color.MAGENTA);
-            canvas.drawRect(0, params.paddingTop, params.parentWidth, params.paddingTop, paint);
-            canvas.drawRect(0, measuredHeight - params.paddingBottom, params.parentWidth,
-                    measuredHeight - params.paddingBottom, paint);
-            paint.setColor(lastColor);
-            paint.setStrokeWidth(lastStrokeWidth);
-        }
 
         for (LeadingMarginSpanDrawParameters parameters : mLeadMarginSpanDrawEvents) {
             // FIXME sort by Y and break out of loop
@@ -529,12 +504,12 @@ public class SpannableDocumentLayout extends IDocumentLayout {
                 float lastStrokeWidth = paint.getStrokeWidth();
                 paint.setStrokeWidth(2);
                 paint.setColor(Color.GREEN);
-                canvas.drawLine(0, tokens[index + TOKEN_Y] - tokens[index + TOKEN_ASCENT],
-                        params.parentWidth, tokens[index + TOKEN_Y] - tokens[index + TOKEN_ASCENT],
+                canvas.drawLine(0, tokens[index + TOKEN_Y] - tokens[index + TOKEN_ASCENT] - scrollTop,
+                        params.parentWidth, tokens[index + TOKEN_Y] - tokens[index + TOKEN_ASCENT] - scrollTop,
                         paint);
                 paint.setColor(Color.CYAN);
-                canvas.drawLine(0, tokens[index + TOKEN_Y] + tokens[index + TOKEN_DESCENT],
-                        params.parentWidth, tokens[index + TOKEN_Y] + tokens[index + TOKEN_DESCENT],
+                canvas.drawLine(0, tokens[index + TOKEN_Y] + tokens[index + TOKEN_DESCENT] - scrollTop,
+                        params.parentWidth, tokens[index + TOKEN_Y] + tokens[index + TOKEN_DESCENT] - scrollTop,
                         paint);
                 paint.setColor(lastColor);
                 paint.setStrokeWidth(lastStrokeWidth);

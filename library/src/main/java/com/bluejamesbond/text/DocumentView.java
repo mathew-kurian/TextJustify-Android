@@ -53,9 +53,6 @@ import android.widget.ScrollView;
 
 import com.bluejamesbond.text.style.TextAlignment;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
@@ -68,11 +65,11 @@ public class DocumentView extends ScrollView {
     public static final int FORMATTED_TEXT = 1;
     private static final ITween LINEAR_EASE_IN;
 
-    private static Lock eglBitmapHeightLock;
+    private static final Object eglBitmapHeightLock;
     private static int eglBitmapHeight;
 
     static {
-        eglBitmapHeightLock = new ReentrantLock();
+        eglBitmapHeightLock = new Object();
         eglBitmapHeight = -1;
         LINEAR_EASE_IN = new ITween() {
             @Override
@@ -85,6 +82,7 @@ public class DocumentView extends ScrollView {
     protected ILayoutProgressListener layoutProgressListener;
     private IDocumentLayout layout;
     private TextPaint paint;
+    private TextPaint cachePaint;
     private View dummyView;
     private ITween fadeInTween;
     private int fadeInDuration = 250;
@@ -166,6 +164,40 @@ public class DocumentView extends ScrollView {
         return Math.max(maximumTextureSize, GL_MAX_TEXTURE_SIZE);
     }
 
+    protected synchronized void drawLayout(Canvas canvas, int startY, int endY, boolean isCache) {
+
+        if (isCache) {
+            // clear canvas
+            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        }
+
+        layout.onDraw(canvas, startY, endY);
+
+        // onDraw border around
+        if (layout.isDebugging()) {
+            IDocumentLayout.LayoutParams params = getDocumentLayoutParams();
+            int lastColor = paint.getColor();
+            float lastStrokeWidth = paint.getStrokeWidth();
+            Paint.Style lastStyle = paint.getStyle();
+
+            // border
+            paint.setColor(Color.MAGENTA);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(4);
+
+            float left = params.paddingLeft;
+            float top = params.paddingTop >= startY && params.paddingTop < endY ? params.paddingTop : 0;
+            float right = params.parentWidth - params.paddingRight;
+            float bottom = (bottom = layout.getMeasuredHeight() - params.paddingBottom) >= startY && bottom < endY ? bottom - startY : canvas.getHeight();
+
+            canvas.drawRect(left, top, right, bottom, paint);
+
+            paint.setStrokeWidth(lastStrokeWidth);
+            paint.setColor(lastColor);
+            paint.setStyle(lastStyle);
+        }
+    }
+
     public int getFadeInAnimationStepDelay() {
         return fadeInAnimationStepDelay;
     }
@@ -192,22 +224,17 @@ public class DocumentView extends ScrollView {
 
     private void init(Context context, AttributeSet attrs, int type) {
 
-        try {
-            eglBitmapHeightLock.lock();
-
+        synchronized (eglBitmapHeightLock) {
             if (DocumentView.eglBitmapHeight == -1) {
                 DisplayMetrics metrics = context.getResources().getDisplayMetrics();
                 DocumentView.eglBitmapHeight = Math.min(Math.max(metrics.heightPixels, metrics.widthPixels) * 7 / 6, getMaxTextureSize());
             }
-
-        } catch (Exception e) {
-            eglBitmapHeightLock.unlock();
-            e.printStackTrace();
         }
 
         fadeInTween = LINEAR_EASE_IN;
         cacheConfig = CacheConfig.AUTO_QUALITY;
         paint = new TextPaint();
+        cachePaint = new TextPaint();
         dummyView = new View(context);
         measureState = MeasureTaskState.START;
 
@@ -265,16 +292,16 @@ public class DocumentView extends ScrollView {
                 } else if (attr == R.styleable.DocumentView_wordSpacingMultiplier) {
                     layoutParams.setWordSpacingMultiplier(a.getFloat(attr, layoutParams.getWordSpacingMultiplier()));
                 } else if (attr == R.styleable.DocumentView_textColor) {
-                    setTextColor(a.getColor(attr, getTextColor()));
+                    layoutParams.setTextColor(a.getColor(attr, layoutParams.getTextColor()));
                 } else if (attr == R.styleable.DocumentView_textSize) {
-                    setTextSize(a.getDimension(attr, getTextSize()));
+                    layoutParams.setTextSize(a.getDimension(attr, layoutParams.getTextSize()));
                 } else if (attr == R.styleable.DocumentView_textStyle) {
                     int style = a.getInt(attr, 0);
-                    setFakeBoldText((style & 1) > 0);
-                    setUnderlineText(((style >> 1) & 1) > 0);
-                    setStrikeThruText(((style >> 2) & 1) > 0);
+                    layoutParams.setTextFakeBold((style & 1) > 0);
+                    layoutParams.setTextUnderline(((style >> 1) & 1) > 0);
+                    layoutParams.setTextStrikeThru(((style >> 2) & 1) > 0);
                 } else if (attr == R.styleable.DocumentView_textTypefacePath) {
-                    setTypeface(Typeface.createFromAsset(getResources().getAssets(), a.getString(attr)));
+                    layoutParams.setTextTypeface(Typeface.createFromAsset(getResources().getAssets(), a.getString(attr)));
                 } else if (attr == R.styleable.DocumentView_antialias) {
                     paint.setAntiAlias(a.getBoolean(attr, isAntiAlias()));
                 } else if (attr == R.styleable.DocumentView_textSubpixel) {
@@ -299,46 +326,6 @@ public class DocumentView extends ScrollView {
         }
     }
 
-    public boolean isUnderlineText() {
-        return paint.isUnderlineText();
-    }
-
-    public void setUnderlineText(boolean underline) {
-        paint.setUnderlineText(underline);
-    }
-
-    public boolean isStrikeThruText() {
-        return paint.isStrikeThruText();
-    }
-
-    public void setStrikeThruText(boolean strikeThru) {
-        paint.setStrikeThruText(strikeThru);
-    }
-
-    public boolean isFakeBoldText() {
-        return paint.isFakeBoldText();
-    }
-
-    public void setFakeBoldText(boolean fakeBold) {
-        paint.setFakeBoldText(fakeBold);
-    }
-
-    public boolean isSubpixelText() {
-        return paint.isSubpixelText();
-    }
-
-    public void setSubpixelText(boolean subpixel) {
-        paint.setSubpixelText(subpixel);
-    }
-
-    public boolean isAntiAlias() {
-        return paint.isAntiAlias();
-    }
-
-    public void setAntialias(boolean antialias) {
-        paint.setAntiAlias(antialias);
-    }
-
     protected void initPaint(Paint paint) {
         paint.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
         paint.setTextSize(34);
@@ -355,28 +342,20 @@ public class DocumentView extends ScrollView {
         }
     }
 
-    public Typeface getTypeface() {
-        return paint.getTypeface();
+    public boolean isSubpixelText() {
+        return paint.isSubpixelText();
     }
 
-    public void setTypeface(Typeface typeface) {
-        paint.setTypeface(typeface);
+    public void setSubpixelText(boolean subpixel) {
+        paint.setSubpixelText(subpixel);
     }
 
-    public float getTextSize() {
-        return paint.getTextSize();
+    public boolean isAntiAlias() {
+        return paint.isAntiAlias();
     }
 
-    public void setTextSize(float textSize) {
-        paint.setTextSize(textSize);
-    }
-
-    public int getTextColor() {
-        return paint.getColor();
-    }
-
-    public void setTextColor(int textColor) {
-        paint.setColor(textColor);
+    public void setAntialias(boolean antialias) {
+        paint.setAntiAlias(antialias);
     }
 
     public void setProgressBar(final int progressBarId) {
@@ -441,7 +420,6 @@ public class DocumentView extends ScrollView {
     @SuppressWarnings("DrawAllocation")
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         final int width = MeasureSpec.getSize(widthMeasureSpec);
 
         switch (measureState) {
@@ -453,6 +431,7 @@ public class DocumentView extends ScrollView {
                 dummyView.setMinimumWidth(width);
                 dummyView.setMinimumHeight(layout.getMeasuredHeight());
                 measureState = MeasureTaskState.FINISH_AWAIT;
+                allocateResources();
                 break;
             case START:
                 if (measureTask != null) {
@@ -464,6 +443,8 @@ public class DocumentView extends ScrollView {
                 measureState = MeasureTaskState.AWAIT;
                 break;
         }
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
@@ -526,13 +507,7 @@ public class DocumentView extends ScrollView {
 
         if (cacheEnabled) {
 
-            if (cacheBitmapTop == null) {
-                cacheBitmapTop = new CacheBitmap(getWidth(), eglBitmapHeight, cacheConfig.getConfig());
-            }
-
-            if (cacheBitmapBottom == null) {
-                cacheBitmapBottom = new CacheBitmap(getWidth(), eglBitmapHeight, cacheConfig.getConfig());
-            }
+            allocateResources();
 
             final int scrollTop = getScrollY();
             final int scrollBottom = scrollTop + getHeight();
@@ -556,7 +531,7 @@ public class DocumentView extends ScrollView {
                     });
                 }
 
-                postInvalidate = drawCacheToView(canvas, top, startTop);
+                postInvalidate = drawCacheToView(canvas, cachePaint, top, startTop);
 
             } else {
 
@@ -582,7 +557,7 @@ public class DocumentView extends ScrollView {
                     });
                 }
 
-                postInvalidate = drawCacheToView(canvas, top, startTop) | drawCacheToView(canvas, bottom, startBottom);
+                postInvalidate = drawCacheToView(canvas, cachePaint, top, startTop) | drawCacheToView(canvas, cachePaint, bottom, startBottom);
             }
 
             if (postInvalidate) {
@@ -600,29 +575,19 @@ public class DocumentView extends ScrollView {
         dummyView.setMinimumHeight(minimumHeight);
     }
 
-    protected void drawLayout(Canvas canvas, int startY, int endY, boolean isCache) {
-        if (isCache) {
-            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-            if (layout.isDebugging()) {
-                int lastColor = paint.getColor();
-                float lastStrokeWidth = paint.getStrokeWidth();
-                Paint.Style lastStyle = paint.getStyle();
-                paint.setStyle(Paint.Style.STROKE);
-                paint.setStrokeWidth(8);
-                paint.setColor(Color.GREEN);
-                canvas.drawRect(0, 0, getWidth(), canvas.getHeight(), paint);
-                paint.setStrokeWidth(lastStrokeWidth);
-                paint.setColor(lastColor);
-                paint.setStyle(lastStyle);
-            }
+    public void allocateResources() {
+        if (cacheBitmapTop == null) {
+            cacheBitmapTop = new CacheBitmap(getWidth(), eglBitmapHeight, cacheConfig.getConfig());
         }
 
-        layout.draw(canvas, startY, endY);
+        if (cacheBitmapBottom == null) {
+            cacheBitmapBottom = new CacheBitmap(getWidth(), eglBitmapHeight, cacheConfig.getConfig());
+        }
     }
 
-    protected boolean drawCacheToView(Canvas canvas, CacheBitmap cache, int y) {
-        // draw only if cache is ready
-        if(cache.isReady()) {
+    protected boolean drawCacheToView(Canvas canvas, Paint paint, CacheBitmap cache, int y) {
+        // onDraw only if cache is ready
+        if (cache.isReady()) {
             int lastAlpha = paint.getAlpha();
             paint.setAlpha(cache.getAlpha());
             canvas.drawBitmap(cache.getBitmap(), 0, y, paint);

@@ -3,7 +3,9 @@ package com.bluejamesbond.text;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.TextPaint;
 import android.widget.Toast;
@@ -114,9 +116,24 @@ public abstract class IDocumentLayout {
         return lineCount;
     }
 
-    public abstract boolean measure(ISet<Float> progress, IGet<Boolean> cancelled);
+    public boolean measure(ISet<Float> progress, IGet<Boolean> cancelled) {
 
-    public abstract void draw(Canvas canvas, int startTop, int startBottom);
+        if (!params.changed && !textChange) {
+            return true;
+        }
+
+        params.loadTo(paint);
+
+        return onMeasure(progress, cancelled);
+    }
+
+    protected abstract boolean onMeasure(ISet<Float> progress, IGet<Boolean> cancelled);
+
+    public void draw(Canvas canvas, int startTop, int startBottom) {
+        onDraw(canvas, startTop, startBottom);
+    }
+
+    protected abstract void onDraw(Canvas canvas, int startTop, int startBottom);
 
     public abstract int getTokenIndex(float y, TokenPosition position);
 
@@ -160,6 +177,13 @@ public abstract class IDocumentLayout {
         protected String hyphen = "-";
         protected TextAlignment textAlignment = TextAlignment.LEFT;
 
+        protected Boolean textUnderline = false;
+        protected Boolean textStrikeThru = false;
+        protected Boolean textFakeBold = false;
+        protected Typeface textTypeface = Typeface.DEFAULT;
+        protected Float textSize = 40f;
+        protected Integer textColor = Color.BLACK;
+
         /**
          * If any settings have changed.
          */
@@ -169,7 +193,17 @@ public abstract class IDocumentLayout {
             return Arrays.hashCode(
                     new Object[]{hyphenator, paddingLeft, paddingTop, paddingBottom, paddingRight,
                             parentWidth, offsetX, offsetX,
-                            lineHeightMultiplier, hyphenated, reverse, maxLines, hyphen, textAlignment, wordSpacingMultiplier});
+                            lineHeightMultiplier, hyphenated, reverse, maxLines, hyphen, textAlignment, wordSpacingMultiplier,
+                            textUnderline, textStrikeThru, textFakeBold, textTypeface, textSize, textColor});
+        }
+
+        public void loadTo(Paint paint) {
+            paint.setTextSize(textSize);
+            paint.setFakeBoldText(textFakeBold);
+            paint.setStrikeThruText(textStrikeThru);
+            paint.setColor(textColor);
+            paint.setTypeface(textTypeface);
+            paint.setUnderlineText(textUnderline);
         }
 
         public Float getWordSpacingMultiplier() {
@@ -370,6 +404,84 @@ public abstract class IDocumentLayout {
         }
 
         public void invalidate() {
+            this.changed = true;
+        }
+
+        public boolean isTextUnderline() {
+            return textUnderline;
+        }
+
+        public void setTextUnderline(boolean underline) {
+            if (this.textUnderline.equals(underline)) {
+                return;
+            }
+
+            this.textUnderline = underline;
+            this.changed = true;
+        }
+
+        public boolean isTextStrikeThru() {
+            return textStrikeThru;
+        }
+
+        public void setTextStrikeThru(boolean strikeThru) {
+            if (this.textStrikeThru.equals(strikeThru)) {
+                return;
+            }
+
+            this.textStrikeThru = strikeThru;
+            this.changed = true;
+        }
+
+        public boolean isTextFakeBold() {
+            return textFakeBold;
+        }
+
+        public void setTextFakeBold(boolean fakeBold) {
+            if (this.textFakeBold.equals(fakeBold)) {
+                return;
+            }
+
+            this.textFakeBold = fakeBold;
+            this.changed = true;
+        }
+
+        public Typeface getTextTypeface() {
+            return textTypeface;
+        }
+
+        public void setTextTypeface(Typeface typeface) {
+            if (this.textTypeface.equals(typeface)) {
+                return;
+            }
+
+            this.textTypeface = typeface;
+            this.changed = true;
+        }
+
+        public float getTextSize() {
+            return textSize;
+        }
+
+        public void setTextSize(float textSize) {
+            if (this.textSize.equals(textSize)) {
+                return;
+            }
+
+            this.textSize = textSize;
+            this.changed = true;
+        }
+
+        public int getTextColor() {
+            return textColor;
+        }
+
+        public void setTextColor(int textColor) {
+            if (this.textColor.equals(textColor)) {
+                return;
+            }
+
+            this.textColor = textColor;
             this.changed = true;
         }
     }

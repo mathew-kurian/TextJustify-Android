@@ -31,6 +31,7 @@ package com.bluejamesbond.text;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.TextPaint;
 
@@ -60,14 +61,10 @@ public class StringDocumentLayout extends IDocumentLayout {
     }
 
     @Override
-    public boolean measure(ISet<Float> progress, IGet<Boolean> cancelled) {
+    public boolean onMeasure(ISet<Float> progress, IGet<Boolean> cancelled) {
 
         boolean done = true;
         String text = this.text.toString();
-
-        if (!params.changed && !textChange) {
-            return done;
-        }
 
         if (textChange) {
             chunks.clear();
@@ -238,13 +235,36 @@ public class StringDocumentLayout extends IDocumentLayout {
     }
 
     @Override
-    public void draw(Canvas canvas, int startTop, int startBottom) {
+    public void onDraw(Canvas canvas, int startTop, int startBottom) {
 
         int tokenStart = getTokenIndex(startTop, TokenPosition.START_OF_LINE);
         int tokenEnd = getTokenIndex(startBottom, TokenPosition.END_OF_LINE);
 
         for (int i = Math.max(0, tokenStart - 25); i < tokenEnd + 25 && i < tokens.length; i++) {
-            tokens[i].draw(canvas, -startTop, paint, params);
+            Token token = tokens[i];
+            token.draw(canvas, -startTop, paint, params);
+            if (debugging) {
+                if (token instanceof LineBreak) {
+                    int lastColor = paint.getColor();
+                    boolean lastFakeBold = paint.isFakeBoldText();
+                    Paint.Style lastStyle = paint.getStyle();
+                    Paint.Align lastAlign = paint.getTextAlign();
+
+                    paint.setColor(Color.YELLOW);
+                    paint.setStyle(Paint.Style.FILL);
+                    canvas.drawRect(params.paddingLeft, token.y - startTop - getFontAscent(), params.parentWidth - params.paddingRight, token.y - startTop + getFontDescent(), paint);
+
+                    paint.setColor(Color.BLACK);
+                    paint.setFakeBoldText(true);
+                    paint.setTextAlign(Paint.Align.CENTER);
+                    canvas.drawText("LINEBREAK", params.paddingLeft + (params.parentWidth - params.paddingRight - params.paddingLeft) / 2, token.y - startTop, paint);
+
+                    paint.setStyle(lastStyle);
+                    paint.setColor(lastColor);
+                    paint.setTextAlign(lastAlign);
+                    paint.setFakeBoldText(lastFakeBold);
+                }
+            }
         }
     }
 

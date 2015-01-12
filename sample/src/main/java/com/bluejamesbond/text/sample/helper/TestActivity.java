@@ -69,14 +69,14 @@ public class TestActivity extends Activity {
 
     public DocumentView addDocumentView(CharSequence article, int type, boolean rtl) {
         final DocumentView documentView = new DocumentView(this, type);
-        documentView.setTextColor(0xffffffff);
-        documentView.setTypeface(Typeface.DEFAULT);
-        documentView.setTextSize(30);
+        documentView.getDocumentLayoutParams().setTextColor(0xffffffff);
+        documentView.getDocumentLayoutParams().setTextTypeface(Typeface.DEFAULT);
+        documentView.getDocumentLayoutParams().setTextSize(30);
         documentView.getDocumentLayoutParams().setTextAlignment(TextAlignment.JUSTIFIED);
-        documentView.getDocumentLayoutParams().setPaddingLeft(0f);
-        documentView.getDocumentLayoutParams().setPaddingRight(0f);
-        documentView.getDocumentLayoutParams().setPaddingTop(0f);
-        documentView.getDocumentLayoutParams().setPaddingBottom(0f);
+        documentView.getDocumentLayoutParams().setPaddingLeft(30f);
+        documentView.getDocumentLayoutParams().setPaddingRight(30f);
+        documentView.getDocumentLayoutParams().setPaddingTop(30f);
+        documentView.getDocumentLayoutParams().setPaddingBottom(30f);
         documentView.getDocumentLayoutParams().setLineHeightMultiplier(1f);
         documentView.getDocumentLayoutParams().setReverse(rtl);
         documentView.getLayout().setDebugging(debugging);

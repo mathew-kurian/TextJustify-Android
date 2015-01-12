@@ -299,7 +299,7 @@ public class Styled {
         for (int i = start; i < end; i = next) {
             next = sp.nextSpanTransition(i, end, division);
 
-            // XXX: if dir and runIsRtl were not the same, this would draw
+            // XXX: if dir and runIsRtl were not the same, this would onDraw
             // spans in the wrong order, but no one appears to call it this
             // way.
             x += drawUniformRun(canvas, sp, i, next, dir, runIsRtl,
@@ -386,14 +386,14 @@ public class Styled {
      *
      * @param canvas    The target canvas
      * @param text      The text to be drawn
-     * @param start     The index of the first character in text to draw
-     * @param end       (end - 1) is the index of the last character in text to draw
+     * @param start     The index of the first character in text to onDraw
+     * @param end       (end - 1) is the index of the last character in text to onDraw
      * @param direction The direction of the text. This must be
      *                  {@link android.text.Layout#DIR_LEFT_TO_RIGHT} or
      *                  {@link android.text.Layout#DIR_RIGHT_TO_LEFT}.
-     * @param x         The x-coordinate of origin for where to draw the text
+     * @param x         The x-coordinate of origin for where to onDraw the text
      * @param top       The top side of the rectangle to be drawn
-     * @param y         The y-coordinate of origin for where to draw the text
+     * @param y         The y-coordinate of origin for where to onDraw the text
      * @param bottom    The bottom side of the rectangle to be drawn
      * @param paint     The main {@link TextPaint} object.
      * @param workPaint The {@link TextPaint} object used for temporal
@@ -415,7 +415,7 @@ public class Styled {
         // Hide runIsRtl parameter since it is meaningless for external
         // developers.
         // XXX: the runIsRtl probably ought to be the same as direction, then
-        // this could draw rtl text.
+        // this could onDraw rtl text.
         return drawText(canvas, text, start, end, direction, false,
                 x, top, y, bottom, paint, workPaint, needWidth);
     }

@@ -56,9 +56,15 @@ public class TestActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(getContentView());
+
         testName = Utils.splitCamelCase(getClass().getSimpleName());
 
-        setContentView(getContentView());
+        TextView titleBar = ((TextView) findViewById(R.id.titlebar));
+
+        if(titleBar != null) {
+            titleBar.setText(testName);
+        }
     }
 
     public DocumentView addDocumentView(CharSequence article, int type, boolean rtl) {
@@ -75,29 +81,7 @@ public class TestActivity extends Activity {
         documentView.getDocumentLayoutParams().setReverse(rtl);
         documentView.getLayout().setDebugging(debugging);
         documentView.setText(article); // true: enable justification
-
-        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        documentView.setOnLayoutProgressListener(new DocumentView.ILayoutProgressListener() {
-            @Override
-            public void onCancelled() {
-                progressBar.setProgress(progressBar.getMax());
-            }
-
-            @Override
-            public void onFinish() {
-                progressBar.setProgress(progressBar.getMax());
-            }
-
-            @Override
-            public void onStart() {
-                progressBar.setProgress(0);
-            }
-
-            @Override
-            public void onProgressUpdate(float progress) {
-                progressBar.setProgress((int) (progress * (float) progressBar.getMax()));
-            }
-        });
+        documentView.setProgressBar((ProgressBar) findViewById(R.id.progressBar));
 
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.VERTICAL);

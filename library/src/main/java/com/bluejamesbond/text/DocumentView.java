@@ -31,6 +31,7 @@ package com.bluejamesbond.text;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -46,7 +47,9 @@ import android.os.Build;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 
 import com.bluejamesbond.text.style.TextAlignment;
@@ -192,7 +195,7 @@ public class DocumentView extends ScrollView {
         measureState = MeasureTaskState.START;
 
         // Initialize paint
-        initPaint(this.paint);
+        initPaint(paint);
 
         // Set default padding
         setPadding(0, 0, 0, 0);
@@ -204,23 +207,11 @@ public class DocumentView extends ScrollView {
                     R.styleable.DocumentView);
 
             final int N = a.getIndexCount();
-            boolean layoutSet = false;
 
             // find and set project layout
-            for (int i = 0; i < N; ++i) {
-                int attr = a.getIndex(i);
-                if (R.styleable.DocumentView_textFormat == attr) {
-                    this.layout = getDocumentLayoutInstance(a.getInt(attr, DocumentView.PLAIN_TEXT), paint);
-                    layoutSet = true;
-                    break;
-                }
-            }
+            layout = getDocumentLayoutInstance(a.getInt(R.styleable.DocumentView_textFormat, DocumentView.PLAIN_TEXT), paint);
 
-            if (!layoutSet) {
-                this.layout = getDocumentLayoutInstance(DocumentView.PLAIN_TEXT, paint);
-            }
-
-            StringDocumentLayout.LayoutParams layoutParams = this.layout.getLayoutParams();
+            IDocumentLayout.LayoutParams layoutParams = layout.getLayoutParams();
 
             for (int i = 0; i < N; ++i) {
 
@@ -275,6 +266,8 @@ public class DocumentView extends ScrollView {
                     layout.setText(a.getString(attr));
                 } else if (attr == R.styleable.DocumentView_cacheConfig) {
                     setCacheConfig(CacheConfig.getById(a.getInt(attr, CacheConfig.AUTO_QUALITY.getId())));
+                } else if (attr == R.styleable.DocumentView_progressBar) {
+                    setProgressBar(a.getResourceId(R.styleable.DocumentView_progressBar, 0));
                 }
             }
 
@@ -486,6 +479,60 @@ public class DocumentView extends ScrollView {
         }
 
         layout.draw(canvas, startY, endY);
+    }
+
+    public void setProgressBar(final int progressBarId) {
+        setOnLayoutProgressListener(new DocumentView.ILayoutProgressListener() {
+
+            private ProgressBar progressBar;
+
+            @Override
+            public void onCancelled() {
+                progressBar.setProgress(progressBar.getMax());
+                progressBar = null;
+            }
+
+            @Override
+            public void onFinish() {
+                progressBar.setProgress(progressBar.getMax());
+                progressBar = null;
+            }
+
+            @Override
+            public void onStart() {
+                progressBar = (ProgressBar) ((Activity) getContext()).getWindow().getDecorView().findViewById(progressBarId);
+                progressBar.setProgress(0);
+            }
+
+            @Override
+            public void onProgressUpdate(float progress) {
+                progressBar.setProgress((int) (progress * (float) progressBar.getMax()));
+            }
+        });
+    }
+
+    public void setProgressBar(final ProgressBar progressBar) {
+        setOnLayoutProgressListener(new DocumentView.ILayoutProgressListener() {
+            @Override
+            public void onCancelled() {
+                progressBar.setProgress(progressBar.getMax());
+            }
+
+            @Override
+            public void onFinish() {
+                progressBar.setProgress(progressBar.getMax());
+            }
+
+            @Override
+            public void onStart() {
+                progressBar.setProgress(0);
+            }
+
+            @Override
+            public void onProgressUpdate(float progress) {
+                progressBar.setProgress((int) (progress * (float) progressBar.getMax()));
+            }
+        });
     }
 
     protected boolean drawCacheToView(Canvas canvas, CacheBitmap cache, int y) {

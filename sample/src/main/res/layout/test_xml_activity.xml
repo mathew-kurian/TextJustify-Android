@@ -3,45 +3,94 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-    <ScrollView xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <ProgressBar
+            android:id="@+id/progressBarXml"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@+id/titlebar"
+            android:max="100"
+            android:progressDrawable="@drawable/progress__background" />
+
+        <TextView
+            android:id="@+id/titlebar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text="@string/titlebar"
+            android:textColor="@android:color/white"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#222222"
+        android:orientation="horizontal"
+        android:padding="7dp"
+        android:weightSum="100">
+
+        <TextView
+            android:id="@+id/debugButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:layout_weight="50"
+            android:background="@drawable/simple_button__background"
+            android:clickable="true"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/debug_button"
+            android:textColor="#aaaaaa"
+            android:textSize="13dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/cacheButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:layout_weight="50"
+            android:background="@drawable/simple_button__background"
+            android:clickable="true"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/cache_button"
+            android:textColor="#aaaaaa"
+            android:textSize="13dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <com.bluejamesbond.text.DocumentView xmlns:document="http://schemas.android.com/apk/res-auto"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#ff000000"
-        tools:context=".SideBySide">
-
-        <LinearLayout
-            android:id="@+id/articleList"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <com.bluejamesbond.text.DocumentView xmlns:document="http://schemas.android.com/apk/res-auto"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                document:antialias="true"
-                document:cacheConfig="auto_quality"
-                document:hypen="-"
-                document:lineHeightMultiplier="2.0"
-                document:maxLines="100"
-                document:offsetX="10dp"
-                document:offsetY="10dp"
-                document:padding="10dp"
-                document:paddingBottom="10dp"
-                document:paddingLeft="10dp"
-                document:paddingRight="10dp"
-                document:paddingTop="10dp"
-                document:reverse="false"
-                document:text="@string/xml_test_data"
-                document:textAlignment="justified"
-                document:textColor="@android:color/white"
-                document:textFormat="plain"
-                document:textSize="12sp"
-                document:textStyle="bold|strikeThrough|underline"
-                document:textSubpixel="true"
-                document:textTypefacePath="fonts/helvetica.ttf"
-                document:wordSpacingMultiplier="5.0" />
-        </LinearLayout>
-    </ScrollView>
+        document:antialias="true"
+        document:cacheConfig="auto_quality"
+        document:hypen="-"
+        document:lineHeightMultiplier="2.0"
+        document:maxLines="100"
+        document:offsetX="10dp"
+        document:offsetY="10dp"
+        document:padding="10dp"
+        document:paddingBottom="10dp"
+        document:paddingLeft="10dp"
+        document:paddingRight="10dp"
+        document:paddingTop="10dp"
+        document:reverse="false"
+        document:text="@string/xml_test_data"
+        document:textAlignment="justified"
+        document:textColor="@android:color/white"
+        document:textFormat="plain"
+        document:progressBar="@id/progressBarXml"
+        document:textSize="12sp"
+        document:textStyle="bold|strikeThrough|underline"
+        document:textSubpixel="true"
+        document:textTypefacePath="fonts/helvetica.ttf"
+        document:wordSpacingMultiplier="5.0" />
 
 </LinearLayout>

@@ -12,16 +12,16 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignBottom="@+id/textView"
+            android:layout_alignBottom="@+id/titlebar"
             android:max="100"
             android:progressDrawable="@drawable/progress__background" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/titlebar"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:padding="20dp"
-            android:text="Samples"
+            android:text="@string/titlebar"
             android:textColor="@android:color/white"
             android:textSize="20dp"
             android:textStyle="bold" />
@@ -45,7 +45,7 @@
             android:clickable="true"
             android:gravity="center"
             android:padding="10dp"
-            android:text="TOGGLE DEBUG"
+            android:text="@string/debug_button"
             android:textColor="#aaaaaa"
             android:textSize="13dp"
             android:textStyle="bold" />
@@ -60,7 +60,7 @@
             android:clickable="true"
             android:gravity="center"
             android:padding="10dp"
-            android:text="CHANGE CACHE"
+            android:text="@string/cache_button"
             android:textColor="#aaaaaa"
             android:textSize="13dp"
             android:textStyle="bold" />

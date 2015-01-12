@@ -544,7 +544,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
     @Override
     public int getTokenIndex(float y, TokenPosition position) {
-        int high = tokens.length - 1;
+        int high = Math.max(0, tokens.length - 1);
         int low = 0;
 
         while (low + 1 < high) {

@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:background="#e74c3c"
         android:padding="20dp"
-        android:text="Samples"
+        android:text="@string/titlebar"
         android:textColor="@android:color/white"
         android:textSize="20dp"
         android:textStyle="bold" />
@@ -24,7 +24,7 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="GITHUB.COM/BLUEJAMESBOND/TEXTJUSTIFY-ANDROID"
+            android:text="@string/github_link"
             android:textColor="#444444"
             android:textSize="10dp"
             android:textStyle="bold" />
@@ -36,6 +36,6 @@
         android:layout_height="fill_parent"
         android:background="#000000"
         android:divider="#222222"
-        android:dividerHeight="1px"></ListView>
+        android:dividerHeight="1px" />
 
 </LinearLayout>

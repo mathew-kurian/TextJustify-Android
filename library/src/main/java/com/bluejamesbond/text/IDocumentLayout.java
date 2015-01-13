@@ -109,7 +109,7 @@ public abstract class IDocumentLayout {
 
     protected void onTextNull() {
         params.changed = false;
-        measuredHeight = (int) (params.paddingTop + params.paddingBottom);
+        measuredHeight = (int) (params.insetPaddingTop + params.insetPaddingBottom);
     }
 
     public int getLineCount() {
@@ -161,10 +161,10 @@ public abstract class IDocumentLayout {
          * All the customizable parameters
          */
         protected Hyphenator hyphenator = null;
-        protected Float paddingLeft = 0.0f;
-        protected Float paddingTop = 0.0f;
-        protected Float paddingBottom = 0.0f;
-        protected Float paddingRight = 0.0f;
+        protected Float insetPaddingLeft = 0.0f;
+        protected Float insetPaddingTop = 0.0f;
+        protected Float insetPaddingBottom = 0.0f;
+        protected Float insetPaddingRight = 0.0f;
         protected Float parentWidth = 800.0f;
         protected Float offsetX = 0.0f;
         protected Float offsetY = 0.0f;
@@ -191,7 +191,7 @@ public abstract class IDocumentLayout {
 
         public int hashCode() {
             return Arrays.hashCode(
-                    new Object[]{hyphenator, paddingLeft, paddingTop, paddingBottom, paddingRight,
+                    new Object[]{hyphenator, insetPaddingLeft, insetPaddingTop, insetPaddingBottom, insetPaddingRight,
                             parentWidth, offsetX, offsetY,
                             lineHeightMultiplier, hyphenated, reverse, maxLines, hyphen, textAlignment, wordSpacingMultiplier,
                             textUnderline, textStrikeThru, textFakeBold, textTypeface, textSize, textColor});
@@ -249,55 +249,55 @@ public abstract class IDocumentLayout {
             this.changed = true;
         }
 
-        public float getPaddingLeft() {
-            return paddingLeft;
+        public float getInsetPaddingLeft() {
+            return insetPaddingLeft;
         }
 
-        public void setPaddingLeft(float paddingLeft) {
-            if (this.paddingLeft.equals(paddingLeft)) {
+        public void setInsetPaddingLeft(float insetPaddingLeft) {
+            if (this.insetPaddingLeft.equals(insetPaddingLeft)) {
                 return;
             }
 
-            this.paddingLeft = paddingLeft;
+            this.insetPaddingLeft = insetPaddingLeft;
             this.changed = true;
         }
 
-        public float getPaddingTop() {
-            return paddingTop;
+        public float getInsetPaddingTop() {
+            return insetPaddingTop;
         }
 
-        public void setPaddingTop(float paddingTop) {
-            if (this.paddingTop.equals(paddingTop)) {
+        public void setInsetPaddingTop(float insetPaddingTop) {
+            if (this.insetPaddingTop.equals(insetPaddingTop)) {
                 return;
             }
 
-            this.paddingTop = paddingTop;
+            this.insetPaddingTop = insetPaddingTop;
             this.changed = true;
         }
 
-        public float getPaddingBottom() {
-            return paddingBottom;
+        public float getInsetPaddingBottom() {
+            return insetPaddingBottom;
         }
 
-        public void setPaddingBottom(float paddingBottom) {
-            if (this.paddingBottom.equals(paddingBottom)) {
+        public void setInsetPaddingBottom(float insetPaddingBottom) {
+            if (this.insetPaddingBottom.equals(insetPaddingBottom)) {
                 return;
             }
 
-            this.paddingBottom = paddingBottom;
+            this.insetPaddingBottom = insetPaddingBottom;
             this.changed = true;
         }
 
-        public float getPaddingRight() {
-            return paddingRight;
+        public float getInsetPaddingRight() {
+            return insetPaddingRight;
         }
 
-        public void setPaddingRight(float paddingRight) {
-            if (this.paddingRight.equals(paddingRight)) {
+        public void setInsetPaddingRight(float insetPaddingRight) {
+            if (this.insetPaddingRight.equals(insetPaddingRight)) {
                 return;
             }
 
-            this.paddingRight = paddingRight;
+            this.insetPaddingRight = insetPaddingRight;
             this.changed = true;
         }
 

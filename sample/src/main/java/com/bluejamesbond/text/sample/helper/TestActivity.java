@@ -73,10 +73,10 @@ public class TestActivity extends Activity {
         documentView.getDocumentLayoutParams().setTextTypeface(Typeface.DEFAULT);
         documentView.getDocumentLayoutParams().setTextSize(30);
         documentView.getDocumentLayoutParams().setTextAlignment(TextAlignment.JUSTIFIED);
-        documentView.getDocumentLayoutParams().setPaddingLeft(30f);
-        documentView.getDocumentLayoutParams().setPaddingRight(30f);
-        documentView.getDocumentLayoutParams().setPaddingTop(30f);
-        documentView.getDocumentLayoutParams().setPaddingBottom(30f);
+        documentView.getDocumentLayoutParams().setInsetPaddingLeft(30f);
+        documentView.getDocumentLayoutParams().setInsetPaddingRight(30f);
+        documentView.getDocumentLayoutParams().setInsetPaddingTop(30f);
+        documentView.getDocumentLayoutParams().setInsetPaddingBottom(30f);
         documentView.getDocumentLayoutParams().setLineHeightMultiplier(1f);
         documentView.getDocumentLayoutParams().setReverse(rtl);
         documentView.getLayout().setDebugging(debugging);

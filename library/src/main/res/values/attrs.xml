@@ -2,20 +2,20 @@
 <resources>
     <declare-styleable name="DocumentView">
 
-        <attr name="padding" format="dimension" />
-        <attr name="paddingLeft" format="dimension" />
-        <attr name="paddingRight" format="dimension" />
-        <attr name="paddingTop" format="dimension" />
-        <attr name="paddingBottom" format="dimension" />
+        <attr name="documentView_insetPadding" format="dimension" />
+        <attr name="documentView_insetPaddingLeft" format="dimension" />
+        <attr name="documentView_insetPaddingRight" format="dimension" />
+        <attr name="documentView_insetPaddingTop" format="dimension" />
+        <attr name="documentView_insetPaddingBottom" format="dimension" />
 
-        <attr name="offsetX" format="dimension" />
-        <attr name="offsetY" format="dimension" />
-        <attr name="wordSpacingMultiplier" format="float" />
-        <attr name="lineHeightMultiplier" format="float" />
-        <attr name="reverse" format="boolean" />
-        <attr name="maxLines" format="integer" />
-        <attr name="hypen" format="string" />
-        <attr name="textAlignment" format="enum">
+        <attr name="documentView_offsetX" format="dimension" />
+        <attr name="documentView_offsetY" format="dimension" />
+        <attr name="documentView_wordSpacingMultiplier" format="float" />
+        <attr name="documentView_lineHeightMultiplier" format="float" />
+        <attr name="documentView_reverse" format="boolean" />
+        <attr name="documentView_maxLines" format="integer" />
+        <attr name="documentView_hyphen" format="string" />
+        <attr name="documentView_textAlignment" format="enum">
             <!--
             Corresponds to
             @link com.bluejamesbond.text.style.TextAlignment}
@@ -26,19 +26,19 @@
             <enum name="center" value="3" />
 
         </attr>
-        <attr name="textSize" format="dimension" />
-        <attr name="textColor" format="color" />
-        <attr name="antialias" format="boolean" />
-        <attr name="text" format="string" />
-        <attr name="textSubpixel" format="boolean" />
-        <attr name="textTypefacePath" format="string" />
-        <attr name="textStyle" format="integer">
+        <attr name="documentView_textSize" format="dimension" />
+        <attr name="documentView_textColor" format="color" />
+        <attr name="documentView_antialias" format="boolean" />
+        <attr name="documentView_text" format="string" />
+        <attr name="documentView_textSubPixel" format="boolean" />
+        <attr name="documentView_textTypefacePath" format="string" />
+        <attr name="documentView_textStyle" format="integer">
             <flag name="plain" value="0" />
             <flag name="bold" value="1" />
             <flag name="underline" value="2" />
             <flag name="strikeThru" value="4" />
         </attr>
-        <attr name="textFormat" format="enum">
+        <attr name="documentView_textFormat" format="enum">
             <!--
                 Plain old text. Corresponds to
                 {@link com.bluejamesbond.text.DocumentView#PLAIN_TEXT}
@@ -50,7 +50,7 @@
             -->
             <enum name="formatted" value="1" />
         </attr>
-        <attr name="cacheConfig" format="enum">
+        <attr name="documentView_cacheConfig" format="enum">
             <enum name="no_cache" value="0" />
             <enum name="auto_quality" value="1" />
             <enum name="low_quality" value="2" />
@@ -58,9 +58,9 @@
             <enum name="grayscale" value="4" />
         </attr>
 
-        <attr name="progressBar" format="reference" />
-        <attr name="fadeInAnimationStepDelay" format="integer" />
-        <attr name="fadeInDuration" format="integer" />
+        <attr name="documentView_progressBar" format="reference" />
+        <attr name="documentView_fadeInAnimationStepDelay" format="integer" />
+        <attr name="documentView_fadeInDuration" format="integer" />
 
     </declare-styleable>
 </resources>

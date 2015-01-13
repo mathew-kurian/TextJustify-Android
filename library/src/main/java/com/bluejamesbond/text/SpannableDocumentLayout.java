@@ -153,7 +153,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
         boolean done = true;
         float parentWidth = params.getParentWidth();
         float boundWidth =
-                params.getParentWidth() - params.getPaddingLeft() - params.getPaddingRight();
+                params.getParentWidth() - params.getInsetPaddingLeft() - params.getInsetPaddingRight();
 
         mLeadMarginSpanDrawEvents = new LinkedList<>();
 
@@ -173,9 +173,9 @@ public class SpannableDocumentLayout extends IDocumentLayout {
         int lineNumber;
 
         float x;
-        float y = params.paddingTop;
-        float left = params.paddingLeft;
-        float right = params.paddingRight;
+        float y = params.insetPaddingTop;
+        float left = params.insetPaddingLeft;
+        float right = params.insetPaddingRight;
         float lineHeightAdd = params.lineHeightMultiplier;
         float lastAscent;
         float lastDescent;
@@ -458,7 +458,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
         tokens = newTokens;
         params.changed = false;
         textChange = !done;
-        measuredHeight = (int) (y - lineHeightAdd + params.paddingBottom);
+        measuredHeight = (int) (y - lineHeightAdd + params.insetPaddingBottom);
 
         return done;
     }

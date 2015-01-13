@@ -95,10 +95,10 @@ public class StringDocumentLayout extends IDocumentLayout {
 
         // Get basic settings widget properties
         int lineNumber = 0;
-        float width = params.parentWidth - params.paddingRight - params.paddingLeft;
+        float width = params.parentWidth - params.insetPaddingRight - params.insetPaddingLeft;
         float lineHeight = getFontAscent() + getFontDescent();
         float x, prog = 0, chunksLen = chunks.size();
-        float y = params.paddingTop + getFontAscent();
+        float y = params.insetPaddingTop + getFontAscent();
         float spaceOffset = paint.measureText(" ") * params.wordSpacingMultiplier;
 
         main:
@@ -116,7 +116,7 @@ public class StringDocumentLayout extends IDocumentLayout {
             }
 
             // Start at x = 0 for drawing text
-            x = params.paddingLeft;
+            x = params.insetPaddingLeft;
 
             String trimParagraph = paragraph.trim();
 
@@ -147,7 +147,7 @@ public class StringDocumentLayout extends IDocumentLayout {
 
             while (true) {
 
-                x = params.paddingLeft;
+                x = params.insetPaddingLeft;
 
                 // Line doesn't fit, then apply wrapping
                 LineAnalysis format = fit(justifyIterator, start, spaceOffset, width);
@@ -230,7 +230,7 @@ public class StringDocumentLayout extends IDocumentLayout {
         lineCount = lineNumber;
         tokens = tokensArr;
         params.changed = !done;
-        measuredHeight = (int) (y - getFontAscent() + params.paddingBottom);
+        measuredHeight = (int) (y - getFontAscent() + params.insetPaddingBottom);
         return done;
     }
 
@@ -252,12 +252,12 @@ public class StringDocumentLayout extends IDocumentLayout {
 
                     paint.setColor(Color.YELLOW);
                     paint.setStyle(Paint.Style.FILL);
-                    canvas.drawRect(params.paddingLeft, token.y - startTop - getFontAscent(), params.parentWidth - params.paddingRight, token.y - startTop + getFontDescent(), paint);
+                    canvas.drawRect(params.insetPaddingLeft, token.y - startTop - getFontAscent(), params.parentWidth - params.insetPaddingRight, token.y - startTop + getFontDescent(), paint);
 
                     paint.setColor(Color.BLACK);
                     paint.setFakeBoldText(true);
                     paint.setTextAlign(Paint.Align.CENTER);
-                    canvas.drawText("LINEBREAK", params.paddingLeft + (params.parentWidth - params.paddingRight - params.paddingLeft) / 2, token.y - startTop, paint);
+                    canvas.drawText("LINEBREAK", params.insetPaddingLeft + (params.parentWidth - params.insetPaddingRight - params.insetPaddingLeft) / 2, token.y - startTop, paint);
 
                     paint.setStyle(lastStyle);
                     paint.setColor(lastColor);

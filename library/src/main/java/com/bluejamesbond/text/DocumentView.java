@@ -185,10 +185,10 @@ public class DocumentView extends ScrollView {
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(4);
 
-            float left = params.paddingLeft;
-            float top = params.paddingTop >= startY && params.paddingTop < endY ? params.paddingTop : 0;
-            float right = params.parentWidth - params.paddingRight;
-            float bottom = (bottom = layout.getMeasuredHeight() - params.paddingBottom) >= startY && bottom < endY ? bottom - startY : canvas.getHeight();
+            float left = params.insetPaddingLeft;
+            float top = params.insetPaddingTop >= startY && params.insetPaddingTop < endY ? params.insetPaddingTop : 0;
+            float right = params.parentWidth - params.insetPaddingRight;
+            float bottom = (bottom = layout.getMeasuredHeight() - params.insetPaddingBottom) >= startY && bottom < endY ? bottom - startY : canvas.getHeight();
 
             canvas.drawRect(left, top, right, bottom, paint);
 
@@ -253,7 +253,7 @@ public class DocumentView extends ScrollView {
             final int N = a.getIndexCount();
 
             // find and set project layout
-            layout = getDocumentLayoutInstance(a.getInt(R.styleable.DocumentView_textFormat, DocumentView.PLAIN_TEXT), paint);
+            layout = getDocumentLayoutInstance(a.getInt(R.styleable.DocumentView_documentView_textFormat, DocumentView.PLAIN_TEXT), paint);
 
             IDocumentLayout.LayoutParams layoutParams = layout.getLayoutParams();
 
@@ -261,60 +261,60 @@ public class DocumentView extends ScrollView {
 
                 int attr = a.getIndex(i);
 
-                if (attr == R.styleable.DocumentView_padding) {
+                if (attr == R.styleable.DocumentView_documentView_insetPadding) {
                     Float pad = a.getDimension(attr, 0f);
-                    layoutParams.setPaddingLeft(pad);
-                    layoutParams.setPaddingBottom(pad);
-                    layoutParams.setPaddingRight(pad);
-                    layoutParams.setPaddingTop(pad);
-                } else if (attr == R.styleable.DocumentView_paddingLeft) {
-                    layoutParams.setPaddingLeft(a.getDimension(attr, layoutParams.getPaddingLeft()));
-                } else if (attr == R.styleable.DocumentView_paddingBottom) {
-                    layoutParams.setPaddingBottom(a.getDimension(attr, layoutParams.getPaddingBottom()));
-                } else if (attr == R.styleable.DocumentView_paddingRight) {
-                    layoutParams.setPaddingRight(a.getDimension(attr, layoutParams.getPaddingRight()));
-                } else if (attr == R.styleable.DocumentView_paddingTop) {
-                    layoutParams.setPaddingTop(a.getDimension(attr, layoutParams.getPaddingTop()));
-                } else if (attr == R.styleable.DocumentView_offsetX) {
+                    layoutParams.setInsetPaddingLeft(pad);
+                    layoutParams.setInsetPaddingBottom(pad);
+                    layoutParams.setInsetPaddingRight(pad);
+                    layoutParams.setInsetPaddingTop(pad);
+                } else if (attr == R.styleable.DocumentView_documentView_insetPaddingLeft) {
+                    layoutParams.setInsetPaddingLeft(a.getDimension(attr, layoutParams.getInsetPaddingLeft()));
+                } else if (attr == R.styleable.DocumentView_documentView_insetPaddingBottom) {
+                    layoutParams.setInsetPaddingBottom(a.getDimension(attr, layoutParams.getInsetPaddingBottom()));
+                } else if (attr == R.styleable.DocumentView_documentView_insetPaddingRight) {
+                    layoutParams.setInsetPaddingRight(a.getDimension(attr, layoutParams.getInsetPaddingRight()));
+                } else if (attr == R.styleable.DocumentView_documentView_insetPaddingTop) {
+                    layoutParams.setInsetPaddingTop(a.getDimension(attr, layoutParams.getInsetPaddingTop()));
+                } else if (attr == R.styleable.DocumentView_documentView_offsetX) {
                     layoutParams.setOffsetX(a.getDimension(attr, layoutParams.getOffsetX()));
-                } else if (attr == R.styleable.DocumentView_offsetY) {
+                } else if (attr == R.styleable.DocumentView_documentView_offsetY) {
                     layoutParams.setOffsetY(a.getDimension(attr, layoutParams.getOffsetY()));
-                } else if (attr == R.styleable.DocumentView_hypen) {
+                } else if (attr == R.styleable.DocumentView_documentView_hyphen) {
                     layoutParams.setHyphen(a.getString(attr));
-                } else if (attr == R.styleable.DocumentView_maxLines) {
+                } else if (attr == R.styleable.DocumentView_documentView_maxLines) {
                     layoutParams.setMaxLines(a.getInt(attr, layoutParams.getMaxLines()));
-                } else if (attr == R.styleable.DocumentView_lineHeightMultiplier) {
+                } else if (attr == R.styleable.DocumentView_documentView_lineHeightMultiplier) {
                     layoutParams.setLineHeightMultiplier(a.getFloat(attr, layoutParams.getLineHeightMultiplier()));
-                } else if (attr == R.styleable.DocumentView_textAlignment) {
+                } else if (attr == R.styleable.DocumentView_documentView_textAlignment) {
                     layoutParams.setTextAlignment(TextAlignment.getById(a.getInt(attr, layoutParams.getTextAlignment().getId())));
-                } else if (attr == R.styleable.DocumentView_reverse) {
+                } else if (attr == R.styleable.DocumentView_documentView_reverse) {
                     layoutParams.setReverse(a.getBoolean(attr, layoutParams.isReverse()));
-                } else if (attr == R.styleable.DocumentView_wordSpacingMultiplier) {
+                } else if (attr == R.styleable.DocumentView_documentView_wordSpacingMultiplier) {
                     layoutParams.setWordSpacingMultiplier(a.getFloat(attr, layoutParams.getWordSpacingMultiplier()));
-                } else if (attr == R.styleable.DocumentView_textColor) {
+                } else if (attr == R.styleable.DocumentView_documentView_textColor) {
                     layoutParams.setTextColor(a.getColor(attr, layoutParams.getTextColor()));
-                } else if (attr == R.styleable.DocumentView_textSize) {
+                } else if (attr == R.styleable.DocumentView_documentView_textSize) {
                     layoutParams.setTextSize(a.getDimension(attr, layoutParams.getTextSize()));
-                } else if (attr == R.styleable.DocumentView_textStyle) {
+                } else if (attr == R.styleable.DocumentView_documentView_textStyle) {
                     int style = a.getInt(attr, 0);
                     layoutParams.setTextFakeBold((style & 1) > 0);
                     layoutParams.setTextUnderline(((style >> 1) & 1) > 0);
                     layoutParams.setTextStrikeThru(((style >> 2) & 1) > 0);
-                } else if (attr == R.styleable.DocumentView_textTypefacePath) {
+                } else if (attr == R.styleable.DocumentView_documentView_textTypefacePath) {
                     layoutParams.setTextTypeface(Typeface.createFromAsset(getResources().getAssets(), a.getString(attr)));
-                } else if (attr == R.styleable.DocumentView_antialias) {
-                    paint.setAntiAlias(a.getBoolean(attr, isAntiAlias()));
-                } else if (attr == R.styleable.DocumentView_textSubpixel) {
-                    paint.setSubpixelText(a.getBoolean(attr, isSubpixelText()));
-                } else if (attr == R.styleable.DocumentView_text) {
+                } else if (attr == R.styleable.DocumentView_documentView_antialias) {
+                    setAntialias(a.getBoolean(attr, isAntiAlias()));
+                } else if (attr == R.styleable.DocumentView_documentView_textSubPixel) {
+                    setTextSubPixel(a.getBoolean(attr, isTextSubPixel()));
+                } else if (attr == R.styleable.DocumentView_documentView_text) {
                     layout.setText(a.getString(attr));
-                } else if (attr == R.styleable.DocumentView_cacheConfig) {
+                } else if (attr == R.styleable.DocumentView_documentView_cacheConfig) {
                     setCacheConfig(CacheConfig.getById(a.getInt(attr, CacheConfig.AUTO_QUALITY.getId())));
-                } else if (attr == R.styleable.DocumentView_progressBar) {
-                    setProgressBar(a.getResourceId(R.styleable.DocumentView_progressBar, 0));
-                } else if (attr == R.styleable.DocumentView_fadeInAnimationStepDelay) {
+                } else if (attr == R.styleable.DocumentView_documentView_progressBar) {
+                    setProgressBar(a.getResourceId(R.styleable.DocumentView_documentView_progressBar, 0));
+                } else if (attr == R.styleable.DocumentView_documentView_fadeInAnimationStepDelay) {
                     setFadeInAnimationStepDelay(a.getInteger(attr, getFadeInAnimationStepDelay()));
-                } else if (attr == R.styleable.DocumentView_fadeInDuration) {
+                } else if (attr == R.styleable.DocumentView_documentView_fadeInDuration) {
                     setFadeInDuration(a.getInteger(attr, getFadeInDuration()));
                 }
             }
@@ -342,11 +342,11 @@ public class DocumentView extends ScrollView {
         }
     }
 
-    public boolean isSubpixelText() {
+    public boolean isTextSubPixel() {
         return paint.isSubpixelText();
     }
 
-    public void setSubpixelText(boolean subpixel) {
+    public void setTextSubPixel(boolean subpixel) {
         paint.setSubpixelText(subpixel);
     }
 

@@ -466,12 +466,12 @@ public class SpannableDocumentLayout extends IDocumentLayout {
     @Override
     public void onDraw(Canvas canvas, int scrollTop, int scrollBottom) {
 
-        int startIndex = getTokenIndex(scrollTop, TokenPosition.START_OF_LINE);
-        int endIndex = getTokenIndex(scrollBottom, TokenPosition.END_OF_LINE);
-
-        if (!(startIndex < tokens.length && endIndex < tokens.length)) {
+        if(tokens.length < TOKEN_LENGTH){
             return;
         }
+
+        int startIndex = getTokenIndex(scrollTop, TokenPosition.START_OF_LINE);
+        int endIndex = getTokenIndex(scrollBottom, TokenPosition.END_OF_LINE);
 
         boolean isReverse = params.reverse;
 

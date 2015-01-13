@@ -466,6 +466,13 @@ public class SpannableDocumentLayout extends IDocumentLayout {
     @Override
     public void onDraw(Canvas canvas, int scrollTop, int scrollBottom) {
 
+        int startIndex = getTokenIndex(scrollTop, TokenPosition.START_OF_LINE);
+        int endIndex = getTokenIndex(scrollBottom, TokenPosition.END_OF_LINE);
+
+        if (!(startIndex < tokens.length && endIndex < tokens.length)) {
+            return;
+        }
+
         boolean isReverse = params.reverse;
 
         for (LeadingMarginSpanDrawParameters parameters : mLeadMarginSpanDrawEvents) {
@@ -479,8 +486,6 @@ public class SpannableDocumentLayout extends IDocumentLayout {
                     parameters.end, parameters.first, null);
         }
 
-        int startIndex = getTokenIndex(scrollTop, TokenPosition.START_OF_LINE);
-        int endIndex = getTokenIndex(scrollBottom, TokenPosition.END_OF_LINE);
         int lastEndIndexY = tokens[endIndex + TOKEN_Y];
         int diffEndIndexYCount = 1;
 

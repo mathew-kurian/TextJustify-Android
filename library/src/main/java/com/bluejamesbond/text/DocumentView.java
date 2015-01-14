@@ -171,7 +171,7 @@ public class DocumentView extends ScrollView {
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         }
 
-        layout.onDraw(canvas, startY, endY);
+        layout.draw(canvas, startY, endY);
 
         // onDraw border around
         if (layout.isDebugging()) {
@@ -252,7 +252,7 @@ public class DocumentView extends ScrollView {
 
             final int N = a.getIndexCount();
 
-            // find and set project layout
+            // find and onUpdate project layout
             layout = getDocumentLayoutInstance(a.getInt(R.styleable.DocumentView_documentView_textFormat, DocumentView.PLAIN_TEXT), paint);
 
             IDocumentLayout.LayoutParams layoutParams = layout.getLayoutParams();
@@ -684,22 +684,22 @@ public class DocumentView extends ScrollView {
 
     public class MeasureTask extends AsyncTask<Void, Float, Boolean> {
 
-        private IDocumentLayout.ISet<Float> progress;
-        private IDocumentLayout.IGet<Boolean> cancelled;
+        private IDocumentLayout.IProgress<Float> progress;
+        private IDocumentLayout.ICancel<Boolean> cancelled;
 
         public MeasureTask(float parentWidth) {
             layout.getLayoutParams().setParentWidth(parentWidth);
-            progress = new IDocumentLayout.ISet<Float>() {
+            progress = new IDocumentLayout.IProgress<Float>() {
                 @Override
-                public void set(Float progress) {
+                public void onUpdate(Float progress) {
                     if (layoutProgressListener != null) {
                         layoutProgressListener.onProgressUpdate(progress);
                     }
                 }
             };
-            cancelled = new IDocumentLayout.IGet<Boolean>() {
+            cancelled = new IDocumentLayout.ICancel<Boolean>() {
                 @Override
-                public Boolean get() {
+                public Boolean isCancelled() {
                     return isCancelled();
                 }
             };

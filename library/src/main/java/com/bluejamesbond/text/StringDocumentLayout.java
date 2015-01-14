@@ -61,7 +61,7 @@ public class StringDocumentLayout extends IDocumentLayout {
     }
 
     @Override
-    public boolean onMeasure(ISet<Float> progress, IGet<Boolean> cancelled) {
+    public boolean onMeasure(IProgress<Float> progress, ICancel<Boolean> cancelled) {
 
         boolean done = true;
         String text = this.text.toString();
@@ -104,12 +104,12 @@ public class StringDocumentLayout extends IDocumentLayout {
         main:
         for (String paragraph : chunks) {
 
-            if (cancelled.get()) {
+            if (cancelled.isCancelled()) {
                 done = false;
                 break;
             }
 
-            progress.set(prog++ / chunksLen);
+            progress.onUpdate(prog++ / chunksLen);
 
             if (lineNumber >= params.maxLines) {
                 break;
@@ -202,7 +202,7 @@ public class StringDocumentLayout extends IDocumentLayout {
                 lineNumber++;
 
                 // Chcek cancelled
-                if (cancelled.get()) {
+                if (cancelled.isCancelled()) {
                     done = false;
                     break;
                 }
@@ -425,7 +425,7 @@ public class StringDocumentLayout extends IDocumentLayout {
                         else {
 
                             // Check if the lastPartial
-                            // was even set
+                            // was even onUpdate
                             if (lastFormattedPartial != null) {
 
                                 unit.unit = lastFormattedPartial;

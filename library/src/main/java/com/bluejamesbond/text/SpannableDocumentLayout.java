@@ -148,7 +148,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public boolean onMeasure(ISet<Float> progress, IGet<Boolean> cancelled) {
+    public boolean onMeasure(IProgress<Float> progress, ICancel<Boolean> cancelled) {
 
         boolean done = true;
         float parentWidth = params.getParentWidth();
@@ -185,12 +185,12 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
         for (lineNumber = 0; lineNumber < lines; lineNumber++) {
 
-            if (cancelled.get()) {
+            if (cancelled.isCancelled()) {
                 done = false;
                 break;
             }
 
-            progress.set((float) lineNumber / (float) lines);
+            progress.onUpdate((float) lineNumber / (float) lines);
 
             newTokens = ammortizeArray(newTokens, index);
 

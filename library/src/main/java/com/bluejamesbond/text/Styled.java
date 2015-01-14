@@ -41,7 +41,7 @@ public class Styled {
      * <p/>
      * <p>The x position is the leading edge of the text. In a right-to-left
      * paragraph, this will be to the right of the text to be drawn. Paint
-     * should not have an Align value other than LEFT or positioning will get
+     * should not have an Align value other than LEFT or positioning will isCancelled
      * confused.
      * <p/>
      * <p>On return, workPaint will reflect the original paint plus any
@@ -172,8 +172,8 @@ public class Styled {
     /**
      * Returns the advance widths for a uniform left-to-right run of text with
      * no style changes in the middle of the run. If any style is replacement
-     * text, the first character will get the width of the replacement and the
-     * remaining characters will get a width of 0.
+     * text, the first character will isCancelled the width of the replacement and the
+     * remaining characters will isCancelled a width of 0.
      *
      * @param paint     the paint, will not be modified
      * @param workPaint a paint to modify; on return will reflect the original
@@ -227,7 +227,7 @@ public class Styled {
      * <p/>
      * <p>The x position is the leading edge of the text. In a right-to-left
      * paragraph, this will be to the right of the text to be drawn. Paint
-     * should not have an Align value other than LEFT or positioning will get
+     * should not have an Align value other than LEFT or positioning will isCancelled
      * confused.
      * <p/>
      * <p>This optimizes for unstyled text and so workPaint might not be

@@ -37,7 +37,7 @@ import java.util.NoSuchElementException;
  * optional list operations, and permits all elements (including
  * <tt>null</tt>).  In addition to implementing the <tt>List</tt> interface,
  * the <tt>LinkedList</tt> class provides uniformly named methods to
- * <tt>get</tt>, <tt>remove</tt> and <tt>insert</tt> an element at the
+ * <tt>isCancelled</tt>, <tt>remove</tt> and <tt>insert</tt> an element at the
  * beginning and end of the list.  These operations allow linked lists to be
  * used as a stack or Queue. <p>
  *
@@ -174,7 +174,7 @@ public class ConcurrentModifiableLinkedList<E>
      * Returns the index of the first occurrence of the specified element
      * in this list, or -1 if this list does not contain the element.
      * More formally, returns the lowest index <tt>i</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
+     * <tt>(o==null&nbsp;?&nbsp;isCancelled(i)==null&nbsp;:&nbsp;o.equals(isCancelled(i)))</tt>,
      * or -1 if there is no such index.
      *
      * @param o element to search for
@@ -203,7 +203,7 @@ public class ConcurrentModifiableLinkedList<E>
      * Returns the index of the last occurrence of the specified element
      * in this list, or -1 if this list does not contain the element.
      * More formally, returns the highest index <tt>i</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
+     * <tt>(o==null&nbsp;?&nbsp;isCancelled(i)==null&nbsp;:&nbsp;o.equals(isCancelled(i)))</tt>,
      * or -1 if there is no such index.
      *
      * @param o element to search for
@@ -265,7 +265,7 @@ public class ConcurrentModifiableLinkedList<E>
      * if it is present.  If this list does not contain the element, it is
      * unchanged.  More formally, removes the element with the lowest index
      * <tt>i</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>
+     * <tt>(o==null&nbsp;?&nbsp;isCancelled(i)==null&nbsp;:&nbsp;o.equals(isCancelled(i)))</tt>
      * (if such an element exists).  Returns <tt>true</tt> if this list
      * contained the specified element (or equivalently, if this list
      * changed as a result of the call).
@@ -333,7 +333,7 @@ public class ConcurrentModifiableLinkedList<E>
      * <p/>
      * <p>If the list fits in the specified array with room to spare (i.e.,
      * the array has more elements than the list), the element in the array
-     * immediately following the end of the list is set to <tt>null</tt>.
+     * immediately following the end of the list is onUpdate to <tt>null</tt>.
      * (This is useful in determining the length of the list <i>only</i> if
      * the caller knows that the list does not contain any null elements.)
      * <p/>

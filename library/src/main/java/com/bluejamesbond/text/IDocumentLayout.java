@@ -116,7 +116,7 @@ public abstract class IDocumentLayout {
         return lineCount;
     }
 
-    public boolean measure(ISet<Float> progress, IGet<Boolean> cancelled) {
+    public boolean measure(IProgress<Float> progress, ICancel<Boolean> cancelled) {
 
         if (!params.changed && !textChange) {
             return true;
@@ -127,7 +127,7 @@ public abstract class IDocumentLayout {
         return onMeasure(progress, cancelled);
     }
 
-    protected abstract boolean onMeasure(ISet<Float> progress, IGet<Boolean> cancelled);
+    protected abstract boolean onMeasure(IProgress<Float> progress, ICancel<Boolean> cancelled);
 
     public void draw(Canvas canvas, int startTop, int startBottom) {
         onDraw(canvas, startTop, startBottom);
@@ -147,12 +147,12 @@ public abstract class IDocumentLayout {
         START_OF_LINE, END_OF_LINE
     }
 
-    public static interface ISet<T> {
-        public void set(T val);
+    public static interface IProgress<T> {
+        public void onUpdate(T val);
     }
 
-    public static interface IGet<T> {
-        public T get();
+    public static interface ICancel<T> {
+        public T isCancelled();
     }
 
     public static class LayoutParams {

@@ -1,5 +1,4 @@
-
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-TextJustify--Android-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1318) [![Build Status](https://travis-ci.org/bluejamesbond/TextJustify-Android.svg?branch=master)](https://travis-ci.org/bluejamesbond/TextJustify-Android) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.bluejamesbond/textjustify-android/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.bluejamesbond/textjustify-android)  
+[![Gittip](http://img.shields.io/gittip/bluejamesbond.svg)](https://gratipay.com/bluejamesbond/) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-TextJustify--Android-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1318) [![Build Status](https://travis-ci.org/bluejamesbond/TextJustify-Android.svg?branch=master)](https://travis-ci.org/bluejamesbond/TextJustify-Android) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.bluejamesbond/textjustify-android/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.bluejamesbond/textjustify-android)  
 ![Logo](https://raw.githubusercontent.com/bluejamesbond/TextJustify-Android/master/misc/logo.png?)
 =======
 

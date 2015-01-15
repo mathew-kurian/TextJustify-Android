@@ -726,7 +726,9 @@ public class DocumentView extends ScrollView {
         @Override
         protected void onPostExecute(Boolean done) {
             if (!done || isCancelled()) {
-                layoutProgressListener.onCancelled();
+                if (layoutProgressListener != null) {
+                    layoutProgressListener.onCancelled();
+                }
                 return;
             }
 

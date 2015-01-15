@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextPaint;
 import android.widget.Toast;
@@ -123,6 +124,12 @@ public abstract class IDocumentLayout {
         }
 
         params.loadTo(paint);
+
+        if(text  == null){
+            text = new SpannableString("");
+        } else if (!(text instanceof Spannable)){
+            text = new SpannableString(text);
+        }
 
         return onMeasure(progress, cancelled);
     }

@@ -64,7 +64,7 @@ public class StringDocumentLayout extends IDocumentLayout {
     public boolean onMeasure(IProgress<Float> progress, ICancel<Boolean> cancelled) {
 
         boolean done = true;
-        String text = this.text.toString();
+        String textCpy = this.text.toString();
 
         if (textChange) {
             chunks.clear();
@@ -72,12 +72,12 @@ public class StringDocumentLayout extends IDocumentLayout {
             int start = 0;
 
             while (start > -1) {
-                int next = text.indexOf('\n', start);
+                int next = textCpy.indexOf('\n', start);
 
                 if (next < 0) {
-                    chunks.add(text.substring(start, text.length()));
+                    chunks.add(textCpy.substring(start, textCpy.length()));
                 } else {
-                    chunks.add(text.substring(start, next));
+                    chunks.add(textCpy.substring(start, next));
                     next += 1;
                 }
 
@@ -115,7 +115,7 @@ public class StringDocumentLayout extends IDocumentLayout {
                 break;
             }
 
-            // Start at x = 0 for drawing text
+            // Start at x = 0 for drawing textCpy
             x = params.insetPaddingLeft;
 
             String trimParagraph = paragraph.trim();

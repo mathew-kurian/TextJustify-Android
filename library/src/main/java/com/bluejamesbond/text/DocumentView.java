@@ -700,7 +700,7 @@ public class DocumentView extends ScrollView {
             cancelled = new IDocumentLayout.ICancel<Boolean>() {
                 @Override
                 public Boolean isCancelled() {
-                    return isCancelled();
+                    return MeasureTask.this.isCancelled();
                 }
             };
         }

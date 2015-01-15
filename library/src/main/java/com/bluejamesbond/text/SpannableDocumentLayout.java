@@ -34,6 +34,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.Layout;
+import android.text.Spannable;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
@@ -163,10 +164,10 @@ public class SpannableDocumentLayout extends IDocumentLayout {
         LeadingMarginSpan[] activeLeadSpans = new LeadingMarginSpan[0];
         HashMap<LeadingMarginSpan, Integer> leadSpans = new HashMap<>();
         TextAlignment defAlign = params.textAlignment;
-        Spanned text = (Spanned) this.text;
+        Spannable textCpy = (Spannable) this.text;
         Paint.FontMetricsInt fmi = paint.getFontMetricsInt();
 
-        int maxTextIndex = text.length() - 1;
+        int maxTextIndex = textCpy.length() - 1;
         int lines = staticLayout.getLineCount();
         int enableLineBreak = 0;
         int index = 0;
@@ -201,18 +202,18 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
             if (debugging) {
                 Console.log(start + " => " + end + " :: " + " " + -staticLayout.getLineAscent(lineNumber)
-                        + " " + staticLayout.getLineDescent(lineNumber) + " " + text.subSequence(start, end)
+                        + " " + staticLayout.getLineDescent(lineNumber) + " " + textCpy.subSequence(start, end)
                         .toString());
             }
 
-            // start == end => end of text
+            // start == end => end of textCpy
             if (start == end || lineNumber >= params.maxLines) {
                 break;
             }
 
-            // Get text alignment for the line
+            // Get textCpy alignment for the line
             TextAlignmentSpan[] textAlignmentSpans =
-                    text.getSpans(start, end, TextAlignmentSpan.class);
+                    textCpy.getSpans(start, end, TextAlignmentSpan.class);
             TextAlignment lineTextAlignment = textAlignmentSpans.length == 0 ? defAlign :
                     textAlignmentSpans[0].getTextAlignment();
 
@@ -222,8 +223,8 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
             // Line is ONLY a <br/> or \n
             if (start + 1 == end &&
-                    (Character.getNumericValue(text.charAt(start)) == -1 ||
-                            text.charAt(start) == '\n')) {
+                    (Character.getNumericValue(textCpy.charAt(start)) == -1 ||
+                            textCpy.charAt(start) == '\n')) {
 
                 // Line break indicates a new paragraph
                 // is next
@@ -248,8 +249,8 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
             // Line CONTAINS a \n
             boolean isParaEnd = end == maxTextIndex ||
-                    text.charAt(Math.min(end, maxTextIndex)) == '\n' ||
-                    text.charAt(end - 1) == '\n';
+                    textCpy.charAt(Math.min(end, maxTextIndex)) == '\n' ||
+                    textCpy.charAt(end - 1) == '\n';
 
             if (isParaEnd) {
                 enableLineBreak = 1;
@@ -259,7 +260,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
             if (isParaStart) {
 
                 // Process LeadingMarginSpan
-                activeLeadSpans = text.getSpans(start, end, LeadingMarginSpan.class);
+                activeLeadSpans = textCpy.getSpans(start, end, LeadingMarginSpan.class);
 
                 // Set up all the spans
                 if (activeLeadSpans.length > 0) {
@@ -336,14 +337,14 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
             switch (lineTextAlignment) {
                 case RIGHT: {
-                    float lineWidth = Styled.measureText(paint, workPaint, text, start, end, fmi);
+                    float lineWidth = Styled.measureText(paint, workPaint, textCpy, start, end, fmi);
                     index = pushToken(newTokens, index, start, end, parentWidth - x - lineWidth, y,
                             lastAscent, lastDescent);
                     y += lastDescent;
                     continue;
                 }
                 case CENTER: {
-                    float lineWidth = Styled.measureText(paint, workPaint, text, start, end, fmi);
+                    float lineWidth = Styled.measureText(paint, workPaint, textCpy, start, end, fmi);
                     index = pushToken(newTokens, index, start, end, x + (realWidth - lineWidth) / 2,
                             y, lastAscent, lastDescent);
                     y += lastDescent;
@@ -357,7 +358,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
             }
 
             // FIXME: Space at the end of each line, possibly due to scrollbar offset
-            LinkedList<Integer> tokenized = tokenize(text, start, end - 1);
+            LinkedList<Integer> tokenized = tokenize(textCpy, start, end - 1);
 
             // If one long word without any spaces
             if (tokenized.size() == 1) {
@@ -365,13 +366,13 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
                 // If not all space, process
                 // characters individually
-                if (getTrimmedLength(text, start, stop) != 0) {
+                if (getTrimmedLength(textCpy, start, stop) != 0) {
 
                     float[] textWidths = new float[stop - start];
                     float sum = 0.0f, textsOffset = 0.0f, offset;
                     int m = 0;
 
-                    Styled.getTextWidths(paint, workPaint, text, start,
+                    Styled.getTextWidths(paint, workPaint, textCpy, start,
                             stop, textWidths, fmi);
 
                     for (float tw : textWidths) {
@@ -416,7 +417,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
                 for (int stop : tokenized) {
 
-                    float wordWidth = Styled.measureText(paint, workPaint, text,
+                    float wordWidth = Styled.measureText(paint, workPaint, textCpy,
                             start, stop, fmi);
 
                     // add word

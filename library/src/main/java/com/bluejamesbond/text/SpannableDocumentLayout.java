@@ -35,7 +35,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.Layout;
 import android.text.Spannable;
-import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.style.LeadingMarginSpan;
@@ -57,7 +56,8 @@ public class SpannableDocumentLayout extends IDocumentLayout {
     private static final int TOKEN_Y = 3;
     private static final int TOKEN_ASCENT = 4;
     private static final int TOKEN_DESCENT = 5;
-    private static final int TOKEN_LENGTH = 6;
+    private static final int TOKEN_LINE = 6;
+    private static final int TOKEN_LENGTH = 7;
     private TextPaint workPaint;
     private LinkedList<LeadingMarginSpanDrawParameters> mLeadMarginSpanDrawEvents;
     private int[] tokens;
@@ -69,7 +69,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
     }
 
     private static int pushToken(int[] tokens, int index, int start, int end, float x, float y,
-                                 float ascent, float descent) {
+                                 float ascent, float descent, int line) {
 
         Assert.assertTrue(index % TOKEN_LENGTH == 0);
 
@@ -79,6 +79,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
         tokens[index + TOKEN_Y] = (int) y;
         tokens[index + TOKEN_ASCENT] = (int) ascent;
         tokens[index + TOKEN_DESCENT] = (int) descent;
+        tokens[index + TOKEN_LINE] = line;
         return index + TOKEN_LENGTH;
     }
 
@@ -231,8 +232,10 @@ public class SpannableDocumentLayout extends IDocumentLayout {
                 isParaStart = true;
 
                 // Use the line-height of the next line
-                y += enableLineBreak * (-staticLayout.getLineAscent(lineNumber + 1) + staticLayout
-                        .getLineDescent(lineNumber + 1));
+                if(lineNumber + 1 < lines) {
+                    y += enableLineBreak * (-staticLayout.getLineAscent(lineNumber + 1) + staticLayout
+                            .getLineDescent(lineNumber + 1));
+                }
 
                 // Don't ignore the next line breaks
                 enableLineBreak = 1;
@@ -339,19 +342,19 @@ public class SpannableDocumentLayout extends IDocumentLayout {
                 case RIGHT: {
                     float lineWidth = Styled.measureText(paint, workPaint, textCpy, start, end, fmi);
                     index = pushToken(newTokens, index, start, end, parentWidth - x - lineWidth, y,
-                            lastAscent, lastDescent);
+                            lastAscent, lastDescent, lineNumber);
                     y += lastDescent;
                     continue;
                 }
                 case CENTER: {
                     float lineWidth = Styled.measureText(paint, workPaint, textCpy, start, end, fmi);
                     index = pushToken(newTokens, index, start, end, x + (realWidth - lineWidth) / 2,
-                            y, lastAscent, lastDescent);
+                            y, lastAscent, lastDescent, lineNumber);
                     y += lastDescent;
                     continue;
                 }
                 case LEFT: {
-                    index = pushToken(newTokens, index, start, end, x, y, lastAscent, lastDescent);
+                    index = pushToken(newTokens, index, start, end, x, y, lastAscent, lastDescent, lineNumber);
                     y += lastDescent;
                     continue;
                 }
@@ -383,7 +386,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
                     for (int k = start; k < stop; k++) {
                         index = pushToken(newTokens, index, k, k + 1,
-                                x + textsOffset + (offset * m), y, lastAscent, lastDescent);
+                                x + textsOffset + (offset * m), y, lastAscent, lastDescent, lineNumber);
                         newTokens = ammortizeArray(newTokens, index);
                         textsOffset += textWidths[m++];
                     }
@@ -422,7 +425,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
                     // add word
                     index = pushToken(newTokens, index, start, stop, rtlRight + rtlMul * (x + lineWidth + rtlZero * wordWidth), y, lastAscent,
-                            lastDescent);
+                            lastDescent, lineNumber);
 
                     lineWidth += wordWidth;
 
@@ -467,12 +470,12 @@ public class SpannableDocumentLayout extends IDocumentLayout {
     @Override
     public void onDraw(Canvas canvas, int scrollTop, int scrollBottom) {
 
-        if(tokens.length < TOKEN_LENGTH){
+        if (tokens.length < TOKEN_LENGTH) {
             return;
         }
 
-        int startIndex = getTokenIndex(scrollTop, TokenPosition.START_OF_LINE);
-        int endIndex = getTokenIndex(scrollBottom, TokenPosition.END_OF_LINE);
+        int startIndex = getTokenForVertical(scrollTop, TokenPosition.START_OF_LINE);
+        int endIndex = getTokenForVertical(scrollBottom, TokenPosition.END_OF_LINE);
 
         boolean isReverse = params.reverse;
 
@@ -524,7 +527,17 @@ public class SpannableDocumentLayout extends IDocumentLayout {
     }
 
     @Override
-    public int getTokenIndex(float y, TokenPosition position) {
+    public float getTokenAscent(int tokenIndex) {
+        return tokens[tokenIndex + TOKEN_ASCENT];
+    }
+
+    @Override
+    public float getTokenDescent(int tokenIndex) {
+        return tokens[tokenIndex + TOKEN_DESCENT];
+    }
+
+    @Override
+    public int getTokenForVertical(float y, TokenPosition position) {
         int high = Math.max(0, tokens.length - 1);
         int low = 0;
 
@@ -560,8 +573,23 @@ public class SpannableDocumentLayout extends IDocumentLayout {
     }
 
     @Override
-    public float getTokenTopAt(int index) {
-        return tokens[index + TOKEN_Y];
+    public int getLineForToken(int tokenIndex) {
+        return tokens[tokenIndex + TOKEN_LINE];
+    }
+
+    @Override
+    public int getTokenStart(int tokenIndex) {
+        return tokens[tokenIndex + TOKEN_START];
+    }
+
+    @Override
+    public int getTokenEnd(int tokenIndex) {
+        return tokens[tokenIndex + TOKEN_END];
+    }
+
+    @Override
+    public float getTokenTopAt(int tokenIndex) {
+        return tokens[tokenIndex + TOKEN_Y];
     }
 
     @Override

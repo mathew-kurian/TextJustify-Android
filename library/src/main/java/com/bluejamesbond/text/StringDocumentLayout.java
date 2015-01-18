@@ -52,11 +52,13 @@ public class StringDocumentLayout extends IDocumentLayout {
         chunks = new ConcurrentModifiableLinkedList<>();
     }
 
-    private float getFontAscent() {
+    @Override
+    public float getTokenAscent(int tokenIndex) {
         return -paint.ascent() * params.lineHeightMultiplier;
     }
 
-    private float getFontDescent() {
+    @Override
+    public float getTokenDescent(int tokenIndex) {
         return paint.descent() * params.lineHeightMultiplier;
     }
 
@@ -96,9 +98,9 @@ public class StringDocumentLayout extends IDocumentLayout {
         // Get basic settings widget properties
         int lineNumber = 0;
         float width = params.parentWidth - params.insetPaddingRight - params.insetPaddingLeft;
-        float lineHeight = getFontAscent() + getFontDescent();
+        float lineHeight = getTokenAscent(0) + getTokenDescent(0);
         float x, prog = 0, chunksLen = chunks.size();
-        float y = params.insetPaddingTop + getFontAscent();
+        float y = params.insetPaddingTop + getTokenAscent(0);
         float spaceOffset = paint.measureText(" ") * params.wordSpacingMultiplier;
 
         main:
@@ -230,15 +232,15 @@ public class StringDocumentLayout extends IDocumentLayout {
         lineCount = lineNumber;
         tokens = tokensArr;
         params.changed = !done;
-        measuredHeight = (int) (y - getFontAscent() + params.insetPaddingBottom);
+        measuredHeight = (int) (y - getTokenAscent(0) + params.insetPaddingBottom);
         return done;
     }
 
     @Override
     public void onDraw(Canvas canvas, int startTop, int startBottom) {
 
-        int tokenStart = getTokenIndex(startTop, TokenPosition.START_OF_LINE);
-        int tokenEnd = getTokenIndex(startBottom, TokenPosition.END_OF_LINE);
+        int tokenStart = getTokenForVertical(startTop, TokenPosition.START_OF_LINE);
+        int tokenEnd = getTokenForVertical(startBottom, TokenPosition.END_OF_LINE);
 
         for (int i = Math.max(0, tokenStart - 25); i < tokenEnd + 25 && i < tokens.length; i++) {
             Token token = tokens[i];
@@ -252,7 +254,7 @@ public class StringDocumentLayout extends IDocumentLayout {
 
                     paint.setColor(Color.YELLOW);
                     paint.setStyle(Paint.Style.FILL);
-                    canvas.drawRect(params.insetPaddingLeft, token.y - startTop - getFontAscent(), params.parentWidth - params.insetPaddingRight, token.y - startTop + getFontDescent(), paint);
+                    canvas.drawRect(params.insetPaddingLeft, token.y - startTop - getTokenAscent(0), params.parentWidth - params.insetPaddingRight, token.y - startTop + getTokenDescent(0), paint);
 
                     paint.setColor(Color.BLACK);
                     paint.setFakeBoldText(true);
@@ -269,7 +271,7 @@ public class StringDocumentLayout extends IDocumentLayout {
     }
 
     @Override
-    public int getTokenIndex(float y, TokenPosition position) {
+    public int getTokenForVertical(float y, TokenPosition position) {
         int high = Math.max(0, tokens.length - 1);
         int low = 0;
 
@@ -302,8 +304,23 @@ public class StringDocumentLayout extends IDocumentLayout {
     }
 
     @Override
-    public float getTokenTopAt(int index) {
-        return tokens[index].getY();
+    public int getLineForToken(int tokenIndex) {
+        throw new RuntimeException("Use SpannableDocumentLayout for now. Method under construction.");
+    }
+
+    @Override
+    public int getTokenStart(int tokenIndex) {
+        throw new RuntimeException("Use SpannableDocumentLayout for now. Method under construction.");
+    }
+
+    @Override
+    public int getTokenEnd(int tokenIndex) {
+        throw new RuntimeException("Use SpannableDocumentLayout for now. Method under construction.");
+    }
+
+    @Override
+    public float getTokenTopAt(int tokenIndex) {
+        return tokens[tokenIndex].getY();
     }
 
     @Override

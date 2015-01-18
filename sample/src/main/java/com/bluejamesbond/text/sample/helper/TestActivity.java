@@ -71,7 +71,7 @@ public class TestActivity extends Activity {
         final DocumentView documentView = new DocumentView(this, type);
         documentView.getDocumentLayoutParams().setTextColor(0xffffffff);
         documentView.getDocumentLayoutParams().setTextTypeface(Typeface.DEFAULT);
-        documentView.getDocumentLayoutParams().setTextSize(30);
+        documentView.getDocumentLayoutParams().setTextSize(14);
         documentView.getDocumentLayoutParams().setTextAlignment(TextAlignment.JUSTIFIED);
         documentView.getDocumentLayoutParams().setInsetPaddingLeft(30f);
         documentView.getDocumentLayoutParams().setInsetPaddingRight(30f);

@@ -294,7 +294,7 @@ public class DocumentView extends ScrollView {
                 } else if (attr == R.styleable.DocumentView_documentView_textColor) {
                     layoutParams.setTextColor(a.getColor(attr, layoutParams.getTextColor()));
                 } else if (attr == R.styleable.DocumentView_documentView_textSize) {
-                    layoutParams.setTextSize(a.getDimension(attr, layoutParams.getTextSize()));
+                    layoutParams.setRawTextSize(a.getDimension(attr, layoutParams.getTextSize()));
                 } else if (attr == R.styleable.DocumentView_documentView_textStyle) {
                     int style = a.getInt(attr, 0);
                     layoutParams.setTextFakeBold((style & 1) > 0);

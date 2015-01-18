@@ -9,6 +9,8 @@ import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextPaint;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.widget.Toast;
 
 import com.bluejamesbond.text.hyphen.Hyphenator;
@@ -57,6 +59,7 @@ public abstract class IDocumentLayout {
     protected LayoutParams params;
     protected TextPaint paint;
     private Toast toast;
+    private DisplayMetrics displayMetrics;
 
     @SuppressLint("ShowToast")
     public IDocumentLayout(Context context, TextPaint textPaint) {
@@ -66,6 +69,7 @@ public abstract class IDocumentLayout {
         lineCount = 0;
         debugging = false;
         textChange = false;
+        displayMetrics = context.getResources().getDisplayMetrics();
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
 
         params = new LayoutParams();
@@ -142,9 +146,19 @@ public abstract class IDocumentLayout {
 
     protected abstract void onDraw(Canvas canvas, int startTop, int startBottom);
 
-    public abstract int getTokenIndex(float y, TokenPosition position);
+    public abstract float getTokenAscent(int tokenIndex);
 
-    public abstract float getTokenTopAt(int index);
+    public abstract float getTokenDescent(int tokenIndex);
+
+    public abstract int getTokenForVertical(float y, TokenPosition position);
+
+    public abstract int getLineForToken(int tokenIndex);
+
+    public abstract int getTokenStart(int tokenIndex);
+
+    public abstract int getTokenEnd(int tokenIndex);
+
+    public abstract float getTokenTopAt(int tokenIndex);
 
     public abstract CharSequence getTokenTextAt(int index);
 
@@ -162,7 +176,7 @@ public abstract class IDocumentLayout {
         public T isCancelled();
     }
 
-    public static class LayoutParams {
+    public class LayoutParams {
 
         /**
          * All the customizable parameters
@@ -188,7 +202,7 @@ public abstract class IDocumentLayout {
         protected Boolean textStrikeThru = false;
         protected Boolean textFakeBold = false;
         protected Typeface textTypeface = Typeface.DEFAULT;
-        protected Float textSize = 40f;
+        protected Float rawTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14, displayMetrics);
         protected Integer textColor = Color.BLACK;
 
         /**
@@ -201,11 +215,11 @@ public abstract class IDocumentLayout {
                     new Object[]{hyphenator, insetPaddingLeft, insetPaddingTop, insetPaddingBottom, insetPaddingRight,
                             parentWidth, offsetX, offsetY,
                             lineHeightMultiplier, hyphenated, reverse, maxLines, hyphen, textAlignment, wordSpacingMultiplier,
-                            textUnderline, textStrikeThru, textFakeBold, textTypeface, textSize, textColor});
+                            textUnderline, textStrikeThru, textFakeBold, textTypeface, rawTextSize, textColor});
         }
 
         public void loadTo(Paint paint) {
-            paint.setTextSize(textSize);
+            paint.setTextSize(rawTextSize);
             paint.setFakeBoldText(textFakeBold);
             paint.setStrikeThruText(textStrikeThru);
             paint.setColor(textColor);
@@ -466,16 +480,24 @@ public abstract class IDocumentLayout {
             this.changed = true;
         }
 
-        public float getTextSize() {
-            return textSize;
+        public void setTextSize(float size){
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         }
 
-        public void setTextSize(float textSize) {
-            if (this.textSize.equals(textSize)) {
+        public void setTextSize(int unit, float size){
+            setRawTextSize(TypedValue.applyDimension(unit, size, displayMetrics));
+        }
+
+        public float getTextSize() {
+            return rawTextSize;
+        }
+
+        public void setRawTextSize(float textSize) {
+            if (this.rawTextSize.equals(textSize)) {
                 return;
             }
 
-            this.textSize = textSize;
+            this.rawTextSize = textSize;
             this.changed = true;
         }
 

@@ -34,6 +34,7 @@ import android.os.Bundle;
 import com.bluejamesbond.text.DocumentView;
 import com.bluejamesbond.text.hyphen.DefaultHyphenator;
 import com.bluejamesbond.text.hyphen.IHyphenator;
+import com.bluejamesbond.text.hyphen.SqueezeHyphenator;
 import com.bluejamesbond.text.sample.R;
 import com.bluejamesbond.text.sample.helper.TestActivity;
 import com.bluejamesbond.text.style.TextAlignment;
@@ -51,25 +52,7 @@ public class CustomHyphenatorTest extends TestActivity {
                 .toString(), DocumentView.PLAIN_TEXT);
 
         documentView.getDocumentLayoutParams().setTextAlignment(TextAlignment.JUSTIFIED);
-        documentView.getDocumentLayoutParams().setHyphenator(new IHyphenator(){
-            @Override
-            public ArrayList<String> hyphenate(String word) {
-
-                ArrayList<String> broken = new ArrayList<String>();
-                int len = word.length() - 1, i;
-
-                for(i = 0; i < len; i += 2){
-                    broken.add(word.substring(i, i + 2));
-                }
-
-                if(i < len){
-                    broken.add(word.substring(i, word.length()));
-                }
-
-                return broken;
-            }
-        });
-
+        documentView.getDocumentLayoutParams().setHyphenator(SqueezeHyphenator.getInstance());
         documentView.getDocumentLayoutParams().setHyphenated(true);
     }
 }

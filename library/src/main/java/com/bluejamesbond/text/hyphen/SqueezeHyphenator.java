@@ -17,7 +17,7 @@ package com.bluejamesbond.text.hyphen;
  *
  * -------------------------------------------------------------------------
  *
- * IHyphenator.java
+ * SqueezeHyphenator.java
  * @author Mathew Kurian
  *
  * From TextJustify-Android Library v2.0
@@ -31,6 +31,34 @@ package com.bluejamesbond.text.hyphen;
 
 import java.util.ArrayList;
 
-public interface IHyphenator  {
-    public ArrayList<String> hyphenate(String word);
+public class SqueezeHyphenator implements IHyphenator {
+
+    private static SqueezeHyphenator squeezeHyphenator;
+
+    static {
+        squeezeHyphenator = new SqueezeHyphenator();
+    }
+
+    public static SqueezeHyphenator getInstance(){
+        return squeezeHyphenator;
+    }
+
+    private SqueezeHyphenator(){}
+
+    @Override
+    public ArrayList<String> hyphenate(String word) {
+
+        ArrayList<String> broken = new ArrayList<String>();
+        int len = word.length() - 1, i;
+
+        for (i = 0; i < len; i += 2) {
+            broken.add(word.substring(i, i + 2));
+        }
+
+        if (i < len) {
+            broken.add(word.substring(i, word.length()));
+        }
+
+        return broken;
+    }
 }

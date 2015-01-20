@@ -64,6 +64,10 @@
             android:name="com.bluejamesbond.text.sample.test.NewLineTest"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
+        <activity
+            android:name="com.bluejamesbond.text.sample.test.CustomHyphenatorTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.NoTitleBar" />
     </application>
 
 </manifest>

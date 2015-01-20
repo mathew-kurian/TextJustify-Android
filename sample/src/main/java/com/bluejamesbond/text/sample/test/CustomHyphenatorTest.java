@@ -33,25 +33,43 @@ import android.os.Bundle;
 
 import com.bluejamesbond.text.DocumentView;
 import com.bluejamesbond.text.hyphen.DefaultHyphenator;
+import com.bluejamesbond.text.hyphen.IHyphenator;
+import com.bluejamesbond.text.sample.R;
 import com.bluejamesbond.text.sample.helper.TestActivity;
 import com.bluejamesbond.text.style.TextAlignment;
 
-public class HyphenatedTest extends TestActivity {
+import java.util.ArrayList;
+
+public class CustomHyphenatorTest extends TestActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         DocumentView documentView = addDocumentView(new StringBuilder()
-                .append(testName + "\n")
-                .append("Vágner Mancini hoje é um sujeito tão angustiado quanto otimista, por mais que pareça uma contradição. O técnico do Botafogo tem a difícil missão de salvar " +
-                        "o time do rebaixamento no Campeonato Brasileiro, apesar de todas as dificuldades que o próprio clube impõe a seu trabalho - salários atrasados, afastamento " +
-                        "de jogadores importantes, dívidas que ameaçam até as poucas chances que ainda existem de permanência na Série A em 2015. Na manhã desta segunda-feira, Mancini " +
-                        "falou ao blog.")
+                .append(getResources().getString(R.string.plain_text))
                 .toString(), DocumentView.PLAIN_TEXT);
 
         documentView.getDocumentLayoutParams().setTextAlignment(TextAlignment.JUSTIFIED);
-        documentView.getDocumentLayoutParams().setHyphenator(new DefaultHyphenator(DefaultHyphenator.HyphenPattern.PT));
+        documentView.getDocumentLayoutParams().setHyphenator(new IHyphenator(){
+            @Override
+            public ArrayList<String> hyphenate(String word) {
+
+                ArrayList<String> broken = new ArrayList<String>();
+                int len = word.length() - 1, i;
+
+                for(i = 0; i < len; i += 2){
+                    broken.add(word.substring(i, i + 2));
+                }
+
+                if(i < len){
+                    broken.add(word.substring(i, word.length()));
+                }
+
+                return broken;
+            }
+        });
+
         documentView.getDocumentLayoutParams().setHyphenated(true);
     }
 }

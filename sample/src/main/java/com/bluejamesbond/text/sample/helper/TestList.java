@@ -43,6 +43,7 @@ import android.widget.TextView;
 
 import com.bluejamesbond.text.sample.R;
 import com.bluejamesbond.text.sample.test.ChineseCharacterTest;
+import com.bluejamesbond.text.sample.test.CustomHyphenatorTest;
 import com.bluejamesbond.text.sample.test.HyphenatedTest;
 import com.bluejamesbond.text.sample.test.LeadingMarginSpan2Test;
 import com.bluejamesbond.text.sample.test.LineBreakTest;
@@ -69,7 +70,8 @@ public class TestList extends TestActivity {
             WordSpacingTest.class,
             RTLTest.class,
             XMLTest.class,
-            TextViewTest.class
+            TextViewTest.class,
+            CustomHyphenatorTest.class
     };
 
     @Override

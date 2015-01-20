@@ -13,7 +13,8 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.Toast;
 
-import com.bluejamesbond.text.hyphen.Hyphenator;
+import com.bluejamesbond.text.hyphen.DefaultHyphenator;
+import com.bluejamesbond.text.hyphen.IHyphenator;
 import com.bluejamesbond.text.style.TextAlignment;
 
 import java.util.Arrays;
@@ -181,7 +182,7 @@ public abstract class IDocumentLayout {
         /**
          * All the customizable parameters
          */
-        protected Hyphenator hyphenator = null;
+        protected IHyphenator hyphenator = null;
         protected Float insetPaddingLeft = 0.0f;
         protected Float insetPaddingTop = 0.0f;
         protected Float insetPaddingBottom = 0.0f;
@@ -253,11 +254,11 @@ public abstract class IDocumentLayout {
             this.changed = true;
         }
 
-        public Hyphenator getHyphenator() {
+        public IHyphenator getHyphenator() {
             return hyphenator;
         }
 
-        public void setHyphenator(Hyphenator hyphenator) {
+        public void setHyphenator(IHyphenator hyphenator) {
             if (hyphenator == null) {
                 return;
             }

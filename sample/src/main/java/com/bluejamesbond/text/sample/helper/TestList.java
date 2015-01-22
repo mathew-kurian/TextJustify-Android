@@ -43,12 +43,14 @@ import android.widget.TextView;
 
 import com.bluejamesbond.text.sample.R;
 import com.bluejamesbond.text.sample.test.ChineseCharacterTest;
+import com.bluejamesbond.text.sample.test.ClickableSpanTest;
 import com.bluejamesbond.text.sample.test.CustomHyphenatorTest;
 import com.bluejamesbond.text.sample.test.HyphenatedTest;
 import com.bluejamesbond.text.sample.test.LeadingMarginSpan2Test;
 import com.bluejamesbond.text.sample.test.LineBreakTest;
 import com.bluejamesbond.text.sample.test.LongFormattedTextTest;
 import com.bluejamesbond.text.sample.test.LongPlainTextTest;
+import com.bluejamesbond.text.sample.test.MixedRTLTest;
 import com.bluejamesbond.text.sample.test.NewLineTest;
 import com.bluejamesbond.text.sample.test.QuoteSpanTest;
 import com.bluejamesbond.text.sample.test.RTLTest;
@@ -71,7 +73,9 @@ public class TestList extends TestActivity {
             RTLTest.class,
             XMLTest.class,
             TextViewTest.class,
-            CustomHyphenatorTest.class
+            CustomHyphenatorTest.class,
+            ClickableSpanTest.class,
+            MixedRTLTest.class
     };
 
     @Override

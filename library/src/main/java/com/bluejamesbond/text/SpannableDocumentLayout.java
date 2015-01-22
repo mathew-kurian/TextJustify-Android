@@ -38,7 +38,10 @@ import android.text.Spannable;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.style.LeadingMarginSpan;
+import android.util.Log;
 
+import com.bluejamesbond.text.style.Direction;
+import com.bluejamesbond.text.style.DirectionSpan;
 import com.bluejamesbond.text.style.TextAlignment;
 import com.bluejamesbond.text.style.TextAlignmentSpan;
 
@@ -222,6 +225,14 @@ public class SpannableDocumentLayout extends IDocumentLayout {
             lastAscent = -staticLayout.getLineAscent(lineNumber);
             lastDescent = staticLayout.getLineDescent(lineNumber) + lineHeightAdd;
 
+            DirectionSpan [] directionSpans = textCpy.getSpans(start, end, DirectionSpan.class);
+
+            if(directionSpans.length > 0){
+                isReverse = directionSpans[0].isReverse();
+            } else {
+                isReverse = params.reverse;
+            }
+
             // Line is ONLY a <br/> or \n
             if (start + 1 == end &&
                     (Character.getNumericValue(textCpy.charAt(start)) == -1 ||
@@ -273,12 +284,10 @@ public class SpannableDocumentLayout extends IDocumentLayout {
                             // Default margin is everything
                             int marginLineCount = -1;
 
-                            {
-                                if (leadSpan instanceof LeadingMarginSpan.LeadingMarginSpan2) {
-                                    LeadingMarginSpan.LeadingMarginSpan2 leadSpan2 =
-                                            ((LeadingMarginSpan.LeadingMarginSpan2) leadSpan);
-                                    marginLineCount = leadSpan2.getLeadingMarginLineCount();
-                                }
+                            if (leadSpan instanceof LeadingMarginSpan.LeadingMarginSpan2) {
+                                LeadingMarginSpan.LeadingMarginSpan2 leadSpan2 =
+                                        ((LeadingMarginSpan.LeadingMarginSpan2) leadSpan);
+                                marginLineCount = leadSpan2.getLeadingMarginLineCount();
                             }
 
                             leadSpans.put(leadSpan, marginLineCount);
@@ -474,10 +483,11 @@ public class SpannableDocumentLayout extends IDocumentLayout {
             return;
         }
 
+        Spannable textCpy = (Spannable) this.text;
         int startIndex = getTokenForVertical(scrollTop, TokenPosition.START_OF_LINE);
         int endIndex = getTokenForVertical(scrollBottom, TokenPosition.END_OF_LINE);
 
-        boolean isReverse = params.reverse;
+        boolean defIsReverse = params.reverse;
 
         for (LeadingMarginSpanDrawParameters parameters : mLeadMarginSpanDrawEvents) {
             // FIXME sort by Y and break out of loop
@@ -486,7 +496,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
             if (bottom < 0 || top > scrollBottom) continue;
             parameters.span.drawLeadingMargin(canvas, paint, parameters.x,
                     parameters.dir, top, parameters.baseline,
-                    bottom, text, parameters.start,
+                    bottom, textCpy, parameters.start,
                     parameters.end, parameters.first, null);
         }
 
@@ -504,8 +514,9 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
         for (int index = startIndex; index < endIndex; index += TOKEN_LENGTH) {
             if (tokens[index + TOKEN_START] == Integer.MAX_VALUE) break;
-            Styled.drawText(canvas, text, tokens[index + TOKEN_START],
-                    tokens[index + TOKEN_END], Layout.DIR_LEFT_TO_RIGHT, isReverse,
+            DirectionSpan [] directionSpans = textCpy.getSpans(tokens[index + TOKEN_START], tokens[index + TOKEN_END], DirectionSpan.class);
+            Styled.drawText(canvas, textCpy, tokens[index + TOKEN_START],
+                    tokens[index + TOKEN_END], Layout.DIR_LEFT_TO_RIGHT, directionSpans.length > 0 ? directionSpans[0].isReverse() : defIsReverse,
                     tokens[index + TOKEN_X], 0,
                     tokens[index + TOKEN_Y] - scrollTop, 0, paint, workPaint, false);
             if (debugging) {

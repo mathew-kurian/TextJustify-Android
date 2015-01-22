@@ -41,7 +41,6 @@ public class WordSpacingTest extends TestActivity {
         super.onCreate(savedInstanceState);
 
         DocumentView documentView = addDocumentView(new StringBuilder()
-                .append(testName + "\n")
                 .append("Document view now supports both String and Spannables. To support this, there are two (2) types of layouts: (a) DocumentLayout and (b) SpannedDocumentLayout. " +
                         "DocumentLayout supports just plain Strings just like the text you are reading. However, Spannables require the " +
                         "constructor to have SpannedDocumentLayout.class as a parameter. For now, DocumentLayout will offer significant speed improvements " +

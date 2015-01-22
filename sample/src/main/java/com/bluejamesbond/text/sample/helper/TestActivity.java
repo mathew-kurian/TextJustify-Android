@@ -32,6 +32,7 @@ package com.bluejamesbond.text.sample.helper;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -71,7 +72,7 @@ public class TestActivity extends Activity {
         final DocumentView documentView = new DocumentView(this, type);
         documentView.getDocumentLayoutParams().setTextColor(0xffffffff);
         documentView.getDocumentLayoutParams().setTextTypeface(Typeface.DEFAULT);
-        documentView.getDocumentLayoutParams().setTextSize(14);
+        documentView.getDocumentLayoutParams().setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         documentView.getDocumentLayoutParams().setTextAlignment(TextAlignment.JUSTIFIED);
         documentView.getDocumentLayoutParams().setInsetPaddingLeft(30f);
         documentView.getDocumentLayoutParams().setInsetPaddingRight(30f);

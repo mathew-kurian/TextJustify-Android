@@ -32,6 +32,7 @@ import android.text.style.CharacterStyle;
  * Date: 11/25/14 7:06 PM
  */
 
+@SuppressWarnings("unused")
 public class DirectionSpan extends CharacterStyle {
     private final Direction direction;
 
@@ -41,6 +42,10 @@ public class DirectionSpan extends CharacterStyle {
 
     public Direction getDirection() {
         return direction;
+    }
+
+    public boolean isReverse(){
+        return direction.isReverse();
     }
 
     @Override

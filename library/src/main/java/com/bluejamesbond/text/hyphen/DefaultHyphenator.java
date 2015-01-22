@@ -48,18 +48,31 @@ import java.util.regex.Pattern;
 @SuppressLint("UseSparseArrays")
 public class DefaultHyphenator implements IHyphenator {
 
-    HyphenPattern hyphenationPattern;
-    TrieNode trie;
-    int leftMin;
-    int rightMin;
+    private static final HashMap<HyphenPattern, DefaultHyphenator> cached;
 
-    public DefaultHyphenator(HyphenPattern pattern) {
+    static {
+        cached = new HashMap<HyphenPattern, DefaultHyphenator>();
+    }
 
-        this.hyphenationPattern = pattern;
+    private TrieNode trie;
+    private int leftMin;
+    private int rightMin;
 
-        this.trie = this.createTrie(this.hyphenationPattern.patternObject);
-        this.leftMin = hyphenationPattern.leftMin;
-        this.rightMin = hyphenationPattern.rightMin;
+    private DefaultHyphenator(HyphenPattern pattern) {
+        this.trie = this.createTrie(pattern.patternObject);
+        this.leftMin = pattern.leftMin;
+        this.rightMin = pattern.rightMin;
+    }
+
+    public static DefaultHyphenator getInstance(HyphenPattern hyphenationPattern) {
+        synchronized (cached) {
+            if (!cached.containsKey(hyphenationPattern)) {
+                cached.put(hyphenationPattern, new DefaultHyphenator(hyphenationPattern));
+                return cached.get(hyphenationPattern);
+            }
+
+            return cached.get(hyphenationPattern);
+        }
     }
 
     private TrieNode createTrie(Map<Integer, String> patternObject) {

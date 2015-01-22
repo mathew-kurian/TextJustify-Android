@@ -29,6 +29,17 @@ package com.bluejamesbond.text.style;
  * Date: 11/25/14 7:13 PM
  */
 
+@SuppressWarnings("unused")
 public enum Direction {
-    NORMAL, REVERSE
+    LEFT_TO_RIGHT(false), RIGHT_TO_LEFT(true);
+
+    private boolean flag;
+
+    public boolean isReverse(){
+        return flag;
+    }
+
+    private Direction(boolean flag){
+        this.flag = flag;
+    }
 }

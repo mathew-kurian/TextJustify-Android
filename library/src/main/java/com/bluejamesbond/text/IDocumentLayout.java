@@ -13,7 +13,6 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.Toast;
 
-import com.bluejamesbond.text.hyphen.DefaultHyphenator;
 import com.bluejamesbond.text.hyphen.IHyphenator;
 import com.bluejamesbond.text.style.TextAlignment;
 
@@ -130,9 +129,9 @@ public abstract class IDocumentLayout {
 
         params.loadTo(paint);
 
-        if(text  == null){
+        if (text == null) {
             text = new SpannableString("");
-        } else if (!(text instanceof Spannable)){
+        } else if (!(text instanceof Spannable)) {
             text = new SpannableString(text);
         }
 
@@ -205,18 +204,26 @@ public abstract class IDocumentLayout {
         protected Typeface textTypeface = Typeface.DEFAULT;
         protected Float rawTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14, displayMetrics);
         protected Integer textColor = Color.BLACK;
-
+        protected Integer textLinkColor = Color.parseColor("#ff05c5cf");
         /**
          * If any settings have changed.
          */
         protected boolean changed = false;
+
+        public Integer getTextLinkColor() {
+            return textLinkColor;
+        }
+
+        public void setTextLinkColor(Integer textLinkColor) {
+            this.textLinkColor = textLinkColor;
+        }
 
         public int hashCode() {
             return Arrays.hashCode(
                     new Object[]{hyphenator, insetPaddingLeft, insetPaddingTop, insetPaddingBottom, insetPaddingRight,
                             parentWidth, offsetX, offsetY,
                             lineHeightMultiplier, hyphenated, reverse, maxLines, hyphen, textAlignment, wordSpacingMultiplier,
-                            textUnderline, textStrikeThru, textFakeBold, textTypeface, rawTextSize, textColor});
+                            textUnderline, textStrikeThru, textFakeBold, textTypeface, rawTextSize});
         }
 
         public void loadTo(Paint paint) {
@@ -481,16 +488,16 @@ public abstract class IDocumentLayout {
             this.changed = true;
         }
 
-        public void setTextSize(float size){
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
-        }
-
-        public void setTextSize(int unit, float size){
+        public void setTextSize(int unit, float size) {
             setRawTextSize(TypedValue.applyDimension(unit, size, displayMetrics));
         }
 
         public float getTextSize() {
             return rawTextSize;
+        }
+
+        public void setTextSize(float size) {
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         }
 
         public void setRawTextSize(float textSize) {
@@ -507,12 +514,7 @@ public abstract class IDocumentLayout {
         }
 
         public void setTextColor(int textColor) {
-            if (this.textColor.equals(textColor)) {
-                return;
-            }
-
             this.textColor = textColor;
-            this.changed = true;
         }
     }
 }

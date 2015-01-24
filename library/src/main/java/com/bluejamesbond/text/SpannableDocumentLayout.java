@@ -225,13 +225,9 @@ public class SpannableDocumentLayout extends IDocumentLayout {
             lastAscent = -staticLayout.getLineAscent(lineNumber);
             lastDescent = staticLayout.getLineDescent(lineNumber) + lineHeightAdd;
 
+            // Handle reverse
             DirectionSpan [] directionSpans = textCpy.getSpans(start, end, DirectionSpan.class);
-
-            if(directionSpans.length > 0){
-                isReverse = directionSpans[0].isReverse();
-            } else {
-                isReverse = params.reverse;
-            }
+            isReverse = directionSpans.length > 0 ? directionSpans[0].isReverse() : params.reverse;
 
             // Line is ONLY a <br/> or \n
             if (start + 1 == end &&

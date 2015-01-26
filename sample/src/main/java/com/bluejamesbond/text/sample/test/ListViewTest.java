@@ -75,37 +75,7 @@ public class ListViewTest extends TestActivity {
                 data,
                 R.layout.test_listview_item,
                 new String[]{"Title"},
-                new int[]{R.id.title}){
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                if(convertView == null) {
-                    view.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View view, MotionEvent event) {
-
-                            DocumentView docView = (DocumentView) view.findViewById(R.id.docView);
-
-                            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                                view.setBackgroundColor(Color.parseColor("#f39c12"));
-                                ((TextView) view.findViewById(R.id.title)).setTextColor(Color.BLACK);
-                                docView.getDocumentLayoutParams().setTextColor(Color.BLACK);
-                                docView.invalidate();
-                            } else if (event.getAction() == MotionEvent.ACTION_UP){
-                                view.setBackgroundColor(Color.TRANSPARENT);
-                                ((TextView) view.findViewById(R.id.title)).setTextColor(Color.WHITE);
-                                docView.getDocumentLayoutParams().setTextColor(Color.WHITE);
-                                docView.invalidate();
-                            }
-
-                            return true;
-                        }
-                    });
-                }
-
-                return view;
-            }
-        };
+                new int[]{R.id.title});
 
         listview.setAdapter(adapter);
 

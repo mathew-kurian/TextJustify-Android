@@ -1,0 +1,28 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/test_listview_item_background"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:textAppearance="@android:style/TextAppearance.Large"/>
+
+    <com.bluejamesbond.text.DocumentView
+        android:id="@+id/docView"
+        xmlns:ext="http://schemas.android.com/apk/res-auto"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        ext:documentView_disallowInterceptTouch="true"
+        ext:documentView_progressBar="@id/progressBarXml"
+        ext:documentView_text="@string/xml_test_data"
+        ext:documentView_textAlignment="justified"
+        ext:documentView_textColor="@android:color/white"
+        ext:documentView_textFormat="plain"
+        ext:documentView_textSize="12sp"/>
+</LinearLayout>

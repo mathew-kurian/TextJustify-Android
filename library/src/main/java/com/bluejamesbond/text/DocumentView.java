@@ -47,6 +47,7 @@ import android.os.Build;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -67,6 +68,7 @@ public class DocumentView extends ScrollView {
 
     private static final Object eglBitmapHeightLock;
     private static int eglBitmapHeight;
+    protected ILayoutProgressListener layoutProgressListener;
 
     static {
         eglBitmapHeightLock = new Object();
@@ -79,7 +81,6 @@ public class DocumentView extends ScrollView {
         };
     }
 
-    protected ILayoutProgressListener layoutProgressListener;
     private IDocumentLayout layout;
     private TextPaint paint;
     private TextPaint cachePaint;
@@ -94,6 +95,7 @@ public class DocumentView extends ScrollView {
     private CacheConfig cacheConfig;
     private CacheBitmap cacheBitmapTop;
     private CacheBitmap cacheBitmapBottom;
+    private boolean disallowInterceptTouch;
 
     public DocumentView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -164,6 +166,15 @@ public class DocumentView extends ScrollView {
         return Math.max(maximumTextureSize, GL_MAX_TEXTURE_SIZE);
     }
 
+    public boolean isDisallowInterceptTouch() {
+        return disallowInterceptTouch;
+    }
+
+    public void setDisallowInterceptTouch(boolean disallowInterceptTouch) {
+        this.disallowInterceptTouch = disallowInterceptTouch;
+        setFocusable(!disallowInterceptTouch);
+    }
+
     protected synchronized void drawLayout(Canvas canvas, int startY, int endY, boolean isCache) {
 
         if (isCache) {
@@ -174,7 +185,7 @@ public class DocumentView extends ScrollView {
         layout.draw(canvas, startY, endY);
 
         // onDraw border around
-        if (layout.isDebugging()) {
+        if (getDocumentLayoutParams().isDebugging()) {
             IDocumentLayout.LayoutParams params = getDocumentLayoutParams();
             int lastColor = paint.getColor();
             float lastStrokeWidth = paint.getStrokeWidth();
@@ -231,6 +242,7 @@ public class DocumentView extends ScrollView {
             }
         }
 
+        disallowInterceptTouch = false;
         fadeInTween = LINEAR_EASE_IN;
         cacheConfig = CacheConfig.AUTO_QUALITY;
         paint = new TextPaint();
@@ -316,6 +328,8 @@ public class DocumentView extends ScrollView {
                     setFadeInAnimationStepDelay(a.getInteger(attr, getFadeInAnimationStepDelay()));
                 } else if (attr == R.styleable.DocumentView_documentView_fadeInDuration) {
                     setFadeInDuration(a.getInteger(attr, getFadeInDuration()));
+                } else if (attr == R.styleable.DocumentView_documentView_disallowInterceptTouch) {
+                    setDisallowInterceptTouch(a.getBoolean(attr, isDisallowInterceptTouch()));
                 }
             }
 
@@ -332,13 +346,44 @@ public class DocumentView extends ScrollView {
         paint.setAntiAlias(true);
     }
 
+    @Override
+    public boolean onInterceptHoverEvent(MotionEvent ev) {
+        return !disallowInterceptTouch & super.onInterceptHoverEvent(ev);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        orientation = getResources().getConfiguration().orientation;
+        super.onAttachedToWindow();
+    }
+
     public IDocumentLayout getDocumentLayoutInstance(int type, TextPaint paint) {
         switch (type) {
             case FORMATTED_TEXT:
-                return new SpannableDocumentLayout(getContext(), paint);
+                return new SpannableDocumentLayout(getContext(), paint) {
+                    @Override
+                    public void onLayoutParamsChange() {
+                        invalidateCache();
+                    }
+                };
             default:
             case PLAIN_TEXT:
-                return new StringDocumentLayout(getContext(), paint);
+                return new StringDocumentLayout(getContext(), paint) {
+                    @Override
+                    public void onLayoutParamsChange() {
+                        invalidateCache();
+                    }
+                };
+        }
+    }
+
+    private void invalidateCache() {
+        if (cacheBitmapTop != null) {
+            cacheBitmapTop.setStart(-1);
+        }
+
+        if (cacheBitmapBottom != null) {
+            cacheBitmapBottom.setStart(-1);
         }
     }
 
@@ -445,6 +490,16 @@ public class DocumentView extends ScrollView {
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return !disallowInterceptTouch & super.onInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        return !disallowInterceptTouch & super.onTouchEvent(ev);
     }
 
     @Override
@@ -620,12 +675,6 @@ public class DocumentView extends ScrollView {
             cacheBitmapBottom.recycle();
             cacheBitmapBottom = null;
         }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        orientation = getResources().getConfiguration().orientation;
-        super.onAttachedToWindow();
     }
 
     public static enum CacheConfig {
@@ -817,6 +866,11 @@ public class DocumentView extends ScrollView {
 
             public CacheDrawTask(Runnable runnable) {
                 drawRunnable = runnable;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
             }
 
             @Override

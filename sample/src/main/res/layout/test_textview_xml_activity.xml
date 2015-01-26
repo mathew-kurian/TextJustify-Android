@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -16,16 +16,16 @@
             android:text="@string/titlebar"
             android:textColor="@android:color/white"
             android:textSize="20dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
     </RelativeLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="#222222"
-        android:orientation="horizontal"
-        android:padding="7dp"
-        android:weightSum="100">
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:background="#222222"
+                  android:orientation="horizontal"
+                  android:padding="7dp"
+                  android:weightSum="100">
 
         <TextView
             android:id="@+id/debugButton"
@@ -40,7 +40,7 @@
             android:text="@string/debug_button"
             android:textColor="#aaaaaa"
             android:textSize="13dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/cacheButton"
@@ -55,14 +55,14 @@
             android:text="@string/cache_button"
             android:textColor="#aaaaaa"
             android:textSize="13dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
     </LinearLayout>
 
     <ScrollView xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#ff000000"
-        tools:context=".SideBySide">
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="#ff000000"
+                tools:context=".SideBySide">
 
         <LinearLayout
             android:id="@+id/articleList"
@@ -75,7 +75,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/plain_text"
-                android:textSize="12sp" />
+                android:textSize="12sp"/>
         </LinearLayout>
     </ScrollView>
 

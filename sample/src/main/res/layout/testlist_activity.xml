@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
     <TextView
         android:layout_width="fill_parent"
@@ -12,14 +12,14 @@
         android:text="@string/titlebar"
         android:textColor="@android:color/white"
         android:textSize="20dp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="#222222"
-        android:orientation="vertical"
-        android:padding="15dp">
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:background="#222222"
+                  android:orientation="vertical"
+                  android:padding="15dp">
 
         <TextView
             android:layout_width="fill_parent"
@@ -27,7 +27,7 @@
             android:text="@string/github_link"
             android:textColor="#444444"
             android:textSize="10dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
     </LinearLayout>
 
     <ListView
@@ -36,6 +36,6 @@
         android:layout_height="fill_parent"
         android:background="#000000"
         android:divider="#222222"
-        android:dividerHeight="1px" />
+        android:dividerHeight="1px"/>
 
 </LinearLayout>

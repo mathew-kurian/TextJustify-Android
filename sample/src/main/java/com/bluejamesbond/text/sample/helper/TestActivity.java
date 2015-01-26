@@ -80,7 +80,7 @@ public class TestActivity extends Activity {
         documentView.getDocumentLayoutParams().setInsetPaddingBottom(30f);
         documentView.getDocumentLayoutParams().setLineHeightMultiplier(1f);
         documentView.getDocumentLayoutParams().setReverse(rtl);
-        documentView.getLayout().setDebugging(debugging);
+        documentView.getDocumentLayoutParams().setDebugging(debugging);
         documentView.setText(article);
         documentView.setProgressBar((ProgressBar) findViewById(R.id.progressBar));
         documentView.setFadeInDuration(800);
@@ -102,7 +102,7 @@ public class TestActivity extends Activity {
         LinearLayout articleList = (LinearLayout) findViewById(R.id.articleList);
         articleList.addView(linearLayout);
 
-        debugging = documentView.getLayout().isDebugging();
+        debugging = documentView.getDocumentLayoutParams().isDebugging();
         cacheConfig = documentView.getCacheConfig().getId();
 
         final TextView debugButton = (TextView) findViewById(R.id.debugButton);
@@ -114,7 +114,7 @@ public class TestActivity extends Activity {
                 public void onClick(View view) {
                     debugging = !debugging;
                     debugButton.setText((debugging ? "DISABLE" : "ENABLE") + " DEBUG");
-                    documentView.getLayout().setDebugging(debugging);
+                    documentView.getDocumentLayoutParams().setDebugging(debugging);
                     documentView.invalidate();
                 }
             });

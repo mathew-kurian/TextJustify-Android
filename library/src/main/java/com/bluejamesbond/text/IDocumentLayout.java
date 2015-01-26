@@ -54,7 +54,6 @@ public abstract class IDocumentLayout {
     protected CharSequence text;
     protected int lineCount;
     protected int measuredHeight;
-    protected boolean debugging;
     protected boolean textChange;
     protected LayoutParams params;
     protected TextPaint paint;
@@ -67,7 +66,6 @@ public abstract class IDocumentLayout {
         text = "";
         measuredHeight = 0;
         lineCount = 0;
-        debugging = false;
         textChange = false;
         displayMetrics = context.getResources().getDisplayMetrics();
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
@@ -81,14 +79,6 @@ public abstract class IDocumentLayout {
     protected void showToast(String s) {
         toast.setText(s);
         toast.show();
-    }
-
-    public boolean isDebugging() {
-        return debugging;
-    }
-
-    public void setDebugging(boolean debugging) {
-        this.debugging = debugging;
     }
 
     public Paint getPaint() {
@@ -127,7 +117,7 @@ public abstract class IDocumentLayout {
             return true;
         }
 
-        params.loadTo(paint);
+        params.loadToPaint(paint);
 
         if (text == null) {
             text = new SpannableString("");
@@ -141,6 +131,9 @@ public abstract class IDocumentLayout {
     protected abstract boolean onMeasure(IProgress<Float> progress, ICancel<Boolean> cancelled);
 
     public void draw(Canvas canvas, int startTop, int startBottom) {
+
+        params.loadToPaint(paint);
+
         onDraw(canvas, startTop, startBottom);
     }
 
@@ -176,6 +169,8 @@ public abstract class IDocumentLayout {
         public T isCancelled();
     }
 
+    public abstract void onLayoutParamsChange();
+
     public class LayoutParams {
 
         /**
@@ -190,6 +185,7 @@ public abstract class IDocumentLayout {
         protected Float offsetX = 0.0f;
         protected Float offsetY = 0.0f;
 
+        protected Boolean debugging = false;
         protected Float wordSpacingMultiplier = 1.0f;
         protected Float lineHeightMultiplier = 0.0f;
         protected Boolean hyphenated = false;
@@ -205,6 +201,7 @@ public abstract class IDocumentLayout {
         protected Float rawTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14, displayMetrics);
         protected Integer textColor = Color.BLACK;
         protected Integer textLinkColor = Color.parseColor("#ff05c5cf");
+
         /**
          * If any settings have changed.
          */
@@ -218,15 +215,7 @@ public abstract class IDocumentLayout {
             this.textLinkColor = textLinkColor;
         }
 
-        public int hashCode() {
-            return Arrays.hashCode(
-                    new Object[]{hyphenator, insetPaddingLeft, insetPaddingTop, insetPaddingBottom, insetPaddingRight,
-                            parentWidth, offsetX, offsetY,
-                            lineHeightMultiplier, hyphenated, reverse, maxLines, hyphen, textAlignment, wordSpacingMultiplier,
-                            textUnderline, textStrikeThru, textFakeBold, textTypeface, rawTextSize});
-        }
-
-        public void loadTo(Paint paint) {
+        public void loadToPaint(Paint paint) {
             paint.setTextSize(rawTextSize);
             paint.setFakeBoldText(textFakeBold);
             paint.setStrikeThruText(textStrikeThru);
@@ -245,7 +234,7 @@ public abstract class IDocumentLayout {
             }
 
             this.wordSpacingMultiplier = wordSpacingMultiplier;
-            this.changed = true;
+            invalidate();
         }
 
         public TextAlignment getTextAlignment() {
@@ -258,7 +247,7 @@ public abstract class IDocumentLayout {
             }
 
             this.textAlignment = textAlignment;
-            this.changed = true;
+            invalidate();
         }
 
         public IHyphenator getHyphenator() {
@@ -275,7 +264,7 @@ public abstract class IDocumentLayout {
             }
 
             this.hyphenator = hyphenator;
-            this.changed = true;
+            invalidate();
         }
 
         public float getInsetPaddingLeft() {
@@ -288,7 +277,7 @@ public abstract class IDocumentLayout {
             }
 
             this.insetPaddingLeft = insetPaddingLeft;
-            this.changed = true;
+            invalidate();
         }
 
         public float getInsetPaddingTop() {
@@ -301,7 +290,7 @@ public abstract class IDocumentLayout {
             }
 
             this.insetPaddingTop = insetPaddingTop;
-            this.changed = true;
+            invalidate();
         }
 
         public float getInsetPaddingBottom() {
@@ -314,7 +303,7 @@ public abstract class IDocumentLayout {
             }
 
             this.insetPaddingBottom = insetPaddingBottom;
-            this.changed = true;
+            invalidate();
         }
 
         public float getInsetPaddingRight() {
@@ -327,7 +316,7 @@ public abstract class IDocumentLayout {
             }
 
             this.insetPaddingRight = insetPaddingRight;
-            this.changed = true;
+            invalidate();
         }
 
         public float getParentWidth() {
@@ -340,7 +329,7 @@ public abstract class IDocumentLayout {
             }
 
             this.parentWidth = parentWidth;
-            this.changed = true;
+            invalidate();
         }
 
         public float getOffsetX() {
@@ -369,7 +358,7 @@ public abstract class IDocumentLayout {
             }
 
             this.lineHeightMultiplier = lineHeightMultiplier;
-            this.changed = true;
+            invalidate();
         }
 
         public boolean isHyphenated() {
@@ -382,7 +371,7 @@ public abstract class IDocumentLayout {
             }
 
             this.hyphenated = hyphenated && hyphenator != null;
-            this.changed = true;
+            invalidate();
         }
 
         public boolean isReverse() {
@@ -399,7 +388,7 @@ public abstract class IDocumentLayout {
             }
 
             this.reverse = reverse;
-            this.changed = true;
+            invalidate();
         }
 
         public int getMaxLines() {
@@ -412,7 +401,7 @@ public abstract class IDocumentLayout {
             }
 
             this.maxLines = maxLines;
-            this.changed = true;
+            invalidate();
         }
 
         public String getHyphen() {
@@ -425,7 +414,7 @@ public abstract class IDocumentLayout {
             }
 
             this.hyphen = hyphen;
-            this.changed = true;
+            invalidate();
         }
 
         public boolean hasChanged() {
@@ -434,6 +423,7 @@ public abstract class IDocumentLayout {
 
         public void invalidate() {
             this.changed = true;
+            onLayoutParamsChange();
         }
 
         public boolean isTextUnderline() {
@@ -446,7 +436,7 @@ public abstract class IDocumentLayout {
             }
 
             this.textUnderline = underline;
-            this.changed = true;
+            onLayoutParamsChange();
         }
 
         public boolean isTextStrikeThru() {
@@ -459,7 +449,7 @@ public abstract class IDocumentLayout {
             }
 
             this.textStrikeThru = strikeThru;
-            this.changed = true;
+            onLayoutParamsChange();
         }
 
         public boolean isTextFakeBold() {
@@ -472,7 +462,7 @@ public abstract class IDocumentLayout {
             }
 
             this.textFakeBold = fakeBold;
-            this.changed = true;
+            invalidate();
         }
 
         public Typeface getTextTypeface() {
@@ -485,7 +475,7 @@ public abstract class IDocumentLayout {
             }
 
             this.textTypeface = typeface;
-            this.changed = true;
+            invalidate();
         }
 
         public void setTextSize(int unit, float size) {
@@ -506,7 +496,7 @@ public abstract class IDocumentLayout {
             }
 
             this.rawTextSize = textSize;
-            this.changed = true;
+            invalidate();
         }
 
         public int getTextColor() {
@@ -514,7 +504,26 @@ public abstract class IDocumentLayout {
         }
 
         public void setTextColor(int textColor) {
+            if (this.textColor.equals(textColor)) {
+                return;
+            }
+
             this.textColor = textColor;
+            onLayoutParamsChange();
         }
+
+        public boolean isDebugging() {
+            return debugging;
+        }
+
+        public void setDebugging(Boolean debugging) {
+            if (this.debugging.equals(debugging)) {
+                return;
+            }
+
+            this.debugging = debugging;
+            onLayoutParamsChange();
+        }
+
     }
 }

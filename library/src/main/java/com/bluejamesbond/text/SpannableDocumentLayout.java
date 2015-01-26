@@ -51,7 +51,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class SpannableDocumentLayout extends IDocumentLayout {
+public abstract class SpannableDocumentLayout extends IDocumentLayout {
 
     private static final int TOKEN_START = 0;
     private static final int TOKEN_END = 1;
@@ -204,7 +204,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
 
             float realWidth = boundWidth;
 
-            if (debugging) {
+            if (params.debugging) {
                 Console.log(start + " => " + end + " :: " + " " + -staticLayout.getLineAscent(lineNumber)
                         + " " + staticLayout.getLineDescent(lineNumber) + " " + textCpy.subSequence(start, end)
                         .toString());
@@ -338,7 +338,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
                 lineTextAlignment = isReverse ? TextAlignment.RIGHT : TextAlignment.LEFT;
             }
 
-            if (debugging) {
+            if (params.debugging) {
                 Console.log(String.format("Align: %s, X: %fpx, Y: %fpx, PWidth: %fpx",
                         lineTextAlignment, x, y, parentWidth));
             }
@@ -515,7 +515,7 @@ public class SpannableDocumentLayout extends IDocumentLayout {
                     tokens[index + TOKEN_END], Layout.DIR_LEFT_TO_RIGHT, directionSpans.length > 0 ? directionSpans[0].isReverse() : defIsReverse,
                     tokens[index + TOKEN_X], 0,
                     tokens[index + TOKEN_Y] - scrollTop, 0, paint, workPaint, false);
-            if (debugging) {
+            if (params.debugging) {
                 int lastColor = paint.getColor();
                 float lastStrokeWidth = paint.getStrokeWidth();
                 paint.setStrokeWidth(2);

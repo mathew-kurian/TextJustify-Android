@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 @SuppressWarnings("unused")
-public class StringDocumentLayout extends IDocumentLayout {
+public abstract class StringDocumentLayout extends IDocumentLayout {
 
     // Parsing objects
     private Token[] tokens;
@@ -245,7 +245,7 @@ public class StringDocumentLayout extends IDocumentLayout {
         for (int i = Math.max(0, tokenStart - 25); i < tokenEnd + 25 && i < tokens.length; i++) {
             Token token = tokens[i];
             token.draw(canvas, -startTop, paint, params);
-            if (debugging) {
+            if (params.debugging) {
                 if (token instanceof LineBreak) {
                     int lastColor = paint.getColor();
                     boolean lastFakeBold = paint.isFakeBoldText();

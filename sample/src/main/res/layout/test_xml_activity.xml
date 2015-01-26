@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -14,7 +14,7 @@
             android:layout_height="match_parent"
             android:layout_alignBottom="@+id/titlebar"
             android:max="100"
-            android:progressDrawable="@drawable/progress__background" />
+            android:progressDrawable="@drawable/progress__background"/>
 
         <TextView
             android:id="@+id/titlebar"
@@ -24,16 +24,16 @@
             android:text="@string/titlebar"
             android:textColor="@android:color/white"
             android:textSize="20dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
     </RelativeLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="#222222"
-        android:orientation="horizontal"
-        android:padding="7dp"
-        android:weightSum="100">
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:background="#222222"
+                  android:orientation="horizontal"
+                  android:padding="7dp"
+                  android:weightSum="100">
 
         <TextView
             android:id="@+id/debugButton"
@@ -48,7 +48,7 @@
             android:text="@string/debug_button"
             android:textColor="#aaaaaa"
             android:textSize="13dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/cacheButton"
@@ -63,34 +63,34 @@
             android:text="@string/cache_button"
             android:textColor="#aaaaaa"
             android:textSize="13dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
     </LinearLayout>
 
     <com.bluejamesbond.text.DocumentView xmlns:ext="http://schemas.android.com/apk/res-auto"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        ext:documentView_antialias="true"
-        ext:documentView_cacheConfig="auto_quality"
-        ext:documentView_hyphen="-"
-        ext:documentView_lineHeightMultiplier="2.0"
-        ext:documentView_maxLines="100"
-        ext:documentView_offsetX="10dp"
-        ext:documentView_offsetY="10dp"
-        ext:documentView_insetPadding="10dp"
-        ext:documentView_insetPaddingBottom="10dp"
-        ext:documentView_insetPaddingLeft="10dp"
-        ext:documentView_insetPaddingRight="10dp"
-        ext:documentView_insetPaddingTop="10dp"
-        ext:documentView_progressBar="@id/progressBarXml"
-        ext:documentView_reverse="false"
-        ext:documentView_text="@string/xml_test_data"
-        ext:documentView_textAlignment="justified"
-        ext:documentView_textColor="@android:color/white"
-        ext:documentView_textFormat="plain"
-        ext:documentView_textSize="12sp"
-        ext:documentView_textStyle="bold|strikeThru|underline"
-        ext:documentView_textSubPixel="true"
-        ext:documentView_textTypefacePath="fonts/helvetica.ttf"
-        ext:documentView_wordSpacingMultiplier="5.0" />
+                                         android:layout_width="fill_parent"
+                                         android:layout_height="fill_parent"
+                                         ext:documentView_antialias="true"
+                                         ext:documentView_cacheConfig="auto_quality"
+                                         ext:documentView_hyphen="-"
+                                         ext:documentView_insetPadding="10dp"
+                                         ext:documentView_insetPaddingBottom="10dp"
+                                         ext:documentView_insetPaddingLeft="10dp"
+                                         ext:documentView_insetPaddingRight="10dp"
+                                         ext:documentView_insetPaddingTop="10dp"
+                                         ext:documentView_lineHeightMultiplier="2.0"
+                                         ext:documentView_maxLines="100"
+                                         ext:documentView_offsetX="10dp"
+                                         ext:documentView_offsetY="10dp"
+                                         ext:documentView_progressBar="@id/progressBarXml"
+                                         ext:documentView_reverse="false"
+                                         ext:documentView_text="@string/xml_test_data"
+                                         ext:documentView_textAlignment="justified"
+                                         ext:documentView_textColor="@android:color/white"
+                                         ext:documentView_textFormat="plain"
+                                         ext:documentView_textSize="12sp"
+                                         ext:documentView_textStyle="bold|strikeThru|underline"
+                                         ext:documentView_textSubPixel="true"
+                                         ext:documentView_textTypefacePath="fonts/helvetica.ttf"
+                                         ext:documentView_wordSpacingMultiplier="5.0"/>
 
 </LinearLayout>

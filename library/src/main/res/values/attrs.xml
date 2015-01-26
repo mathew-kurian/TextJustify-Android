@@ -61,6 +61,7 @@
         <attr name="documentView_progressBar" format="reference" />
         <attr name="documentView_fadeInAnimationStepDelay" format="integer" />
         <attr name="documentView_fadeInDuration" format="integer" />
+        <attr name="documentView_disallowInterceptTouch" format="boolean" />
 
     </declare-styleable>
 </resources>

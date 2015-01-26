@@ -8,7 +8,7 @@
         android:layout_height="wrap_content">
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/progressBarXml"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -66,11 +66,14 @@
             android:textStyle="bold"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/articleList"
-        android:layout_width="fill_parent"
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"/>
+        android:background="#000000"
+        android:divider="#222222"
+        android:dividerHeight="1px">
+
+    </ListView>
 
 </LinearLayout>

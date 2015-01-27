@@ -15,7 +15,7 @@ package com.bluejamesbond.text.sample.test;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * -------------------------------------------------------------------------
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * ListViewTest.java
  * @author Mathew Kurian
@@ -26,20 +26,15 @@ package com.bluejamesbond.text.sample.test;
  * Please report any issues
  * https://github.com/bluejamesbond/TextJustify-Android/issues
  *
- * Date: 1/26/15 12:07 AM
+ * Date: 1/27/15 3:35 AM
  */
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
-import com.bluejamesbond.text.DocumentView;
 import com.bluejamesbond.text.sample.R;
 import com.bluejamesbond.text.sample.helper.TestActivity;
 

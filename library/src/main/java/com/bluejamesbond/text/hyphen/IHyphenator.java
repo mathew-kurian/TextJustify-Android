@@ -15,7 +15,7 @@ package com.bluejamesbond.text.hyphen;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * -------------------------------------------------------------------------
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * IHyphenator.java
  * @author Mathew Kurian
@@ -26,7 +26,7 @@ package com.bluejamesbond.text.hyphen;
  * Please report any issues
  * https://github.com/bluejamesbond/TextJustify-Android/issues
  *
- * Date: 1/20/15 11:42 AM
+ * Date: 1/27/15 3:35 AM
  */
 
 import java.util.ArrayList;

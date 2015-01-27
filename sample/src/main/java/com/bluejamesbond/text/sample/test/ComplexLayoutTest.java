@@ -17,7 +17,7 @@ package com.bluejamesbond.text.sample.test;
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * LongPlainTextTest.java
+ * ComplexLayoutTest.java
  * @author Mathew Kurian
  *
  * From TextJustify-Android Library v2.0
@@ -26,22 +26,17 @@ package com.bluejamesbond.text.sample.test;
  * Please report any issues
  * https://github.com/bluejamesbond/TextJustify-Android/issues
  *
- * Date: 1/27/15 3:35 AM
+ * Date: 1/27/15 3:36 AM
  */
 
-import android.os.Bundle;
-
-import com.bluejamesbond.text.DocumentView;
 import com.bluejamesbond.text.sample.R;
 import com.bluejamesbond.text.sample.helper.TestActivity;
 
-public class LongPlainTextTest extends TestActivity {
+public class ComplexLayoutTest extends TestActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        addDocumentView("Short sentence.\n\n" +
-                getResources().getString(R.string.plain_text), DocumentView.PLAIN_TEXT);
+    protected int getContentView() {
+        return R.layout.test_complex_layout;
     }
+
 }

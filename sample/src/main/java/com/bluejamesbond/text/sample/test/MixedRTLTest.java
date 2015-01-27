@@ -15,7 +15,7 @@ package com.bluejamesbond.text.sample.test;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * -------------------------------------------------------------------------
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * MixedRTLTest.java
  * @author Mathew Kurian
@@ -26,7 +26,7 @@ package com.bluejamesbond.text.sample.test;
  * Please report any issues
  * https://github.com/bluejamesbond/TextJustify-Android/issues
  *
- * Date: 1/22/15 1:03 PM
+ * Date: 1/27/15 3:35 AM
  */
 
 import android.graphics.Typeface;

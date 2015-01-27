@@ -4,7 +4,7 @@ import android.text.TextPaint;
 import android.text.style.CharacterStyle;
 
 /*
- * Copyright 2014 Mathew Kurian
+ * Copyright 2015 Mathew Kurian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ import android.text.style.CharacterStyle;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * -------------------------------------------------------------------------
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * ReverseSpan.java
+ * DirectionSpan.java
  * @author Mathew Kurian
  *
  * From TextJustify-Android Library v2.0
@@ -29,7 +29,7 @@ import android.text.style.CharacterStyle;
  * Please report any issues
  * https://github.com/bluejamesbond/TextJustify-Android/issues
  *
- * Date: 11/25/14 7:06 PM
+ * Date: 1/27/15 3:35 AM
  */
 
 @SuppressWarnings("unused")

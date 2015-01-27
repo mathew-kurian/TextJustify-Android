@@ -19,7 +19,7 @@ import com.bluejamesbond.text.style.TextAlignment;
 import java.util.Arrays;
 
 /*
- * Copyright 2014 Mathew Kurian
+ * Copyright 2015 Mathew Kurian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import java.util.Arrays;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * -------------------------------------------------------------------------
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * IDocumentLayout.java
  * @author Mathew Kurian
@@ -44,7 +44,7 @@ import java.util.Arrays;
  * Please report any issues
  * https://github.com/bluejamesbond/TextJustify-Android/issues
  *
- * Date: 10/27/14 1:36 PM
+ * Date: 1/27/15 3:35 AM
  */
 
 @SuppressWarnings("unused")

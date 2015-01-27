@@ -1,7 +1,7 @@
 package com.bluejamesbond.text;
 
 /*
- * Copyright 2014 Mathew Kurian
+ * Copyright 2015 Mathew Kurian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@ package com.bluejamesbond.text;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * -------------------------------------------------------------------------
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * DocumentView.java
  * @author Mathew Kurian
@@ -26,7 +26,7 @@ package com.bluejamesbond.text;
  * Please report any issues
  * https://github.com/bluejamesbond/TextJustify-Android/issues
  *
- * Date: 10/27/14 1:36 PM
+ * Date: 1/27/15 3:35 AM
  */
 
 import android.annotation.SuppressLint;
@@ -172,7 +172,6 @@ public class DocumentView extends ScrollView {
 
     public void setDisallowInterceptTouch(boolean disallowInterceptTouch) {
         this.disallowInterceptTouch = disallowInterceptTouch;
-        setFocusable(!disallowInterceptTouch);
     }
 
     protected synchronized void drawLayout(Canvas canvas, int startY, int endY, boolean isCache) {
@@ -347,11 +346,6 @@ public class DocumentView extends ScrollView {
     }
 
     @Override
-    public boolean onInterceptHoverEvent(MotionEvent ev) {
-        return !disallowInterceptTouch & super.onInterceptHoverEvent(ev);
-    }
-
-    @Override
     protected void onAttachedToWindow() {
         orientation = getResources().getConfiguration().orientation;
         super.onAttachedToWindow();
@@ -493,13 +487,9 @@ public class DocumentView extends ScrollView {
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return !disallowInterceptTouch & super.onInterceptTouchEvent(ev);
-    }
-
-    @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        return !disallowInterceptTouch & super.onTouchEvent(ev);
+        requestDisallowInterceptTouchEvent(disallowInterceptTouch);
+        return super.onTouchEvent(ev);
     }
 
     @Override
@@ -547,6 +537,8 @@ public class DocumentView extends ScrollView {
 
         super.onConfigurationChanged(newConfig);
     }
+
+
 
     @SuppressLint("DrawAllocation")
     @Override

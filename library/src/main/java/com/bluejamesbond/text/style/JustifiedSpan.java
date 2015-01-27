@@ -1,7 +1,7 @@
 package com.bluejamesbond.text.style;
 
 /*
- * Copyright 2014 Mathew Kurian
+ * Copyright 2015 Mathew Kurian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@ package com.bluejamesbond.text.style;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * -------------------------------------------------------------------------
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * JustifiedSpan.java
  * @author Mathew Kurian
@@ -26,7 +26,7 @@ package com.bluejamesbond.text.style;
  * Please report any issues
  * https://github.com/bluejamesbond/TextJustify-Android/issues
  *
- * Date: 10/27/14 1:36 PM
+ * Date: 1/27/15 3:35 AM
  */
 
 public class JustifiedSpan extends TextAlignmentSpan {

@@ -1,0 +1,257 @@
+<!--
+  ~ Copyright 2015 Mathew Kurian
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~
+  ~ test_complex_layout.xml
+  ~ @author Mathew Kurian
+  ~
+  ~ From TextJustify-Android Library v2.0
+  ~ https://github.com/bluejamesbond/TextJustify-Android
+  ~
+  ~ Please report any issues
+  ~ https://github.com/bluejamesbond/TextJustify-Android/issues
+  ~
+  ~ Date: 1/27/15 3:35 AM
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <ProgressBar
+            android:id="@+id/progressBarXml"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@+id/titlebar"
+            android:max="100"
+            android:progressDrawable="@drawable/progress__background"/>
+
+        <TextView
+            android:id="@+id/titlebar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text="@string/titlebar"
+            android:textColor="@android:color/white"
+            android:textSize="20dp"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:background="#222222"
+                  android:orientation="horizontal"
+                  android:padding="7dp"
+                  android:weightSum="100">
+
+        <TextView
+            android:id="@+id/debugButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:layout_weight="50"
+            android:background="@drawable/simple_button__background"
+            android:clickable="true"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/debug_button"
+            android:textColor="#aaaaaa"
+            android:textSize="13dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/cacheButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:layout_weight="50"
+            android:background="@drawable/simple_button__background"
+            android:clickable="true"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/cache_button"
+            android:textColor="#aaaaaa"
+            android:textSize="13dp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/blog"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp">
+
+        <RelativeLayout
+            android:id="@+id/blogWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <RelativeLayout
+                android:id="@+id/blogInfo"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true">
+
+                <ImageView
+                    android:id="@+id/blogImage"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:background="#e74c3c"
+                    android:scaleType="centerCrop"/>
+
+                <TextView
+                    android:id="@+id/blogTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/blogBlogger"
+                    android:layout_alignStart="@+id/blogBlogger"
+                    android:layout_below="@+id/blogBlogger"
+                    android:layout_gravity="center_vertical"
+                    android:text="TextView1"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:id="@+id/blogBlogger"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toEndOf="@+id/blogImage"
+                    android:layout_toRightOf="@+id/blogImage"
+                    android:text="TextView2"
+                    android:textSize="22sp"
+                    android:textStyle="bold"/>
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/blogButtonsSocial"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="false">
+
+            <ImageView
+                android:id="@+id/blogLike"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginBottom="28dp"
+                android:layout_marginRight="15dp"
+                android:background="#3498db"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/blogLinkFacebook"
+                    android:layout_width="0dp"
+                    android:layout_height="45dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="0.3"
+                    android:background="#2ecc71"
+                    android:gravity="center"
+                    android:text="FB"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"/>
+
+                <ImageView
+                    android:id="@+id/blogLinkTwitter"
+                    android:layout_width="0dp"
+                    android:layout_height="45dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="0.3"
+                    android:background="#f1c40f"
+                    android:gravity="center"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/blogDislike"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginLeft="15dp"
+                android:background="#e74c3c"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/loginFooter"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#FF00FF"/>
+
+        <RelativeLayout
+            android:id="@+id/blogLinkTwitterPopup"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/blogButtonsSocial"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/blogWrapper"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <com.bluejamesbond.text.DocumentView
+                android:id="@+id/blogText"
+                xmlns:ext="http://schemas.android.com/apk/res-auto"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                ext:documentView_antialias="true"
+                ext:documentView_cacheConfig="auto_quality"
+                ext:documentView_hyphen="-"
+                ext:documentView_progressBar="@id/progressBarXml"
+                ext:documentView_reverse="false"
+                ext:documentView_text="@string/plain_text"
+                ext:documentView_textAlignment="justified"
+                ext:documentView_textColor="#f1c40f"
+                ext:documentView_textFormat="plain"
+                ext:documentView_textSize="14sp"
+                ext:documentView_textSubPixel="true"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,5 +1,7 @@
+package com.bluejamesbond.text.sample.test;
+
 /*
- * Copyright 2014 Mathew Kurian
+ * Copyright 2015 Mathew Kurian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * -------------------------------------------------------------------------
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * FormattedTextTest.java
+ * NewLineTest.java
  * @author Mathew Kurian
  *
  * From TextJustify-Android Library v2.0
@@ -24,10 +26,8 @@
  * Please report any issues
  * https://github.com/bluejamesbond/TextJustify-Android/issues
  *
- * Date: 11/1/14 3:21 AM
+ * Date: 1/27/15 3:35 AM
  */
-
-package com.bluejamesbond.text.sample.test;
 
 import android.graphics.Typeface;
 import android.os.Bundle;

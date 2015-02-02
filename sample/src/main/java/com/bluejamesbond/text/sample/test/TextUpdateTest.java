@@ -17,7 +17,7 @@ package com.bluejamesbond.text.sample.test;
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * NewLineTest.java
+ * TextUpdateTest.java
  * @author Mathew Kurian
  *
  * From TextJustify-Android Library v2.0
@@ -26,21 +26,35 @@ package com.bluejamesbond.text.sample.test;
  * Please report any issues
  * https://github.com/bluejamesbond/TextJustify-Android/issues
  *
- * Date: 1/27/15 3:35 AM
+ * Date: 2/2/15 10:39 AM
  */
 
 import android.os.Bundle;
+import android.view.View;
 
+import com.bluejamesbond.text.Console;
 import com.bluejamesbond.text.DocumentView;
+import com.bluejamesbond.text.hyphen.SqueezeHyphenator;
 import com.bluejamesbond.text.sample.helper.TestActivity;
 
-public class NewLineTest extends TestActivity {
+public class TextUpdateTest extends TestActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        addDocumentView("There will be 6 lines following this message.\n\n\n\n\n\n",
-                DocumentView.PLAIN_TEXT);
+        final DocumentView documentView = addDocumentView("Click here!"
+                , DocumentView.PLAIN_TEXT);
+
+        documentView.getDocumentLayoutParams().setHyphenator(SqueezeHyphenator.getInstance());
+        documentView.getDocumentLayoutParams().setHyphenated(true);
+        documentView.getViewportView().setClickable(true);
+        documentView.getViewportView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Console.log("Clicked");
+                documentView.setText("Click[" + System.currentTimeMillis() + "], " + documentView.getText());
+            }
+        });
     }
 }

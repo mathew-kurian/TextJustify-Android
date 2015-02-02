@@ -56,6 +56,8 @@ import com.bluejamesbond.text.sample.test.MixedRTLTest;
 import com.bluejamesbond.text.sample.test.NewLineTest;
 import com.bluejamesbond.text.sample.test.QuoteSpanTest;
 import com.bluejamesbond.text.sample.test.RTLTest;
+import com.bluejamesbond.text.sample.test.ShortFormattedTextTest;
+import com.bluejamesbond.text.sample.test.TextUpdateTest;
 import com.bluejamesbond.text.sample.test.TextViewTest;
 import com.bluejamesbond.text.sample.test.WordSpacingTest;
 import com.bluejamesbond.text.sample.test.XMLTest;
@@ -79,7 +81,9 @@ public class TestList extends TestActivity {
             ClickableSpanTest.class,
             MixedRTLTest.class,
             ListViewTest.class,
-            ComplexLayoutTest.class
+            ComplexLayoutTest.class,
+            ShortFormattedTextTest.class,
+            TextUpdateTest.class
     };
 
     @Override

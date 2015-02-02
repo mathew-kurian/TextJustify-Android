@@ -38,9 +38,7 @@ import android.text.Spannable;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.style.LeadingMarginSpan;
-import android.util.Log;
 
-import com.bluejamesbond.text.style.Direction;
 import com.bluejamesbond.text.style.DirectionSpan;
 import com.bluejamesbond.text.style.TextAlignment;
 import com.bluejamesbond.text.style.TextAlignmentSpan;
@@ -226,7 +224,7 @@ public abstract class SpannableDocumentLayout extends IDocumentLayout {
             lastDescent = staticLayout.getLineDescent(lineNumber) + lineHeightAdd;
 
             // Handle reverse
-            DirectionSpan [] directionSpans = textCpy.getSpans(start, end, DirectionSpan.class);
+            DirectionSpan[] directionSpans = textCpy.getSpans(start, end, DirectionSpan.class);
             isReverse = directionSpans.length > 0 ? directionSpans[0].isReverse() : params.reverse;
 
             // Line is ONLY a <br/> or \n
@@ -239,7 +237,7 @@ public abstract class SpannableDocumentLayout extends IDocumentLayout {
                 isParaStart = true;
 
                 // Use the line-height of the next line
-                if(lineNumber + 1 < lines) {
+                if (lineNumber + 1 < lines) {
                     y += enableLineBreak * (-staticLayout.getLineAscent(lineNumber + 1) + staticLayout
                             .getLineDescent(lineNumber + 1));
                 }
@@ -510,7 +508,7 @@ public abstract class SpannableDocumentLayout extends IDocumentLayout {
 
         for (int index = startIndex; index < endIndex; index += TOKEN_LENGTH) {
             if (tokens[index + TOKEN_START] == Integer.MAX_VALUE) break;
-            DirectionSpan [] directionSpans = textCpy.getSpans(tokens[index + TOKEN_START], tokens[index + TOKEN_END], DirectionSpan.class);
+            DirectionSpan[] directionSpans = textCpy.getSpans(tokens[index + TOKEN_START], tokens[index + TOKEN_END], DirectionSpan.class);
             Styled.drawText(canvas, textCpy, tokens[index + TOKEN_START],
                     tokens[index + TOKEN_END], Layout.DIR_LEFT_TO_RIGHT, directionSpans.length > 0 ? directionSpans[0].isReverse() : defIsReverse,
                     tokens[index + TOKEN_X], 0,

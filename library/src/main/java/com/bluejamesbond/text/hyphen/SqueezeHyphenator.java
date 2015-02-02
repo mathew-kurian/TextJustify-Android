@@ -39,11 +39,12 @@ public class SqueezeHyphenator implements IHyphenator {
         squeezeHyphenator = new SqueezeHyphenator();
     }
 
-    public static SqueezeHyphenator getInstance(){
-        return squeezeHyphenator;
+    private SqueezeHyphenator() {
     }
 
-    private SqueezeHyphenator(){}
+    public static SqueezeHyphenator getInstance() {
+        return squeezeHyphenator;
+    }
 
     @Override
     public ArrayList<String> hyphenate(String word) {

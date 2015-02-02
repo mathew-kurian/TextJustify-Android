@@ -31,6 +31,6 @@ package com.bluejamesbond.text.hyphen;
 
 import java.util.ArrayList;
 
-public interface IHyphenator  {
+public interface IHyphenator {
     public ArrayList<String> hyphenate(String word);
 }

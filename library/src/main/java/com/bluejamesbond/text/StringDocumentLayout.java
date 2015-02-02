@@ -53,16 +53,6 @@ public abstract class StringDocumentLayout extends IDocumentLayout {
     }
 
     @Override
-    public float getTokenAscent(int tokenIndex) {
-        return -paint.ascent() * params.lineHeightMultiplier;
-    }
-
-    @Override
-    public float getTokenDescent(int tokenIndex) {
-        return paint.descent() * params.lineHeightMultiplier;
-    }
-
-    @Override
     public boolean onMeasure(IProgress<Float> progress, ICancel<Boolean> cancelled) {
 
         boolean done = true;
@@ -79,8 +69,7 @@ public abstract class StringDocumentLayout extends IDocumentLayout {
                 if (next < 0) {
                     chunks.add(textCpy.substring(start, textCpy.length()));
                 } else {
-                    chunks.add(textCpy.substring(start, next));
-                    next += 1;
+                    chunks.add(textCpy.substring(start, next++));
                 }
 
                 start = next;
@@ -268,6 +257,16 @@ public abstract class StringDocumentLayout extends IDocumentLayout {
                 }
             }
         }
+    }
+
+    @Override
+    public float getTokenAscent(int tokenIndex) {
+        return -paint.ascent() * params.lineHeightMultiplier;
+    }
+
+    @Override
+    public float getTokenDescent(int tokenIndex) {
+        return paint.descent() * params.lineHeightMultiplier;
     }
 
     @Override

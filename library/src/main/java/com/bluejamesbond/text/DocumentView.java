@@ -84,7 +84,7 @@ public class DocumentView extends ScrollView {
     private IDocumentLayout layout;
     private TextPaint paint;
     private TextPaint cachePaint;
-    private View dummyView;
+    private View viewportView;
     private ITween fadeInTween;
     private int fadeInDuration = 250;
     private int fadeInAnimationStepDelay = 35;
@@ -246,7 +246,7 @@ public class DocumentView extends ScrollView {
         cacheConfig = CacheConfig.AUTO_QUALITY;
         paint = new TextPaint();
         cachePaint = new TextPaint();
-        dummyView = new View(context);
+        viewportView = new View(context);
         measureState = MeasureTaskState.START;
 
         // Initialize paint
@@ -255,7 +255,7 @@ public class DocumentView extends ScrollView {
         // Set default padding
         setPadding(0, 0, 0, 0);
 
-        addView(dummyView);
+        addView(viewportView);
 
         if (attrs != null && !isInEditMode()) {
             TypedArray a = context.obtainStyledAttributes(attrs,
@@ -314,9 +314,9 @@ public class DocumentView extends ScrollView {
                 } else if (attr == R.styleable.DocumentView_documentView_textTypefacePath) {
                     layoutParams.setTextTypeface(Typeface.createFromAsset(getResources().getAssets(), a.getString(attr)));
                 } else if (attr == R.styleable.DocumentView_documentView_antialias) {
-                    setAntialias(a.getBoolean(attr, isAntiAlias()));
+                    layoutParams.setAntialias(a.getBoolean(attr, layoutParams.isAntiAlias()));
                 } else if (attr == R.styleable.DocumentView_documentView_textSubPixel) {
-                    setTextSubPixel(a.getBoolean(attr, isTextSubPixel()));
+                    layoutParams.setTextSubPixel(a.getBoolean(attr, layoutParams.isTextSubPixel()));
                 } else if (attr == R.styleable.DocumentView_documentView_text) {
                     layout.setText(a.getString(attr));
                 } else if (attr == R.styleable.DocumentView_documentView_cacheConfig) {
@@ -358,6 +358,13 @@ public class DocumentView extends ScrollView {
                     @Override
                     public void onLayoutParamsChange() {
                         invalidateCache();
+                        postInvalidate();
+                    }
+
+                    @Override
+                    public void onTextChange() {
+                        invalidateCache();
+                        requestLayout();
                     }
                 };
             default:
@@ -366,12 +373,19 @@ public class DocumentView extends ScrollView {
                     @Override
                     public void onLayoutParamsChange() {
                         invalidateCache();
+                        postInvalidate();
+                    }
+
+                    @Override
+                    public void onTextChange() {
+                        invalidateCache();
+                        requestLayout();
                     }
                 };
         }
     }
 
-    private void invalidateCache() {
+    public void invalidateCache() {
         if (cacheBitmapTop != null) {
             cacheBitmapTop.setStart(-1);
         }
@@ -381,20 +395,8 @@ public class DocumentView extends ScrollView {
         }
     }
 
-    public boolean isTextSubPixel() {
-        return paint.isSubpixelText();
-    }
-
-    public void setTextSubPixel(boolean subpixel) {
-        paint.setSubpixelText(subpixel);
-    }
-
-    public boolean isAntiAlias() {
-        return paint.isAntiAlias();
-    }
-
-    public void setAntialias(boolean antialias) {
-        paint.setAntiAlias(antialias);
+    public View getViewportView(){
+        return viewportView;
     }
 
     public void setProgressBar(final int progressBarId) {
@@ -467,8 +469,8 @@ public class DocumentView extends ScrollView {
             case AWAIT:
                 break;
             case FINISH:
-                dummyView.setMinimumWidth(width);
-                dummyView.setMinimumHeight(layout.getMeasuredHeight());
+                viewportView.setMinimumWidth(width);
+                viewportView.setMinimumHeight(layout.getMeasuredHeight());
                 measureState = MeasureTaskState.FINISH_AWAIT;
                 allocateResources();
                 break;
@@ -537,7 +539,6 @@ public class DocumentView extends ScrollView {
 
         super.onConfigurationChanged(newConfig);
     }
-
 
 
     @SuppressLint("DrawAllocation")
@@ -619,7 +620,7 @@ public class DocumentView extends ScrollView {
     @Override
     public void setMinimumHeight(int minHeight) {
         minimumHeight = minHeight;
-        dummyView.setMinimumHeight(minimumHeight);
+        viewportView.setMinimumHeight(minimumHeight);
     }
 
     public void allocateResources() {
@@ -646,7 +647,7 @@ public class DocumentView extends ScrollView {
     }
 
     protected void freeResources() {
-        dummyView.setMinimumHeight(minimumHeight);
+        viewportView.setMinimumHeight(minimumHeight);
 
         if (measureTask != null) {
             measureTask.cancel(true);

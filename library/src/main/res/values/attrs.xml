@@ -31,66 +31,66 @@
 <resources>
     <declare-styleable name="DocumentView">
 
-        <attr name="documentView_insetPadding" format="dimension" />
-        <attr name="documentView_insetPaddingLeft" format="dimension" />
-        <attr name="documentView_insetPaddingRight" format="dimension" />
-        <attr name="documentView_insetPaddingTop" format="dimension" />
-        <attr name="documentView_insetPaddingBottom" format="dimension" />
+        <attr name="documentView_insetPadding" format="dimension"/>
+        <attr name="documentView_insetPaddingLeft" format="dimension"/>
+        <attr name="documentView_insetPaddingRight" format="dimension"/>
+        <attr name="documentView_insetPaddingTop" format="dimension"/>
+        <attr name="documentView_insetPaddingBottom" format="dimension"/>
 
-        <attr name="documentView_offsetX" format="dimension" />
-        <attr name="documentView_offsetY" format="dimension" />
-        <attr name="documentView_wordSpacingMultiplier" format="float" />
-        <attr name="documentView_lineHeightMultiplier" format="float" />
-        <attr name="documentView_reverse" format="boolean" />
-        <attr name="documentView_maxLines" format="integer" />
-        <attr name="documentView_hyphen" format="string" />
+        <attr name="documentView_offsetX" format="dimension"/>
+        <attr name="documentView_offsetY" format="dimension"/>
+        <attr name="documentView_wordSpacingMultiplier" format="float"/>
+        <attr name="documentView_lineHeightMultiplier" format="float"/>
+        <attr name="documentView_reverse" format="boolean"/>
+        <attr name="documentView_maxLines" format="integer"/>
+        <attr name="documentView_hyphen" format="string"/>
         <attr name="documentView_textAlignment" format="enum">
             <!--
             Corresponds to
             @link com.bluejamesbond.text.style.TextAlignment}
             -->
-            <enum name="left" value="0" />
-            <enum name="right" value="1" />
-            <enum name="justified" value="2" />
-            <enum name="center" value="3" />
+            <enum name="left" value="0"/>
+            <enum name="right" value="1"/>
+            <enum name="justified" value="2"/>
+            <enum name="center" value="3"/>
 
         </attr>
-        <attr name="documentView_textSize" format="dimension" />
-        <attr name="documentView_textColor" format="color" />
-        <attr name="documentView_antialias" format="boolean" />
-        <attr name="documentView_text" format="string" />
-        <attr name="documentView_textSubPixel" format="boolean" />
-        <attr name="documentView_textTypefacePath" format="string" />
+        <attr name="documentView_textSize" format="dimension"/>
+        <attr name="documentView_textColor" format="color"/>
+        <attr name="documentView_antialias" format="boolean"/>
+        <attr name="documentView_text" format="string"/>
+        <attr name="documentView_textSubPixel" format="boolean"/>
+        <attr name="documentView_textTypefacePath" format="string"/>
         <attr name="documentView_textStyle" format="integer">
-            <flag name="plain" value="0" />
-            <flag name="bold" value="1" />
-            <flag name="underline" value="2" />
-            <flag name="strikeThru" value="4" />
+            <flag name="plain" value="0"/>
+            <flag name="bold" value="1"/>
+            <flag name="underline" value="2"/>
+            <flag name="strikeThru" value="4"/>
         </attr>
         <attr name="documentView_textFormat" format="enum">
             <!--
                 Plain old text. Corresponds to
                 {@link com.bluejamesbond.text.DocumentView#PLAIN_TEXT}
             -->
-            <enum name="plain" value="0" />
+            <enum name="plain" value="0"/>
             <!--
                 Spannable text. Corresponds to
                 {@link com.bluejamesbond.text.DocumentView#FORMATTED_TEXT}.
             -->
-            <enum name="formatted" value="1" />
+            <enum name="formatted" value="1"/>
         </attr>
         <attr name="documentView_cacheConfig" format="enum">
-            <enum name="no_cache" value="0" />
-            <enum name="auto_quality" value="1" />
-            <enum name="low_quality" value="2" />
-            <enum name="high_quality" value="3" />
-            <enum name="grayscale" value="4" />
+            <enum name="no_cache" value="0"/>
+            <enum name="auto_quality" value="1"/>
+            <enum name="low_quality" value="2"/>
+            <enum name="high_quality" value="3"/>
+            <enum name="grayscale" value="4"/>
         </attr>
 
-        <attr name="documentView_progressBar" format="reference" />
-        <attr name="documentView_fadeInAnimationStepDelay" format="integer" />
-        <attr name="documentView_fadeInDuration" format="integer" />
-        <attr name="documentView_disallowInterceptTouch" format="boolean" />
+        <attr name="documentView_progressBar" format="reference"/>
+        <attr name="documentView_fadeInAnimationStepDelay" format="integer"/>
+        <attr name="documentView_fadeInDuration" format="integer"/>
+        <attr name="documentView_disallowInterceptTouch" format="boolean"/>
 
     </declare-styleable>
 </resources>

@@ -80,7 +80,7 @@ public class Console {
         android.util.Log.d("", s + "");
     }
 
-    public static void log(Object s) {
+    public static <T> void log(T s) {
         android.util.Log.d("", s == null ? "null" : s.toString());
     }
 }

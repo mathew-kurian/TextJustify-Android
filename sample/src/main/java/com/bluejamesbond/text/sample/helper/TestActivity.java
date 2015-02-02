@@ -115,7 +115,6 @@ public class TestActivity extends Activity {
                     debugging = !debugging;
                     debugButton.setText((debugging ? "DISABLE" : "ENABLE") + " DEBUG");
                     documentView.getDocumentLayoutParams().setDebugging(debugging);
-                    documentView.invalidate();
                 }
             });
         }

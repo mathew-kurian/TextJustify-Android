@@ -35,11 +35,11 @@ public enum Direction {
 
     private boolean flag;
 
-    public boolean isReverse(){
-        return flag;
+    private Direction(boolean flag) {
+        this.flag = flag;
     }
 
-    private Direction(boolean flag){
-        this.flag = flag;
+    public boolean isReverse() {
+        return flag;
     }
 }

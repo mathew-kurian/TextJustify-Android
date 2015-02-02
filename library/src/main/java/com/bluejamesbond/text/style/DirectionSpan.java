@@ -44,7 +44,7 @@ public class DirectionSpan extends CharacterStyle {
         return direction;
     }
 
-    public boolean isReverse(){
+    public boolean isReverse() {
         return direction.isReverse();
     }
 

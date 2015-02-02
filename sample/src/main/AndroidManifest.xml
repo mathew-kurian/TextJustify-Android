@@ -113,6 +113,14 @@
             android:name="com.bluejamesbond.text.sample.test.ComplexLayoutTest"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
+        <activity
+            android:name="com.bluejamesbond.text.sample.test.TextUpdateTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.NoTitleBar" />
+        <activity
+            android:name="com.bluejamesbond.text.sample.test.ShortFormattedTextTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.NoTitleBar" />
     </application>
 
 </manifest>

@@ -16,8 +16,6 @@ import android.widget.Toast;
 import com.bluejamesbond.text.hyphen.IHyphenator;
 import com.bluejamesbond.text.style.TextAlignment;
 
-import java.util.Arrays;
-
 /*
  * Copyright 2015 Mathew Kurian
  *
@@ -94,8 +92,16 @@ public abstract class IDocumentLayout {
     }
 
     public void setText(CharSequence text) {
-        this.text = text == null ? new SpannableString("") : text;
+        text = text == null ? new SpannableString("") : new SpannableString(text);
+
+        if (this.text.equals(text)) {
+            return;
+        }
+
+        this.text = text;
         this.textChange = true;
+
+        onTextChange();
     }
 
     public int getMeasuredHeight() {
@@ -157,6 +163,10 @@ public abstract class IDocumentLayout {
 
     public abstract boolean isTokenized();
 
+    public abstract void onLayoutParamsChange();
+
+    public abstract void onTextChange();
+
     public static enum TokenPosition {
         START_OF_LINE, END_OF_LINE
     }
@@ -168,8 +178,6 @@ public abstract class IDocumentLayout {
     public static interface ICancel<T> {
         public T isCancelled();
     }
-
-    public abstract void onLayoutParamsChange();
 
     public class LayoutParams {
 
@@ -190,6 +198,8 @@ public abstract class IDocumentLayout {
         protected Float lineHeightMultiplier = 0.0f;
         protected Boolean hyphenated = false;
         protected Boolean reverse = false;
+        protected Boolean subpixelText = false;
+        protected Boolean antialias = false;
         protected Integer maxLines = Integer.MAX_VALUE;
         protected String hyphen = "-";
         protected TextAlignment textAlignment = TextAlignment.LEFT;
@@ -222,6 +232,8 @@ public abstract class IDocumentLayout {
             paint.setColor(textColor);
             paint.setTypeface(textTypeface);
             paint.setUnderlineText(textUnderline);
+            paint.setAntiAlias(antialias);
+            paint.setSubpixelText(subpixelText);
         }
 
         public Float getWordSpacingMultiplier() {
@@ -525,5 +537,30 @@ public abstract class IDocumentLayout {
             onLayoutParamsChange();
         }
 
+        public boolean isTextSubPixel() {
+            return subpixelText;
+        }
+
+        public void setTextSubPixel(boolean subpixelText) {
+
+            if (this.subpixelText.equals(subpixelText)) {
+                return;
+            }
+
+            this.subpixelText = subpixelText;
+        }
+
+        public boolean isAntiAlias() {
+            return antialias;
+        }
+
+        public void setAntialias(boolean antialias) {
+
+            if (this.antialias.equals(antialias)) {
+                return;
+            }
+
+            this.antialias = antialias;
+        }
     }
 }

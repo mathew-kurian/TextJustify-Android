@@ -883,7 +883,7 @@ public class ConcurrentModifiableLinkedList<E>
 
         public int nextIndex() {
             return nextIndex;
-        }        private Entry<E> lastReturned = header;
+        }
 
         public E previous() {
             if (nextIndex == 0)
@@ -892,7 +892,7 @@ public class ConcurrentModifiableLinkedList<E>
             lastReturned = next = next.previous;
             nextIndex--;
             return lastReturned.element;
-        }
+        }        private Entry<E> lastReturned = header;
 
         public int previousIndex() {
             return nextIndex - 1;

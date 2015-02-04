@@ -121,6 +121,14 @@
             android:name="com.bluejamesbond.text.sample.test.ShortFormattedTextTest"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.NoTitleBar" />
+        <activity
+            android:name="com.bluejamesbond.text.sample.test.ImageSpanTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.NoTitleBar" />
+        <activity
+            android:name="com.bluejamesbond.text.sample.test.ForceNoCacheXMLTest"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.NoTitleBar" />
     </application>
 
 </manifest>

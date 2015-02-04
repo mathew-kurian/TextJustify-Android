@@ -46,7 +46,9 @@ import com.bluejamesbond.text.sample.test.ChineseCharacterTest;
 import com.bluejamesbond.text.sample.test.ClickableSpanTest;
 import com.bluejamesbond.text.sample.test.ComplexLayoutTest;
 import com.bluejamesbond.text.sample.test.CustomHyphenatorTest;
+import com.bluejamesbond.text.sample.test.ForceNoCacheXMLTest;
 import com.bluejamesbond.text.sample.test.HyphenatedTest;
+import com.bluejamesbond.text.sample.test.ImageSpanTest;
 import com.bluejamesbond.text.sample.test.LeadingMarginSpan2Test;
 import com.bluejamesbond.text.sample.test.LineBreakTest;
 import com.bluejamesbond.text.sample.test.ListViewTest;
@@ -83,7 +85,9 @@ public class TestList extends TestActivity {
             ListViewTest.class,
             ComplexLayoutTest.class,
             ShortFormattedTextTest.class,
-            TextUpdateTest.class
+            ImageSpanTest.class,
+            TextUpdateTest.class,
+            ForceNoCacheXMLTest.class
     };
 
     @Override

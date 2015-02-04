@@ -472,7 +472,11 @@ public class DocumentView extends ScrollView {
                 viewportView.setMinimumWidth(width);
                 viewportView.setMinimumHeight(layout.getMeasuredHeight());
                 measureState = MeasureTaskState.FINISH_AWAIT;
-                allocateResources();
+
+                if(cacheConfig != CacheConfig.NO_CACHE){
+                    allocateResources();
+                }
+
                 break;
             case START:
                 if (measureTask != null) {

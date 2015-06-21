@@ -37,9 +37,9 @@ android {
             signingConfigs {
                 release {
                     keyAlias 'bluejamesbond'
-                    keyPassword 'Mkone123*'
+                    keyPassword '<redacted>'
                     storeFile file('C:/release.keystore.jks')
-                    storePassword 'Mkone123*'
+                    storePassword '<redacted>'
                 }
             }
 

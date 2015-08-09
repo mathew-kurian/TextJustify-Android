@@ -133,3 +133,5 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
+
+manifest-merger-release-report.txt

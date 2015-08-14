@@ -395,9 +395,6 @@ public abstract class IDocumentLayout {
                 return;
             }
 
-            if (reverse) {
-                textAlignment = TextAlignment.RIGHT;
-            }
 
             this.reverse = reverse;
             invalidate();

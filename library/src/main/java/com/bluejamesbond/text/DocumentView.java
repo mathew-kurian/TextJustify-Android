@@ -854,8 +854,10 @@ public class DocumentView extends ScrollView {
                 drawCompleted = false;
             }
 
-            bitmap.recycle();
-            bitmap = null;
+            if (bitmap != null) {
+                bitmap.recycle();
+                bitmap = null;
+            }
         }
 
         public class CacheDrawTask extends AsyncTask<Void, Void, Void> {

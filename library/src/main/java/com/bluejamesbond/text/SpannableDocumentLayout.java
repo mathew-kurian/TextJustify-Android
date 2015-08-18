@@ -481,7 +481,7 @@ public abstract class SpannableDocumentLayout extends IDocumentLayout {
         int startIndex = getTokenForVertical(scrollTop, TokenPosition.START_OF_LINE);
         int endIndex = getTokenForVertical(scrollBottom, TokenPosition.END_OF_LINE);
 
-        boolean defIsReverse = params.reverse;
+        boolean defIsReverse = false;
 
         for (LeadingMarginSpanDrawParameters parameters : mLeadMarginSpanDrawEvents) {
             // FIXME sort by Y and break out of loop

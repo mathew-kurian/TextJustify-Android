@@ -28,7 +28,7 @@ For examples, tests, and API refer to the [Android-TextJustify Wiki](https://git
 Just add to your `build.gradle`
 ```gradle
 dependencies {
-    compile 'com.github.bluejamesbond:textjustify-android:2.1.0'
+    compile 'com.github.bluejamesbond:textjustify-android:2.1.1'
 }
 ```
 

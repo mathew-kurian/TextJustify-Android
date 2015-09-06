@@ -35,7 +35,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.TextPaint;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -419,7 +418,7 @@ public abstract class StringDocumentLayout extends IDocumentLayout {
                     String lastConcatPartial = null;
                     String concatPartial = "";
 
-                    ArrayList<String> partials = params.hyphenator.hyphenate(word);
+                    List<String> partials = params.hyphenator.hyphenate(word);
 
                     for (String partial : partials) {
 

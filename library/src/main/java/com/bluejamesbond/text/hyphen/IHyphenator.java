@@ -29,8 +29,8 @@ package com.bluejamesbond.text.hyphen;
  * Date: 1/27/15 3:35 AM
  */
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface IHyphenator {
-    public ArrayList<String> hyphenate(String word);
+    List<String> hyphenate(String word);
 }

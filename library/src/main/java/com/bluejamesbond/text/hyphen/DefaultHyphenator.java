@@ -4,9 +4,8 @@ import android.annotation.SuppressLint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /*
  * Copyright 2015 Mathew Kurian
@@ -43,6 +42,13 @@ import java.util.regex.Pattern;
  * @date   2014-10-20
  */
 
+/*
+ * Several performance and memory optimizations
+ *
+ * @author Martin Fietz
+ * @date   2015-09-06
+ */
+
 @SuppressLint("UseSparseArrays")
 public class DefaultHyphenator implements IHyphenator {
 
@@ -75,47 +81,53 @@ public class DefaultHyphenator implements IHyphenator {
 
     private TrieNode createTrie(Map<Integer, String> patternObject) {
 
-        int i = 0, c = 0, p = 0, codePoint;
-
-        String[] chars, points;
         TrieNode t, tree = new TrieNode();
-        ArrayList<String> patterns = new ArrayList<String>();
 
         for (Map.Entry<Integer, String> entry : patternObject.entrySet()) {
-            Matcher matcher = Pattern.compile(".{1," + String.valueOf(entry.getKey()) + "}")
-                    .matcher(entry.getValue());
-            while (matcher.find()) {
-                patterns.add(matcher.group(0));
-            }
+            int key = entry.getKey();
+            String value = entry.getValue();
 
-            for (i = 0; i < patterns.size(); i++) {
-                chars = patterns.get(i).replaceAll("[0-9]", "").split("");
-                points = patterns.get(i).split("\\D");
-
+            int numPatterns = value.length() / key;
+            for (int i = 0; i < numPatterns; i++) {
+                String pattern = value.substring(i * key, (i + 1) * key);
                 t = tree;
 
-                for (c = 0; c < chars.length; c++) {
-                    if (chars[c].length() == 0) {
+                for (int c = 0; c < pattern.length(); c++) {
+                    char chr = pattern.charAt(c);
+                    if(Character.isDigit(chr)) {
                         continue;
                     }
-
-                    codePoint = chars[c].codePointAt(0);
-
+                    int codePoint = pattern.codePointAt(c);
                     if (t.codePoint.get(codePoint) == null) {
                         t.codePoint.put(codePoint, new TrieNode());
                     }
-
                     t = t.codePoint.get(codePoint);
                 }
 
-                t._points = new ArrayList<Integer>();
-
-                for (p = 0; p < points.length; p++) {
-                    try {
-                        t._points.add(Integer.parseInt(points[p]));
-                    } catch (NumberFormatException e) {
-                        t._points.add(0);
+                List<Integer> list = new ArrayList<Integer>();
+                int digitStart = -1;
+                for (int p = 0; p < pattern.length(); p++) {
+                    if (Character.isDigit(pattern.charAt(p))) {
+                        if (digitStart < 0) {
+                            digitStart = p;
+                        }
+                        if(p == pattern.length()-1) {
+                            // last number in the pattern
+                            String number = pattern.substring(digitStart, pattern.length());
+                            list.add(Integer.valueOf(number));
+                        }
+                    } else if (digitStart >= 0) {
+                        // we reached the end of the current number
+                        String number = pattern.substring(digitStart, p);
+                        list.add(Integer.valueOf(number));
+                        digitStart = -1;
+                    } else {
+                        list.add(0);
                     }
+                }
+                t.points = new int[list.size()];
+                for(int k=0; k < list.size(); k++) {
+                    t.points[k] = list.get(k);
                 }
             }
         }
@@ -124,46 +136,31 @@ public class DefaultHyphenator implements IHyphenator {
     }
 
     @Override
-    public ArrayList<String> hyphenate(String word) {
-
-        int i, j, k, wordLength, nodePointsLength;
-        ArrayList<Integer> nodePoints;
-        ArrayList<String> characters = new ArrayList<String>();
-        ArrayList<Integer> characterPoints = new ArrayList<Integer>();
-        ArrayList<String> originalCharacters = new ArrayList<String>();
-        ArrayList<Integer> points = new ArrayList<Integer>();
-        ArrayList<String> result = new ArrayList<String>();
-        TrieNode node, trie = this.trie;
-
-        result.add("");
+    public List<String> hyphenate(String word) {
 
         word = "_" + word + "_";
+        String lowercase = word.toLowerCase();
 
-        for (char character : word.toCharArray()) {
-            characters.add((String.valueOf(character)).toLowerCase());
-            originalCharacters.add(String.valueOf(character));
+        int wordLength = lowercase.length();
+
+        int[] points = new int[wordLength];
+        int[] characterPoints = new int[wordLength];
+        for (int i = 0; i < wordLength; i++) {
+            points[i] = 0;
+            characterPoints[i] = lowercase.codePointAt(i);
         }
 
-        wordLength = characters.size();
-
-        for (i = 0; i < wordLength; i++) {
-            points.add(i, 0);
-            characterPoints.add(i, characters.get(i).codePointAt(0));
-        }
-
-        for (i = 0; i < wordLength; i++) {
+        TrieNode node, trie = this.trie;
+        int[] nodePoints;
+        for (int i = 0; i < wordLength; i++) {
             node = trie;
-
-            for (j = i; j < wordLength; j++) {
-                node = node.codePoint.get(characterPoints.get(j));
-
+            for (int j = i; j < wordLength; j++) {
+                node = node.codePoint.get(characterPoints[j]);
                 if (node != null) {
-                    nodePoints = node._points;
-
+                    nodePoints = node.points;
                     if (nodePoints != null) {
-                        for (k = 0, nodePointsLength =
-                                nodePoints.size(); k < nodePointsLength; k++) {
-                            points.set(i + k, Math.max(points.get(i + k), nodePoints.get(k)));
+                        for (int k = 0, nodePointsLength = nodePoints.length; k < nodePointsLength; k++) {
+                            points[i + k] = Math.max(points[i + k], nodePoints[k]);
                         }
                     }
                 } else {
@@ -172,15 +169,17 @@ public class DefaultHyphenator implements IHyphenator {
             }
         }
 
-        for (i = 1; i < wordLength - 1; i++) {
-            if (i > this.leftMin && i < (wordLength - this.rightMin) && points.get(i) % 2 > 0) {
-                result.add(originalCharacters.get(i));
-            } else {
-                result.set(result.size() - 1,
-                        result.get(result.size() - 1) + originalCharacters.get(i));
+        List<String> result = new ArrayList<String>();
+        int start = 1;
+        for (int i = 1; i < wordLength - 1; i++) {
+            if (i > this.leftMin && i < (wordLength - this.rightMin) && points[i] % 2 > 0) {
+                result.add(word.substring(start, i));
+                start = i;
             }
         }
-
+        if (start < word.length() - 1) {
+            result.add(word.substring(start, word.length() - 1));
+        }
         return result;
     }
 
@@ -271,7 +270,7 @@ public class DefaultHyphenator implements IHyphenator {
     }
 
     private class TrieNode {
-        Map<Integer, TrieNode> codePoint = new HashMap<Integer, TrieNode>();
-        ArrayList<Integer> _points;
+        Map<Integer, TrieNode> codePoint = new HashMap<Integer,TrieNode>();
+        int[] points;
     }
 }

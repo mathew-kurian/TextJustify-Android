@@ -364,7 +364,9 @@ public abstract class SpannableDocumentLayout extends IDocumentLayout {
             }
 
             // FIXME: Space at the end of each line, possibly due to scrollbar offset
-            LinkedList<Integer> tokenized = tokenize(textCpy, start, end - 1);
+//            LinkedList<Integer> tokenized = tokenize(textCpy, start, end - 1);
+            // FIXME: 2016/4/16 Issue #105 bug
+            LinkedList<Integer> tokenized = tokenize(textCpy, start, end);
 
             // If one long word without any spaces
             if (tokenized.size() == 1) {

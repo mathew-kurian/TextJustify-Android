@@ -191,7 +191,11 @@ public abstract class StringDocumentLayout extends IDocumentLayout {
                 // Next line
                 lineNumber++;
 
-                // Chcek cancelled
+                if (lineNumber >= params.maxLines) {
+                    break main;
+                }
+
+                // Check cancelled
                 if (cancelled.isCancelled()) {
                     done = false;
                     break;

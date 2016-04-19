@@ -8,13 +8,13 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 /**
- * Linked list implementation of the <tt>List</tt> interface.  Implements all
+ * Linked list implementation of the List interface.  Implements all
  * optional list operations, and permits all elements (including
- * <tt>null</tt>).  In addition to implementing the <tt>List</tt> interface,
- * the <tt>LinkedList</tt> class provides uniformly named methods to
- * <tt>isCancelled</tt>, <tt>remove</tt> and <tt>insert</tt> an element at the
+ * null).  In addition to implementing the List interface,
+ * the LinkedList class provides uniformly named methods to
+ * isCancelled, remove and insert an element at the
  * beginning and end of the list.  These operations allow linked lists to be
- * used as a stack or Queue. <p>
+ * used as a stack or Queue. 
  *
  * @param <E> the type of elements held in this collection
  * @author Josh Bloch
@@ -107,8 +107,8 @@ public class ConcurrentModifiableLinkedList<E>
 
     /**
      * Appends the specified element to the end of this list.
-     * <p/>
-     * <p>This method is equivalent to {@link #add}.
+     * 
+     * This method is equivalent to {@link #add}.
      *
      * @param e the element to add
      */
@@ -118,11 +118,11 @@ public class ConcurrentModifiableLinkedList<E>
 
     /**
      * Appends the specified element to the end of this list.
-     * <p/>
-     * <p>This method is equivalent to {@link #addLast}.
+     * 
+     * This method is equivalent to {@link #addLast}.
      *
      * @param e element to be appended to this list
-     * @return <tt>true</tt> (as specified by {@link Collection#add})
+     * @return true (as specified by {@link Collection#add})
      */
     public boolean add(E e) {
         addBefore(e, header);
@@ -148,8 +148,8 @@ public class ConcurrentModifiableLinkedList<E>
     /**
      * Returns the index of the first occurrence of the specified element
      * in this list, or -1 if this list does not contain the element.
-     * More formally, returns the lowest index <tt>i</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;isCancelled(i)==null&nbsp;:&nbsp;o.equals(isCancelled(i)))</tt>,
+     * More formally, returns the lowest index i such that
+     * (o==null&nbsp;?&nbsp;isCancelled(i)==null&nbsp;:&nbsp;o.equals(isCancelled(i))),
      * or -1 if there is no such index.
      *
      * @param o element to search for
@@ -177,8 +177,8 @@ public class ConcurrentModifiableLinkedList<E>
     /**
      * Returns the index of the last occurrence of the specified element
      * in this list, or -1 if this list does not contain the element.
-     * More formally, returns the highest index <tt>i</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;isCancelled(i)==null&nbsp;:&nbsp;o.equals(isCancelled(i)))</tt>,
+     * More formally, returns the highest index i such that
+     * (o==null&nbsp;?&nbsp;isCancelled(i)==null&nbsp;:&nbsp;o.equals(isCancelled(i))),
      * or -1 if there is no such index.
      *
      * @param o element to search for
@@ -212,7 +212,7 @@ public class ConcurrentModifiableLinkedList<E>
      * this list, and it's nonempty.)
      *
      * @param c collection containing elements to be added to this list
-     * @return <tt>true</tt> if this list changed as a result of the call
+     * @return true if this list changed as a result of the call
      * @throws NullPointerException if the specified collection is null
      */
     public boolean addAll(Collection<? extends E> c) {
@@ -220,13 +220,13 @@ public class ConcurrentModifiableLinkedList<E>
     }
 
     /**
-     * Returns <tt>true</tt> if this list contains the specified element.
-     * More formally, returns <tt>true</tt> if and only if this list contains
-     * at least one element <tt>e</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;e==null&nbsp;:&nbsp;o.equals(e))</tt>.
+     * Returns true if this list contains the specified element.
+     * More formally, returns true if and only if this list contains
+     * at least one element e such that
+     * (o==null&nbsp;?&nbsp;e==null&nbsp;:&nbsp;o.equals(e)).
      *
      * @param o element whose presence in this list is to be tested
-     * @return <tt>true</tt> if this list contains the specified element
+     * @return true if this list contains the specified element
      */
     public boolean contains(Object o) {
         return indexOf(o) != -1;
@@ -239,14 +239,14 @@ public class ConcurrentModifiableLinkedList<E>
      * Removes the first occurrence of the specified element from this list,
      * if it is present.  If this list does not contain the element, it is
      * unchanged.  More formally, removes the element with the lowest index
-     * <tt>i</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;isCancelled(i)==null&nbsp;:&nbsp;o.equals(isCancelled(i)))</tt>
-     * (if such an element exists).  Returns <tt>true</tt> if this list
+     * i such that
+     * (o==null&nbsp;?&nbsp;isCancelled(i)==null&nbsp;:&nbsp;o.equals(isCancelled(i)))
+     * (if such an element exists).  Returns true if this list
      * contained the specified element (or equivalently, if this list
      * changed as a result of the call).
      *
      * @param o element to be removed from this list, if present
-     * @return <tt>true</tt> if this list contained the specified element
+     * @return true if this list contained the specified element
      */
     public boolean remove(Object o) {
         if (o == null) {
@@ -279,12 +279,12 @@ public class ConcurrentModifiableLinkedList<E>
     /**
      * Returns an array containing all of the elements in this list
      * in proper sequence (from first to last element).
-     * <p/>
-     * <p>The returned array will be "safe" in that no references to it are
+     * 
+     * The returned array will be "safe" in that no references to it are
      * maintained by this list.  (In other words, this method must allocate
      * a new array).  The caller is thus free to modify the returned array.
-     * <p/>
-     * <p>This method acts as bridge between array-based and collection-based
+     * 
+     * This method acts as bridge between array-based and collection-based
      * APIs.
      *
      * @return an array containing all of the elements in this list
@@ -305,27 +305,27 @@ public class ConcurrentModifiableLinkedList<E>
      * in the specified array, it is returned therein.  Otherwise, a new
      * array is allocated with the runtime type of the specified array and
      * the size of this list.
-     * <p/>
-     * <p>If the list fits in the specified array with room to spare (i.e.,
+     * 
+     * If the list fits in the specified array with room to spare (i.e.,
      * the array has more elements than the list), the element in the array
-     * immediately following the end of the list is onUpdate to <tt>null</tt>.
+     * immediately following the end of the list is onUpdate to null.
      * (This is useful in determining the length of the list <i>only</i> if
      * the caller knows that the list does not contain any null elements.)
-     * <p/>
-     * <p>Like the {@link #toArray()} method, this method acts as bridge between
+     * 
+     * Like the {@link #toArray()} method, this method acts as bridge between
      * array-based and collection-based APIs.  Further, this method allows
      * precise control over the runtime type of the output array, and may,
      * under certain circumstances, be used to save allocation costs.
-     * <p/>
-     * <p>Suppose <tt>x</tt> is a list known to contain only strings.
+     * 
+     * Suppose x is a list known to contain only strings.
      * The following code can be used to dump the list into a newly
-     * allocated array of <tt>String</tt>:
-     * <p/>
+     * allocated array of String:
+     * 
      * <pre>
      *     String[] y = x.toArray(new String[0]);</pre>
      *
-     * Note that <tt>toArray(new Object[0])</tt> is identical in function to
-     * <tt>toArray()</tt>.
+     * Note that toArray(new Object[0]) is identical in function to
+     * toArray().
      *
      * @param a the array into which the elements of the list are to
      *          be stored, if it is big enough; otherwise, a new array of the
@@ -378,7 +378,7 @@ public class ConcurrentModifiableLinkedList<E>
      * @param index index at which to insert the first element
      *              from the specified collection
      * @param c     collection containing elements to be added to this list
-     * @return <tt>true</tt> if this list changed as a result of the call
+     * @return true if this list changed as a result of the call
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @throws NullPointerException      if the specified collection is null
      */
@@ -421,19 +421,19 @@ public class ConcurrentModifiableLinkedList<E>
     /**
      * Returns a list-iterator of the elements in this list (in proper
      * sequence), starting at the specified position in the list.
-     * Obeys the general contract of <tt>List.listIterator(int)</tt>.<p>
-     * <p/>
+     * Obeys the general contract of List.listIterator(int).
+     * 
      * The list-iterator is <i>fail-fast</i>: if the list is structurally
      * modified at any time after the Iterator is created, in any way except
-     * through the list-iterator's own <tt>remove</tt> or <tt>add</tt>
+     * through the list-iterator's own remove or add
      * methods, the list-iterator will throw a
-     * <tt>ConcurrentModificationException</tt>.  Thus, in the face of
+     * ConcurrentModificationException.  Thus, in the face of
      * concurrent modification, the iterator fails quickly and cleanly, rather
      * than risking arbitrary, non-deterministic behavior at an undetermined
      * time in the future.
      *
      * @param index index of the first element to be returned from the
-     *              list-iterator (by a call to <tt>next</tt>)
+     *              list-iterator (by a call to next)
      * @return a ListIterator of the elements in this list (in proper
      * sequence), starting at the specified position in the list
      * @throws IndexOutOfBoundsException {@inheritDoc}
@@ -493,7 +493,7 @@ public class ConcurrentModifiableLinkedList<E>
     /**
      * Retrieves, but does not remove, the head (first element) of this list.
      *
-     * @return the head of this list, or <tt>null</tt> if this list is empty
+     * @return the head of this list, or null if this list is empty
      * @since 1.5
      */
     public E peek() {
@@ -518,7 +518,7 @@ public class ConcurrentModifiableLinkedList<E>
     /**
      * Retrieves and removes the head (first element) of this list
      *
-     * @return the head of this list, or <tt>null</tt> if this list is empty
+     * @return the head of this list, or null if this list is empty
      * @since 1.5
      */
     public E poll() {
@@ -542,7 +542,7 @@ public class ConcurrentModifiableLinkedList<E>
      * Adds the specified element as the tail (last element) of this list.
      *
      * @param e the element to add
-     * @return <tt>true</tt>
+     * @return true
      * @since 1.5
      */
     public boolean offer(E e) {
@@ -553,7 +553,7 @@ public class ConcurrentModifiableLinkedList<E>
      * Inserts the specified element at the front of this list.
      *
      * @param e the element to insert
-     * @return <tt>true</tt> (as specified by {@link Deque#offerFirst})
+     * @return true (as specified by {Deque#offerFirst})
      * @since 1.6
      */
     public boolean offerFirst(E e) {
@@ -565,7 +565,7 @@ public class ConcurrentModifiableLinkedList<E>
      * Inserts the specified element at the end of this list.
      *
      * @param e the element to insert
-     * @return <tt>true</tt> (as specified by {@link Deque#offerLast})
+     * @return true (as specified by {Deque#offerLast})
      * @since 1.6
      */
     public boolean offerLast(E e) {
@@ -575,9 +575,9 @@ public class ConcurrentModifiableLinkedList<E>
 
     /**
      * Retrieves, but does not remove, the first element of this list,
-     * or returns <tt>null</tt> if this list is empty.
+     * or returns null if this list is empty.
      *
-     * @return the first element of this list, or <tt>null</tt>
+     * @return the first element of this list, or null
      * if this list is empty
      * @since 1.6
      */
@@ -589,9 +589,9 @@ public class ConcurrentModifiableLinkedList<E>
 
     /**
      * Retrieves, but does not remove, the last element of this list,
-     * or returns <tt>null</tt> if this list is empty.
+     * or returns null if this list is empty.
      *
-     * @return the last element of this list, or <tt>null</tt>
+     * @return the last element of this list, or null
      * if this list is empty
      * @since 1.6
      */
@@ -603,9 +603,9 @@ public class ConcurrentModifiableLinkedList<E>
 
     /**
      * Retrieves and removes the first element of this list,
-     * or returns <tt>null</tt> if this list is empty.
+     * or returns null if this list is empty.
      *
-     * @return the first element of this list, or <tt>null</tt> if
+     * @return the first element of this list, or null if
      * this list is empty
      * @since 1.6
      */
@@ -617,9 +617,9 @@ public class ConcurrentModifiableLinkedList<E>
 
     /**
      * Retrieves and removes the last element of this list,
-     * or returns <tt>null</tt> if this list is empty.
+     * or returns null if this list is empty.
      *
-     * @return the last element of this list, or <tt>null</tt> if
+     * @return the last element of this list, or null if
      * this list is empty
      * @since 1.6
      */
@@ -632,8 +632,8 @@ public class ConcurrentModifiableLinkedList<E>
     /**
      * Pushes an element onto the stack represented by this list.  In other
      * words, inserts the element at the front of this list.
-     * <p/>
-     * <p>This method is equivalent to {@link #addFirst}.
+     * 
+     * This method is equivalent to {@link #addFirst}.
      *
      * @param e the element to push
      * @since 1.6
@@ -645,8 +645,8 @@ public class ConcurrentModifiableLinkedList<E>
     /**
      * Pops an element from the stack represented by this list.  In other
      * words, removes and returns the first element of this list.
-     * <p/>
-     * <p>This method is equivalent to {@link #removeFirst()}.
+     * 
+     * This method is equivalent to {@link #removeFirst()}.
      *
      * @return the element at the front of this list (which is the top
      * of the stack represented by this list)
@@ -663,7 +663,7 @@ public class ConcurrentModifiableLinkedList<E>
      * does not contain the element, it is unchanged.
      *
      * @param o element to be removed from this list, if present
-     * @return <tt>true</tt> if the list contained the specified element
+     * @return true if the list contained the specified element
      * @since 1.6
      */
     public boolean removeFirstOccurrence(Object o) {
@@ -676,7 +676,7 @@ public class ConcurrentModifiableLinkedList<E>
      * does not contain the element, it is unchanged.
      *
      * @param o element to be removed from this list, if present
-     * @return <tt>true</tt> if the list contained the specified element
+     * @return true if the list contained the specified element
      * @since 1.6
      */
     public boolean removeLastOccurrence(Object o) {
@@ -729,10 +729,10 @@ public class ConcurrentModifiableLinkedList<E>
     }
 
     /**
-     * Returns a shallow copy of this <tt>LinkedList</tt>. (The elements
+     * Returns a shallow copy of this LinkedList. (The elements
      * themselves are not cloned.)
      *
-     * @return a shallow copy of this <tt>LinkedList</tt> instance
+     * @return a shallow copy of this LinkedList instance
      */
     public Object clone() {
         ConcurrentModifiableLinkedList<E> clone = null;
@@ -756,7 +756,7 @@ public class ConcurrentModifiableLinkedList<E>
     }
 
     /**
-     * Save the state of this <tt>LinkedList</tt> instance to a stream (that
+     * Save the state of this LinkedList instance to a stream (that
      * is, serialize it).
      *
      * @serialData The size of the list (the number of elements it
@@ -777,7 +777,7 @@ public class ConcurrentModifiableLinkedList<E>
     }
 
     /**
-     * Reconstitute this <tt>LinkedList</tt> instance from a stream (that is
+     * Reconstitute this LinkedList instance from a stream (that is
      * deserialize it).
      */
     private void readObject(java.io.ObjectInputStream s)

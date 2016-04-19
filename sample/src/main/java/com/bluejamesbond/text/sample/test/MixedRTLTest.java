@@ -35,7 +35,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 
 import com.bluejamesbond.text.DocumentView;
-import com.bluejamesbond.text.sample.helper.ArticleBuilder;
+import com.bluejamesbond.text.util.ArticleBuilder;
 import com.bluejamesbond.text.sample.helper.TestActivity;
 import com.bluejamesbond.text.style.Direction;
 import com.bluejamesbond.text.style.DirectionSpan;

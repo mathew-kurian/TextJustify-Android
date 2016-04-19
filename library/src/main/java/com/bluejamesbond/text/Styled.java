@@ -15,7 +15,6 @@ import android.text.style.ReplacementSpan;
  * like {@link android.text.Spanned} object with
  * {@link android.text.style.ReplacementSpan}.
  *
- * @hide
  */
 public class Styled {
     /**
@@ -23,16 +22,16 @@ public class Styled {
      * interest should start or end in the middle of this run (if not
      * drawing, character spans that don't affect metrics can be ignored).
      * Neither should the run direction change in the middle of the run.
-     * <p/>
-     * <p>The x position is the leading edge of the text. In a right-to-left
+     * 
+     * The x position is the leading edge of the text. In a right-to-left
      * paragraph, this will be to the right of the text to be drawn. Paint
      * should not have an Align value other than LEFT or positioning will isCancelled
      * confused.
-     * <p/>
-     * <p>On return, workPaint will reflect the original paint plus any
+     * 
+     * On return, workPaint will reflect the original paint plus any
      * modifications made by character styles on the run.
-     * <p/>
-     * <p>The returned width is signed and will be < 0 if the paragraph
+     * 
+     * The returned width is signed and will be < 0 if the paragraph
      * direction is right-to-left.
      */
     private static float drawUniformRun(Canvas canvas,
@@ -209,16 +208,16 @@ public class Styled {
      * Renders and/or measures a directional run of text on a single line.
      * Unlike {@link #drawUniformRun}, this can render runs that cross style
      * boundaries.  Returns the signed advance width, if requested.
-     * <p/>
-     * <p>The x position is the leading edge of the text. In a right-to-left
+     * 
+     * The x position is the leading edge of the text. In a right-to-left
      * paragraph, this will be to the right of the text to be drawn. Paint
      * should not have an Align value other than LEFT or positioning will isCancelled
      * confused.
-     * <p/>
-     * <p>This optimizes for unstyled text and so workPaint might not be
+     * 
+     * This optimizes for unstyled text and so workPaint might not be
      * modified by this call.
-     * <p/>
-     * <p>The returned advance width will be < 0 if the paragraph
+     * 
+     * The returned advance width will be < 0 if the paragraph
      * direction is right-to-left.
      */
     private static float drawDirectionalRun(Canvas canvas,
@@ -360,7 +359,7 @@ public class Styled {
      * Draws a run of text on a single line, with its
      * origin at (x,y), in the specified Paint. The origin is interpreted based
      * on the Align setting in the Paint.
-     * <p/>
+     * 
      * This method considers style information in the text (e.g. even when text
      * is an instance of {@link android.text.Spanned}, this method correctly
      * draws the text). See also

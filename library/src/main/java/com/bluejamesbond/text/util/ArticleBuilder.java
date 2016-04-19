@@ -1,4 +1,4 @@
-package com.bluejamesbond.text.sample.helper;
+package com.bluejamesbond.text.util;
 
 /*
  * Copyright 2015 Mathew Kurian

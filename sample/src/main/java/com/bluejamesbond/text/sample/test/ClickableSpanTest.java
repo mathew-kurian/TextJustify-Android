@@ -39,7 +39,7 @@ import android.widget.Toast;
 
 import com.bluejamesbond.text.DocumentView;
 import com.bluejamesbond.text.hyphen.SqueezeHyphenator;
-import com.bluejamesbond.text.sample.helper.ArticleBuilder;
+import com.bluejamesbond.text.util.ArticleBuilder;
 import com.bluejamesbond.text.sample.helper.MyQuoteSpan;
 import com.bluejamesbond.text.sample.helper.TestActivity;
 import com.bluejamesbond.text.style.JustifiedSpan;

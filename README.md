@@ -9,6 +9,10 @@ This library will provide you a way to justify text. It supports both plain text
 
 *Compatible for Android 2.2 to 5.X*
 
+#Other Libraries
+- [FacebookMessengerBot.js](https://github.com/bluejamesbond/FacebookMessengerBot.js) - a Node ES5/6 API for the new Facebook Messenger Bot Platform
+- [Scribe.js](https://github.com/bluejamesbond/Scribe.js) - a Node ES5/6 logging system with a web interface
+ 
 #Screenshot
 ![Preview](http://i.imgur.com/k6bAWd0.jpg)
 
